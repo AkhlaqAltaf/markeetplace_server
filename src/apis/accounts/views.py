@@ -6,8 +6,9 @@ from rest_framework.generics import RetrieveUpdateAPIView
 from rest_framework.response import Response
 
 from src.apis.accounts.serializers import UserSerializer, VerifyEmailSerializer, CustomLoginSerializer
-from src.apis.accounts.models import CustomUser
+from src.apps.accounts.models import CustomUser
 from ...apps.whisper.main import Mailing
+
 
 
 class CustomLoginView(LoginView):
@@ -33,7 +34,7 @@ class UserRetrieveChangeAPIView(RetrieveUpdateAPIView):
         return self.request.user
 
 
-from .serializers import UserSerializer
+from ...apis.accounts.serializers import UserSerializer
 from django.contrib.auth import get_user_model
 
 User = get_user_model()

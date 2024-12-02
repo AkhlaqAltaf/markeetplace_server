@@ -31,7 +31,7 @@ SECRET_KEY = 'django-insecure-1!ubys-rk=gabd&=w@d73k_5ck!gcl8cvjz$-iw=%v6k=0%onc
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -46,10 +46,15 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # APIS 
     
-    'src.apis.accounts.apps.AccountsAppConfig',
+    'src.apps.accounts.apps.AccountsAppConfig',
 
     #WEBSITE APPS
-    
+
+    'src.apps.core.apps.CoreConfig',
+    'src.apps.vendor.apps.VendorConfig',
+    'src.apps.product.apps.ProductConfig',
+    'src.apps.cart.apps.CartConfig',
+    'src.apps.order.apps.OrderConfig',
     'src.apps.whisper.apps.WhisperConfig',
     'src.apps.website.apps.WebsiteConfig',
     
@@ -144,10 +149,11 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static'),
-]
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static_files')]
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media/'
 
 
 # Default primary key field type
@@ -182,3 +188,20 @@ EMAIL_HOST_PASSWORD = env('host_mail_password')
 UNSPLASH_API_KEY = env('UNSPLASH_API_KEY')
 API_KEY = env('API_KEY')
 EMAIL_USE_TLS = True
+
+DEFAULT_EMAIL_FROM = 'Multi Vendor Site <akhlaqaltaf4@gmail.com>'
+
+
+
+
+LOGIN_URL = 'vendor:login'
+LOGIN_REDIRECT_URL = 'vendor:vendor-admin'
+LOGOUT_REDIRECT_URL = 'core:home'
+
+SESSION_COOKIE_AGE = 86400 # Day in Seconds
+CART_SESSION_ID = 'cart'
+
+
+# STRIPE PAYMENT
+STRIPE_PUB_KEY = 'pk_test_OKdhbDNME5KHtnpzYRBfNmEZ00mjM6DVsJ' # For JavaScript
+STRIPE_SECRET_KEY = 'sk_test_jaIdMJOlkcUG6QpXV5wAJxXT005aZAJVM1' # For Django Backend

@@ -17,8 +17,18 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import include, path
 
+from marketplace_server import settings
+from django.conf.urls.static import static
+
 urlpatterns = [
-    path('',include('src.apps.website.urls',namespace='website')),
+    path('admin/', admin.site.urls),
+    path('', include('src.apps.core.urls')),
+    path('vendor/', include('src.apps.vendor.urls')),
+    path('product/', include('src.apps.product.urls')),
+    path('accounts/',include('src.apps.accounts.urls')),
+    path('cart/', include('src.apps.cart.urls')),
+    path('order/', include('src.apps.order.urls')),
+    # path('',include('src.apps.website.urls',namespace='website')),
     path('admin/', admin.site.urls),
     path('api/',include('src.apis.urls',namespace='api')),
-]
+]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

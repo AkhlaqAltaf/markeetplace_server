@@ -3,7 +3,6 @@ from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.views import View
 from django.views.generic import TemplateView ,RedirectView
-
 from src.apps.whisper.main import Mailing
 
 

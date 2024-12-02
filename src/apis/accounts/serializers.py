@@ -1,6 +1,6 @@
 from django.contrib.auth import get_user_model
 
-from src.apis.accounts.models import CustomUser
+from src.apps.accounts.models import CustomUser
 from src.apps.whisper.main import Mailing
 from dj_rest_auth.serializers import LoginSerializer as DefaultLoginSerializer
 from django.utils.translation import gettext_lazy as _
