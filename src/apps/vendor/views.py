@@ -26,29 +26,19 @@ class BecomeVendorView(View):
     template_name = 'vendor/become_vendor.html'
 
     def get(self, request):
-        vendor_form = VendorForm()
-        return render(request, self.template_name, {'form': vendor_form})
+        if request.user.is_authenticated:
+            vendor_form = VendorForm()
+            return render(request, self.template_name, {'form': vendor_form})
+        else:
+            return redirect('accounts:login')
 
     def post(self, request):
         vendor_form = VendorForm(request.POST, request.FILES)
 
         if vendor_form.is_valid():
-            # Create the user
-            email = vendor_form.cleaned_data['email']
-            password = request.POST.get('password')
-            user_data = CustomUser.objects.create_user(email=email, password=password)
-
-            if isinstance(user_data, dict):  # Check for status code in response
-                if user_data['status_code'] == 600:
-                    vendor_form.add_error('email', user_data['message'])
-                    return render(request, self.template_name, {'form': vendor_form})
-
-            user = user_data['user']
-
-            # Create the vendor
+            user = request.user
             Vendor.objects.create(
                 name=vendor_form.cleaned_data['name'],
-                email=vendor_form.cleaned_data['email'],
                 id_card_number=vendor_form.cleaned_data['id_card_number'],
                 address=vendor_form.cleaned_data['address'],
                 mobile_number=vendor_form.cleaned_data['mobile_number'],

@@ -17,7 +17,7 @@ class ProductForm(ModelForm):
 class VendorForm(forms.ModelForm):
     class Meta:
         model = Vendor
-        fields = ['name', 'email', 'id_card_number', 'address', 'mobile_number', 'cr_file']
+        fields = ['name','id_card_number', 'address', 'mobile_number', 'cr_file']
         widgets = {
             'address': forms.Textarea(attrs={'rows': 3}),
         }

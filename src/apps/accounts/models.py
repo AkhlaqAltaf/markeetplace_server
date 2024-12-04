@@ -4,6 +4,9 @@ import random
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.db import models
 
+from src.apps.whisper.main import Mailing
+from django.core import signing
+
 
 class CustomUserManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
@@ -27,8 +30,32 @@ class CustomUserManager(BaseUserManager):
         user.verification_code = self.generate_verification_code()
         user.set_password(password)
         user.save(using=self._db)
-        return  {'user':user,'status_code':700,'message':"Successfully Registered"}
 
+        token = self.generate_verification_token(user)
+        self.send_verification_email(user, token)
+
+
+
+        return  user
+    
+    def send_verification_email(self, user, token):
+        """
+        Sends a verification email with a link that contains the token
+        """
+        verification_link = f"http://127.0.0.1:8000/accounts/verify/{token}/"
+        context = {'user': user, 'verification_link': verification_link}
+
+        # You would send the email here (using your mailing logic)
+        mail = Mailing()
+        mail.send_email(template="mails/verification_email.html", to_email=[user.email], context=context)
+
+
+
+    def generate_verification_token(self, user):
+        """
+        Generates a token for email verification using Django's signing module
+        """
+        return signing.dumps({'user_id': user.id}, salt='email-verification')
 
     def create_superuser(self, email, password=None, **extra_fields):
         extra_fields.setdefault('is_staff', True)

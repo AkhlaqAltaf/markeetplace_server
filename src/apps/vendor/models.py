@@ -32,7 +32,6 @@ def upload_to_cr(instance, filename):
 
 class Vendor(models.Model):
     name = models.CharField(max_length=255)
-    email = models.EmailField(unique=True)
     cr_file = models.FileField(upload_to=upload_to_cr,blank=True,null=True)  # File upload for CR
     id_card_number = models.CharField(max_length=20, unique=True)
     address = models.TextField()
@@ -42,7 +41,7 @@ class Vendor(models.Model):
         related_name='vendor', 
         on_delete=models.CASCADE
     )
-    verification_status = models.BooleanField(default=False)  # Admin verification
+    verification_status = models.BooleanField(default=False) 
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

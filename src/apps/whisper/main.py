@@ -24,10 +24,10 @@ class Mailing:
 
 
 
-    def send_email(self,template,to_email):
+    def send_email(self,template,to_email,context):
 
         subject = 'Verify your email'
-        html_message = render_to_string(template, {'user': "...."})
+        html_message = render_to_string(template, context)
         plain_message = strip_tags(html_message)
         from_email = self.host_email
         to = to_email

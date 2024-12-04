@@ -8,6 +8,6 @@ from .models import Vendor
 
 @admin.register(Vendor)
 class VendorAdmin(admin.ModelAdmin):
-    list_display = ('name', 'email', 'id_card_number', 'mobile_number', 'verification_status')
+    list_display = ('name',  'id_card_number', 'mobile_number', 'verification_status')
     list_filter = ('verification_status', 'created_at')
-    search_fields = ('name', 'email', 'id_card_number', 'mobile_number')
+    search_fields = ('name',  'id_card_number', 'mobile_number')

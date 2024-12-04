@@ -33,7 +33,6 @@
                 <a class="navbar-item" href="{% url 'core:home' %}">
                     Home
                 </a>
-                
                 {% for category in categories %}
                     <a class="navbar-item" href="{% url 'product:category' category.slug %}">
                         {{category.title}}
@@ -65,8 +64,8 @@
                     <a href="{% url 'cart:cart' %}" class="button is-warning">Cart {% if cart %}({{cart|length}}){% endif %}</a>
                 </div>
                 
-                {% if request.user.is_authenticated %}
 
+                {% if request.user.vendor %}
                 <div class="navbar-item has-dropdown is-hoverable">
                     <a class="navbar-link is-capitalized">
                     {{user.vendor.name}}
@@ -74,23 +73,45 @@
 
                     <div class="navbar-dropdown">
                     <a class="navbar-item" href="{% url 'vendor:vendor-admin' %}">
-                        Profile
+                        {{ request.user.vendor }}
                     </a>
                     <a class="navbar-item" href="{% url 'vendor:edit-vendor' %}">
                         Update Profile
                     </a>
                     <a class="navbar-item" href="{% url 'vendor:add-product' %}">
-                        Add Product
+                        List Product
                     </a>
                     <hr class="navbar-divider">
-                    <a class="navbar-item" href="{% url 'vendor:logout' %}">
+                    <a class="navbar-item" href="{% url 'accounts:logout' %}">
                         Logout
                     </a>
                     </div>
                 </div>
+              
+                {% elif request.user.is_authenticate %}
+                <div class="navbar-item has-dropdown is-hoverable">
+                    <a class="navbar-link is-capitalized">
+                    {{user.vendor.name}}
+                    </a>
 
+                    <div class="navbar-dropdown">
+                    <a class="navbar-item" href="{% url 'vendor:vendor-admin' %}">
+                        profile
+                    </a>
+                    <a class="navbar-item" href="{% url 'vendor:edit-vendor' %}">
+                        Update Profile
+                    </a>
+                    <a class="navbar-item" href="{% url 'vendor:add-product' %}">
+                        Become Vendor
+                    </a>
+                    <hr class="navbar-divider">
+                    <a class="navbar-item" href="{% url 'accounts:logout' %}">
+                        Logout
+                    </a>
+                    </div>
+                </div>
                 {% else %}
-
+                
                 <div class="navbar-item">
                     <div class="buttons">
                         <a class="button is-primary" href="{% url 'vendor:become-vendor' %}">
@@ -101,7 +122,7 @@
                         </a>
                     </div>
                 </div>
-
+              
                 {% endif %}
 
 
@@ -113,7 +134,9 @@
     <section class="section">
         <div class="container">
 
-            {% block content %}{% endblock content %}
+            {% block content %}
+            
+            {% endblock content %}
 
         </div>
     </section>
