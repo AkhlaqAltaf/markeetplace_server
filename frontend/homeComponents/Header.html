@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <title>Responsive Navbar</title>
+</head>
+<body>
+  <!-- Black Friday Banner -->
+  <div id="black-friday-banner" class="bg-black flex justify-between items-center p-2">
+    <div class="flex gap-2 items-center px-16">
+      <p class="bg-yellow-400 text-2xl px-4 py-2 transform rotate-2">Black</p>
+      <p class="text-white text-xl">Friday</p>
+    </div>
+    <div class="flex items-center gap-2">
+      <p class="text-sm text-white">Up to</p>
+      <span class="text-yellow-400 text-4xl">59%</span>
+      <p class="text-lg text-white">OFF</p>
+    </div>
+    <button class="bg-yellow-400 font-bold px-6 py-2 flex items-center gap-2">
+      Shop Now
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+      </svg>
+    </button>
+    <button class="bg-blue-900 p-2" onclick="document.getElementById('black-friday-banner').remove();">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+      </svg>
+    </button>
+  </div>
+
+  <!-- Social Media Section -->
+  <div class="bg-blue-900 p-2 px-24 flex justify-between items-center text-white">
+    <p>Welcome to Saudi online Shopping store</p>
+    <div class="flex items-center gap-5">
+      <div class="flex items-center gap-2">
+        <p>Follow us:</p>
+        <i class="fab fa-twitter"></i>
+        <i class="fab fa-facebook"></i>
+        <i class="fab fa-instagram"></i>
+        <i class="fab fa-youtube"></i>
+        <i class="fab fa-reddit"></i>
+      </div>
+      <div class="h-5 w-px bg-white mx-4"></div>
+
+      <!-- Language Dropdown -->
+      <div class="relative">
+        <button class="flex items-center gap-2">
+          <span id="selected-language">ENG</span>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+        <div id="language-dropdown" class="hidden absolute bg-white text-black rounded mt-2 shadow-lg z-10 p-2">
+          <div class="flex items-center gap-2 p-2 cursor-pointer hover:bg-gray-200" onclick="selectLanguage('ENG')">
+            <img src="usimage.png" alt="US Flag" class="w-5 h-5 rounded-full border">
+            <p>English</p>
+          </div>
+          <div class="flex items-center gap-2 p-2 cursor-pointer hover:bg-gray-200" onclick="selectLanguage('ARB')">
+            <img src="saudiflag.png" alt="Saudi Flag" class="w-5 h-5 rounded-full border">
+            <p>Arabic</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Currency Dropdown -->
+      <div class="relative">
+        <button class="flex items-center gap-2">
+          <span id="selected-currency">SR</span>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+        <div id="currency-dropdown" class="hidden absolute bg-white text-black rounded mt-2 shadow-lg z-10 p-2">
+          <div class="p-2 cursor-pointer hover:bg-gray-200" onclick="selectCurrency('SR')">Saudi Riyal (SR)</div>
+          <div class="p-2 cursor-pointer hover:bg-gray-200" onclick="selectCurrency('AED')">UAE Dirham (AED)</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="border-gray-400" />
+
+  <!-- Main Navbar -->
+  <div class="bg-blue-900 p-4 px-24 flex justify-between items-center text-white">
+    <a href="#"><img src="logo-2.png" alt="Logo" class="h-16"></a>
+    <div class="relative">
+      <input type="text" class="pl-4 pr-10 py-2 border border-gray-300 rounded w-64" placeholder="Search for products">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 absolute top-2 right-2 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M11 19a8 8 0 110-16 8 8 0 010 16z" />
+      </svg>
+    </div>
+    <div class="flex items-center gap-4">
+      <i class="fas fa-shopping-cart"></i>
+      <a href="#" class="fas fa-heart"></a>
+      <i class="fas fa-user"></i>
+    </div>
+  </div>
+
+  <script>
+    function selectLanguage(language) {
+      document.getElementById('selected-language').textContent = language;
+      document.getElementById('language-dropdown').classList.add('hidden');
+    }
+
+    function selectCurrency(currency) {
+      document.getElementById('selected-currency').textContent = currency;
+      document.getElementById('currency-dropdown').classList.add('hidden');
+    }
+  </script>
+</body>
+</html>
