@@ -1,5 +1,6 @@
 from django import forms
 from django.contrib.auth import authenticate
+from django.contrib.auth.password_validation import validate_password
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth import password_validation
 
@@ -36,13 +37,18 @@ class CustomLoginForm(forms.Form):
         return cleaned_data
 
 
+
 class UserRegistrationForm(forms.ModelForm):
+    name = forms.CharField(max_length=100, label="Name")
+    phone = forms.CharField(max_length=15, label="Phone Number")
+    email = forms.EmailField(label="Email")
     password = forms.CharField(widget=forms.PasswordInput, label="Password")
     confirm_password = forms.CharField(widget=forms.PasswordInput, label="Confirm Password")
+    terms = forms.BooleanField(required=True, label="I agree to the Terms and Privacy Policy")
 
     class Meta:
         model = CustomUser
-        fields = ['email', 'password']
+        fields = ['name', 'phone', 'email', 'password']
 
     def clean(self):
         cleaned_data = super().clean()
@@ -51,17 +57,20 @@ class UserRegistrationForm(forms.ModelForm):
 
         if password != confirm_password:
             raise forms.ValidationError("Passwords do not match.")
-        
-        password_validation.validate_password(password)
+
+        validate_password(password)  # Optional: Use Django's built-in password validation
 
         return cleaned_data
 
     def save(self, commit=True):
         # Manually call create_user instead of saving directly via ModelForm
+        name = self.cleaned_data['name']
+        phone = self.cleaned_data['phone']
         email = self.cleaned_data['email']
         password = self.cleaned_data['password']
         print("FORM SAVED...")
+
         # Call CustomUserManager's create_user method
-        user = CustomUser.objects.create_user(email=email, password=password)
+        user = CustomUser.objects.create_user(email=email, password=password, name=name, phone=phone)
 
         return user

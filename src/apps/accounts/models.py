@@ -79,7 +79,8 @@ class CustomUserManager(BaseUserManager):
 
 
 class CustomUser(AbstractBaseUser):
-
+    name  = models.CharField(max_length=50,blank=True,null=True)
+    phone = models.IntegerField(blank=True,null=True)
     email = models.EmailField(unique=True)
     verification_code = models.CharField(max_length=32, unique=False, blank=True, null=True)
     is_verified = models.BooleanField(default=False)

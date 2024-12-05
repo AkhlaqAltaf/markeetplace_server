@@ -1,0 +1,145 @@
+<form method="post" action="{% url 'accounts:register' %}">
+    {% csrf_token %}
+
+ {% if signup_form.non_field_errors %}
+    <div class="text-red-500 text-sm mt-1">
+      {% for error in signin_form.non_field_errors %}
+        <p>{{ error }}</p>
+      {% endfor %}
+    </div>
+  {% endif %}
+    <div id="signUpForm" class="hidden space-y-6">
+
+        <!-- Name Field -->
+        <div>
+            <label class="block text-sm font-medium text-gray-700" for="{{ signup_form.name.id_for_label }}">Name</label>
+            <input
+                type="text"
+                name="name"
+                id="{{ signup_form.name.id_for_label }}"
+                class="w-full border border-gray-300 p-2 rounded"
+                placeholder="Enter your name"
+                value="{{ signup_form.name.value }}">
+            {% if signup_form.name.errors %}
+                <div class="text-red-500 text-sm mt-1">
+                    {% for error in signup_form.name.errors %}
+                        <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Phone Number Field -->
+        <div>
+            <label class="block text-sm font-medium text-gray-700" for="{{ signup_form.phone.id_for_label }}">Phone Number</label>
+            <input
+                type="text"
+                name="phone"
+                id="{{ signup_form.phone.id_for_label }}"
+                class="w-full border border-gray-300 p-2 rounded"
+                placeholder="Enter phone number"
+                value="{{ signup_form.phone.value }}">
+            {% if signup_form.phone.errors %}
+                <div class="text-red-500 text-sm mt-1">
+                    {% for error in signup_form.phone.errors %}
+                        <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Email Field -->
+        <div>
+            <label class="block text-sm font-medium text-gray-700" for="{{ signup_form.email.id_for_label }}">Email</label>
+            <input
+                type="email"
+                name="email"
+                id="{{ signup_form.email.id_for_label }}"
+                class="w-full border border-gray-300 p-2 rounded"
+                placeholder="Enter email address"
+                value="{{ signup_form.email.value }}">
+            {% if signup_form.email.errors %}
+                <div class="text-red-500 text-sm mt-1">
+                    {% for error in signup_form.email.errors %}
+                        <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Password Field -->
+        <div class="relative">
+            <label class="block text-sm font-medium text-gray-700" for="{{ signup_form.password.id_for_label }}">Password</label>
+            <input
+                type="password"
+                name="password"
+                id="{{ signup_form.password.id_for_label }}"
+                class="w-full border border-gray-300 p-2 rounded"
+                placeholder="Enter password"
+                value="{{ signup_form.password.value }}">
+            <i class="fas fa-eye absolute top-3 right-3 text-gray-500 cursor-pointer" onclick="togglePassword('signUpPassword')"></i>
+            {% if signup_form.password.errors %}
+                <div class="text-red-500 text-sm mt-1">
+                    {% for error in signup_form.password.errors %}
+                        <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Confirm Password Field -->
+        <div class="relative">
+            <label class="block text-sm font-medium text-gray-700" for="{{ signup_form.confirm_password.id_for_label }}">Confirm Password</label>
+            <input
+                type="password"
+                name="confirm_password"
+                id="{{ signup_form.confirm_password.id_for_label }}"
+                class="w-full border border-gray-300 p-2 rounded"
+                placeholder="Confirm password"
+                value="{{ signup_form.confirm_password.value }}">
+            <i class="fas fa-eye absolute top-3 right-3 text-gray-500 cursor-pointer" onclick="togglePassword('confirmPassword')"></i>
+            {% if signup_form.confirm_password.errors %}
+                <div class="text-red-500 text-sm mt-1">
+                    {% for error in signup_form.confirm_password.errors %}
+                        <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Terms & Conditions -->
+        <div class="flex items-center">
+            <input
+                type="checkbox"
+                name="terms"
+                id="terms"
+                class="mr-2"
+                {% if signup_form.terms.value %} checked {% endif %}>
+            <label for="terms" class="text-sm">
+                I agree to the <a href="#" class="text-blue-500 hover:underline">Terms</a> and
+                <a href="#" class="text-blue-500 hover:underline">Privacy Policy</a>.
+            </label>
+            {% if signup_form.terms.errors %}
+                <div class="text-red-500 text-sm mt-1">
+                    {% for error in signup_form.terms.errors %}
+                        <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Sign Up Button -->
+        <button type="submit" class="w-full py-2 bg-[#0B5D51] text-white rounded-lg">Sign Up</button>
+    </div>
+<script>
+    function togglePassword(id) {
+        var passwordField = document.getElementById(id);
+        if (passwordField.type === "password") {
+            passwordField.type = "text";
+        } else {
+            passwordField.type = "password";
+        }
+    }
+</script>
+</form>
+

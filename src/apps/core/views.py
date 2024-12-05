@@ -11,7 +11,7 @@ def frontpage(request):
         'newest_products': newest_products,
         'categories':categories
     }
-    return render(request, 'core/frontpage.html', context)
+    return render(request, 'home/home.html', context)
 
 
 def contactpage(request):

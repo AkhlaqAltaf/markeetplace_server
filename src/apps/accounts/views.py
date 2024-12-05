@@ -32,46 +32,36 @@ def verify_email(request, token):
     except (signing.BadSignature, get_user_model().DoesNotExist):
         # Invalid token or user doesn't exist
         raise SuspiciousOperation("Invalid verification link.")
-    
 
 
 class LoginView(View):
-    template_name = 'accounts/login.html'
-
-    def get(self, request):
-        form = CustomLoginForm()
-        return render(request, self.template_name, {'form': form})
-
     def post(self, request):
         form = CustomLoginForm(request.POST)
         if form.is_valid():
             user = form.cleaned_data['user']
             login(request, user)
             return redirect('core:home')
-
-        return render(request, self.template_name, {'form': form})
-  
-
-
+        return render(request, 'accounts/accounts.html', {'signin_form': form})
 
 
 class UserRegistrationView(View):
-    template_name = 'accounts/register.html'
-
-    def get(self, request):
-        form = UserRegistrationForm()
-        return render(request, self.template_name, {'form': form})
-
     def post(self, request):
         form = UserRegistrationForm(request.POST)
         if form.is_valid():
             user = form.save()
-            return redirect('accounts:login')  
-
-        return render(request, self.template_name, {'form': form})
+            return redirect('accounts:accounts')
+        return render(request, 'accounts/accounts.html', {'signup_form': form})
     
 
 class LogoutView(View):
     def get(self, request):
         logout(request)  # Log out the user
         return redirect('core:home')  # Redirect to the home page or desired URL
+
+
+class AccountsView(View):
+    template_name = 'accounts/accounts.html'
+    def get(self,request):
+        sigin_form = CustomLoginForm()
+        signup_form = UserRegistrationForm()
+        return render(request, self.template_name, {'signin_form': sigin_form, 'signup_form': signup_form })

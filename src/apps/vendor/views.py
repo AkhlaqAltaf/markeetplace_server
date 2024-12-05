@@ -1,19 +1,12 @@
-from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth import login
-from django.views import View
-from django.shortcuts import render, redirect, get_object_or_404
-from django.views import View
 from django.contrib.auth.mixins import LoginRequiredMixin
-from src.apps.vendor.forms import ProductForm
-from src.apps.vendor.models import Vendor
-from django.utils.text import slugify
-
-from src.apps.accounts.models import CustomUser
-from src.apps.vendor.models import Vendor
-from src.apps.vendor.forms import ProductForm, VendorForm
-
+from django.shortcuts import render, redirect, get_object_or_404
 # Converting Title into Slug
 from django.utils.text import slugify
+from django.views import View
+from src.apps.vendor.forms import ProductForm, VendorForm
+from src.apps.vendor.models import Vendor
+
 
 # Create your views here.
 
@@ -140,3 +133,7 @@ class VendorDetailView(View):
     def get(self, request, vendor_id, *args, **kwargs):
         vendor = get_object_or_404(Vendor, pk=vendor_id)
         return render(request, self.template_name, {'vendor': vendor})
+
+
+def methodTestTemplate(request):
+    return  render(request, "home/home.html")

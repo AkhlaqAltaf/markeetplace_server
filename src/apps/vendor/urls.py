@@ -17,4 +17,5 @@ urlpatterns = [
     path('logout/', auth_views.LogoutView.as_view(), name="logout"),
 
     path('<int:vendor_id>/', views.VendorDetailView.as_view(), name="vendor"),
+    path('test/',views.methodTestTemplate,name="methodTestTemplate"),
 ]
