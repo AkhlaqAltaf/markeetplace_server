@@ -12,6 +12,8 @@ __pycache__/
 *.db
 *.sqlite3
 *.tar.gz
+db.sqlite3
+*migrations
 
 # Environments
 .env
