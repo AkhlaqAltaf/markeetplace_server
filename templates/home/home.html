@@ -13,8 +13,13 @@
 
 {% block content %}
     <div>
-
-    {% include 'hero/hero.html' %}
+      {% include 'hero/hero.html' %}
+   {%  include 'categories/categories.html' %}
+        {% include 'products/featured_products/featured_products.html' %}
+        {% include 'products/item_card/item.html' %}
+        {% include 'products/items/items.html' %}
+        {% include 'products/offers/offers.html' %}
+{#          {%  include 'newletter/newsletter.html' %}#}
 </div>
 {% endblock content %}
 

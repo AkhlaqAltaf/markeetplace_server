@@ -10,6 +10,7 @@ from src.apps.vendor.models import Vendor
 
 # Create your models here.
 class Category(models.Model):
+    image = models.ImageField(upload_to='uploads/', blank=True, null=True)
     title = models.CharField(max_length=50)
     slug = models.SlugField(max_length=55)
     ordering = models.IntegerField(default=0)

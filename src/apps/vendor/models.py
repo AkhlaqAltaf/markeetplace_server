@@ -18,11 +18,11 @@ from marketplace_server import settings
 
 #     def get_balance(self):
 #         items = self.items.filter(vendor_paid=False, order__vendors__in=[self.id])
-#         return sum((item.product.price * item.quantity) for item in items)
+#         return sum((item_card.product.price * item_card.quantity) for item_card in items)
 
 #     def get_paid_amount(self):
 #         items = self.items.filter(vendor_paid=True, order__vendors__in=[self.id])
-#         return sum((item.product.price * item.quantity) for item in items)
+#         return sum((item_card.product.price * item_card.quantity) for item_card in items)
 
 
 
