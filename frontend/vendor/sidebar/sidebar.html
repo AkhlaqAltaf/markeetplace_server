@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <title>Sidebar with Dropdowns</title>
+</head>
+
+<body class="bg-gray-100">
+  <div id="app" class="relative h-full">
+    <!-- Hamburger Menu for Mobile -->
+    <div class="md:hidden fixed top-5 left-4 z-[100]">
+      <div id="sidebarToggle" class="cursor-pointer text-white w-8 h-8">
+        <svg id="menuIcon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+        <svg id="closeIcon" class="hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div id="sidebar" class="fixed top-0 left-0 transform -translate-x-full md:translate-x-0 md:h-full lg:w-[280px] bg-[#0B5D51] text-white flex-col items-start p-4 transition-transform z-[50] h-[100vh]">
+      <!-- Logo Section -->
+      <div class="mt-4 flex items-center justify-center">
+        <img src="/your-logo.svg" alt="Logo" class="h-16">
+      </div>
+
+      <!-- Store Analytics -->
+      <a href="#" class="flex items-center bg-[#073741] w-[247.2px] h-[36px] mt-6 p-2 rounded-lg">
+        <img src="/icons/store-analytics.svg" class="w-5 h-5 mr-4">
+        <span class="font-inter font-semibold text-[14px]">Store Analytics</span>
+      </a>
+
+      <!-- Menu Items -->
+      <nav class="flex-grow space-y-4 mt-6">
+        <!-- Account -->
+        <a href="/account" class="flex items-center space-x-4">
+          <img src="/icons/account.svg" alt="Account" class="w-5 h-5">
+          <span>Account</span>
+        </a>
+
+        <!-- Customers -->
+        <div class="relative">
+          <div class="flex items-center space-x-4 cursor-pointer dropdown-toggle" data-target="customersDropdown">
+            <img src="/icons/customers.svg" alt="Customers" class="w-5 h-5">
+            <span>Customers</span>
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 ml-auto" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path d="M6 9l6 6 6-6"></path>
+            </svg>
+          </div>
+          <div id="customersDropdown" class="hidden ml-8 mt-2 space-y-2">
+            <a href="/customers/list" class="block">List</a>
+            <a href="/customers/details" class="block">Details</a>
+          </div>
+        </div>
+
+        <!-- Vendors -->
+        <div class="relative">
+          <div class="flex items-center space-x-4 cursor-pointer dropdown-toggle" data-target="vendorsDropdown">
+            <img src="/icons/vendors.svg" alt="Vendors" class="w-5 h-5">
+            <span>Vendors</span>
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 ml-auto" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path d="M6 9l6 6 6-6"></path>
+            </svg>
+          </div>
+          <div id="vendorsDropdown" class="hidden ml-8 mt-2 space-y-2">
+            <a href="/vendors/list" class="block">List</a>
+            <a href="/vendors/details" class="block">Details</a>
+            <a href="/vendors/edit" class="block">Edit</a>
+            <a href="/vendors/approval" class="block">Vendor Approval</a>
+          </div>
+        </div>
+
+        <!-- Products -->
+        <div class="relative">
+          <div class="flex items-center space-x-4 cursor-pointer dropdown-toggle" data-target="productsDropdown">
+            <img src="/icons/products.svg" alt="Products" class="w-5 h-5">
+            <span>Products</span>
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 ml-auto" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path d="M6 9l6 6 6-6"></path>
+            </svg>
+          </div>
+          <div id="productsDropdown" class="hidden ml-8 mt-2 space-y-2">
+            <a href="/products/list" class="block">Product List</a>
+            <a href="/products/create" class="block">Product Create</a>
+          </div>
+        </div>
+
+        <!-- Orders -->
+        <div class="relative">
+          <div class="flex items-center space-x-4 cursor-pointer dropdown-toggle" data-target="ordersDropdown">
+            <img src="/icons/orders.svg" alt="Orders" class="w-5 h-5">
+            <span>Orders</span>
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 ml-auto" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path d="M6 9l6 6 6-6"></path>
+            </svg>
+          </div>
+          <div id="ordersDropdown" class="hidden ml-8 mt-2 space-y-2">
+            <a href="/orders/list" class="block">List</a>
+            <a href="/orders/details" class="block">Details</a>
+            <a href="/orders/status" class="block">Order Status</a>
+          </div>
+        </div>
+
+        <!-- Additional Links -->
+        <a href="/calendar" class="flex items-center space-x-4">
+          <img src="/icons/calendar.svg" alt="Calendar" class="w-5 h-5">
+          <span>Calendar</span>
+        </a>
+        <a href="/auth" class="flex items-center space-x-4">
+          <img src="/icons/auth.svg" alt="Auth" class="w-5 h-5">
+          <span>Auth</span>
+        </a>
+        <a href="/checkout" class="flex items-center space-x-4">
+          <img src="/icons/checkout.svg" alt="Checkout" class="w-5 h-5">
+          <span>Checkout</span>
+        </a>
+      </nav>
+    </div>
+  </div>
+
+  <!-- Dropdown Logic -->
+  <script>
+    document.querySelectorAll('.dropdown-toggle').forEach(toggle => {
+      toggle.addEventListener('click', () => {
+        const target = toggle.dataset.target;
+        const dropdown = document.getElementById(target);
+        dropdown.classList.toggle('hidden');
+      });
+    });
+
+    const sidebarToggle = document.getElementById('sidebarToggle');
+    const sidebar = document.getElementById('sidebar');
+    const menuIcon = document.getElementById('menuIcon');
+    const closeIcon = document.getElementById('closeIcon');
+
+    sidebarToggle.addEventListener('click', () => {
+      sidebar.classList.toggle('-translate-x-full');
+      menuIcon.classList.toggle('hidden');
+      closeIcon.classList.toggle('hidden');
+    });
+  </script>
+</body>
+
+</html>
