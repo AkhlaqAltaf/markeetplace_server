@@ -106,6 +106,37 @@
           </div>
         </div>
 
+        <div class="relative">
+            <div class="flex items-center space-x-4 cursor-pointer dropdown-toggle" data-target="invoiceDropdown">
+              <img src="/icons/invoice.svg" alt="invoice" class="w-5 h-5">
+              <span>invoice</span>
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 ml-auto" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path d="M6 9l6 6 6-6"></path>
+              </svg>
+            </div>
+            <div id="invoiceDropdown" class="hidden ml-8 mt-2 space-y-2">
+              <a href="/invoice/list" class="block">List</a>
+              <a href="/invoice/details" class="block">Details</a>
+              
+            </div>
+          </div>
+
+
+          <div class="relative">
+            <div class="flex items-center space-x-4 cursor-pointer dropdown-toggle" data-target="LogisticsDropdown">
+              <img src="/icons/Logistics.svg" alt="invoice" class="w-5 h-5">
+              <span>Logistics</span>
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 ml-auto" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path d="M6 9l6 6 6-6"></path>
+              </svg>
+            </div>
+            <div id="LogisticsDropdown" class="hidden ml-8 mt-2 space-y-2">
+              <a href="/Logistics/list" class="block">Dashboard</a>
+              <a href="/Logistics/details" class="block">fleet</a>
+              <a href="/Logistics/details" class="block">vechicle</a>
+            </div>
+          </div>
+  
         <!-- Additional Links -->
         <a href="/calendar" class="flex items-center space-x-4">
           <img src="/icons/calendar.svg" alt="Calendar" class="w-5 h-5">
@@ -129,6 +160,19 @@
       toggle.addEventListener('click', () => {
         const target = toggle.dataset.target;
         const dropdown = document.getElementById(target);
+
+        // Close other dropdowns
+        document.querySelectorAll('.dropdown-toggle').forEach(otherToggle => {
+          const otherTarget = otherToggle.dataset.target;
+          if (otherTarget !== target) {
+            const otherDropdown = document.getElementById(otherTarget);
+            if (!otherDropdown.classList.contains('hidden')) {
+              otherDropdown.classList.add('hidden');
+            }
+          }
+        });
+
+        // Toggle the clicked dropdown
         dropdown.classList.toggle('hidden');
       });
     });
@@ -143,6 +187,7 @@
       menuIcon.classList.toggle('hidden');
       closeIcon.classList.toggle('hidden');
     });
+  
   </script>
 </body>
 
