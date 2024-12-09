@@ -122,3 +122,5 @@ class VendorDetailView(View):
 
 
 
+def addProductTest(request):
+    return render(request,template_name="vendor/add_product/addproduct.html")

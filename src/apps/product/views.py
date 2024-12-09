@@ -1,8 +1,9 @@
+from django.views import View
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
 from django.urls import reverse_lazy
-from django.shortcuts import get_object_or_404, redirect
+from django.shortcuts import get_object_or_404, redirect, render
 from django.http import JsonResponse
-from .models import Product, Media, SubCategory
+from .models import Category, CountryOrigin, Product, Media, SubCategory
 from .forms import ProductForm, SubCategoryForm
 
 # List View for Products
@@ -63,3 +64,60 @@ def create_subcategory(request):
         else:
             return JsonResponse({'errors': form.errors}, status=400)
     return JsonResponse({'error': 'Invalid request'}, status=400)
+
+
+
+
+
+class CreateProduct(CreateView):
+    def get(self, request, *args, **kwargs):
+        
+        categories = Category.objects.all()
+        origins = CountryOrigin.objects.all()
+        print(categories)
+        
+        return render(request,template_name="vendor/add_product/addproduct.html",context={"categories":categories,'origins':origins})
+    
+    def post(self, request, *args, **kwargs):
+        # Assuming the data is in JSON format (commonly used in APIs)
+        import json
+        
+        try:
+            # Decode the request body
+            data = "data"
+            # print(request.method) 
+            print(request.form())
+
+            # product_name = request.POST.get('product_name')
+            # price = request.POST.get('price')
+
+            # print("Product Name:", product_name)
+            # print("Price:", price)          
+            # Print the incoming data to the console
+            print("DATA: ", data)
+
+            # You can handle the data here (e.g., validation, saving to the database, etc.)
+
+            # Render a template after handling the POST request
+            return render(request, "vendor/add_product/addproduct.html", {"data": data})
+        
+        except json.JSONDecodeError:
+            # Handle the case where the body is not valid JSON
+            return JsonResponse({"error": "Invalid JSON"}, status=400)
+    
+    
+from django.core.serializers import serialize
+
+        
+class GetSubCategory(View):
+    def get(self, request, category):
+        category_obj = Category.objects.filter(name=category).first()
+        if not category_obj:
+            return JsonResponse({"error": "Category not found"}, status=404)
+
+        sub_categories = SubCategory.objects.filter(category=category_obj)
+        # Simplify the response to include only id and name
+        data = [{"id": sub.pk, "name": sub.name} for sub in sub_categories]
+
+        return JsonResponse({"subcategories": data})
+        
