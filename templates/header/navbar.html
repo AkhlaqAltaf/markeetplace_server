@@ -21,17 +21,17 @@
                     </a>
 
                     <div class="navbar-dropdown">
-                        <a class="navbar-item" href="{% url 'vendor:vendor-admin' %}">
+                        <a class="navbar-item" href="#">
                             {{ request.user.vendor }}
                         </a>
-                        <a class="navbar-item" href="{% url 'vendor:edit-vendor' %}">
+                        <a class="navbar-item" href="{% url '#' %}">
                             Update Profile
                         </a>
-                        <a class="navbar-item" href="{% url 'vendor:add-product' %}">
+                        <a class="navbar-item" href="{% url '#' %}">
                             List Product
                         </a>
                         <hr class="navbar-divider">
-                        <a class="navbar-item" href="{% url 'accounts:logout' %}">
+                        <a class="navbar-item" href="#">
                             Logout
                         </a>
                     </div>
@@ -44,13 +44,13 @@
                     </a>
 
                     <div class="navbar-dropdown">
-                        <a class="navbar-item" href="{% url 'vendor:vendor-admin' %}">
+                        <a class="navbar-item" href="#">
                             Profile
                         </a>
-                        <a class="navbar-item" href="{% url 'vendor:edit-vendor' %}">
+                        <a class="navbar-item" href="#">
                             Update Profile
                         </a>
-                        <a class="navbar-item" href="{% url 'vendor:add-product' %}">
+                        <a class="navbar-item" href="#">
                             Become Vendor
                         </a>
                         <hr class="navbar-divider">

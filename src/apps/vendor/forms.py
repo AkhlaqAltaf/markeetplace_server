@@ -6,11 +6,6 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from .models import Vendor
 
-class ProductForm(ModelForm):
-    class Meta:
-        model = Product
-        fields = ['category', 'image', 'title', 'description', 'price']
-
 
 
 

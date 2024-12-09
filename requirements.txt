@@ -9,3 +9,4 @@ django-environ
 setuptools
 django-admin-interface
 stripe
+django-ckeditor

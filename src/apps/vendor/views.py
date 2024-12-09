@@ -4,7 +4,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 # Converting Title into Slug
 from django.utils.text import slugify
 from django.views import View
-from src.apps.vendor.forms import ProductForm, VendorForm
+from src.apps.vendor.forms import  VendorForm
 from src.apps.vendor.models import Vendor
 
 
@@ -79,24 +79,6 @@ class VendorAdminView(LoginRequiredMixin, CheckVendorMixin, View):
         return render(request, self.template_name, {'vendor': vendor, 'products': products, 'orders': orders})
 
 
-class AddProductView(LoginRequiredMixin, CheckVendorMixin, View):
-    template_name = 'vendor/add_product.html'
-
-    def get(self, request, *args, **kwargs):
-        form = ProductForm()
-        return render(request, self.template_name, {'form': form})
-
-    def post(self, request, *args, **kwargs):
-        form = ProductForm(request.POST, request.FILES)
-        if form.is_valid():
-            product = form.save(commit=False)
-            product.vendor = request.user.vendor
-            product.slug = slugify(product.title)
-            product.save()
-            return redirect('vendor:vendor-admin')
-        return render(request, self.template_name, {'form': form})
-
-
 class EditVendorView(LoginRequiredMixin, CheckVendorMixin, View):
     template_name = 'vendor/edit_vendor.html'
 
@@ -135,5 +117,8 @@ class VendorDetailView(View):
         return render(request, self.template_name, {'vendor': vendor})
 
 
-def methodTestTemplate(request):
-    return  render(request, "home/home.html")
+
+
+
+
+

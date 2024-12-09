@@ -1,59 +1,65 @@
-import random # To get random products from the database
-from django.contrib import messages
-from django.shortcuts import redirect, render, get_object_or_404
+from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
+from django.urls import reverse_lazy
+from django.shortcuts import get_object_or_404, redirect
+from django.http import JsonResponse
+from .models import Product, Media, SubCategory
+from .forms import ProductForm, SubCategoryForm
 
-from .models import Category, Product
+# List View for Products
+class ProductListView(ListView):
+    model = Product
+    template_name = "products/product_list.html"
+    context_object_name = "products"
 
-from django.db.models import Q
+class ProductCreateView(CreateView):
+    model = Product
+    form_class = ProductForm
+    template_name = "products/product_form.html"
+    success_url = reverse_lazy('product_list')
 
-from .forms import AddToCartForm
-from src.apps.cart.cart import Cart
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # context['media_form'] = MediaForm()  # Add the MediaForm to the context
+        return context
 
+    def form_valid(self, form):
+        response = super().form_valid(form)
 
-# Create your views here.
-def product(request, category_slug, product_slug):
-    # Create instance of Cart class
-    cart = Cart(request)
+        # Handle multiple file uploads
+        # media_form = MediaForm(self.request.POST, self.request.FILES)
+        # if media_form.is_valid():
+        #     files = self.request.FILES.getlist('files')  # Get the list of files
+        #     for file in files:
+        #         Media.objects.create(product=self.object, file=file)  # Save each file
 
-    product = get_object_or_404(Product, category__slug=category_slug, slug=product_slug)
+        return response
 
-    # Check whether the AddToCart button is clicked or not
-    if request.method == 'POST':
-        form = AddToCartForm(request.POST)
+# Product Update View
+class ProductUpdateView(UpdateView):
+    model = Product
+    form_class = ProductForm
+    template_name = "products/product_form.html"
+    success_url = reverse_lazy('product_list')
 
+# Product Delete View
+class ProductDeleteView(DeleteView):
+    model = Product
+    template_name = "products/product_confirm_delete.html"
+    success_url = reverse_lazy('product_list')
+
+# Product Detail View
+class ProductDetailView(DetailView):
+    model = Product
+    template_name = "products/product_detail.html"
+    context_object_name = "product"
+
+# SubCategory Inline Creation View (AJAX)
+def create_subcategory(request):
+    if request.method == "POST":
+        form = SubCategoryForm(request.POST, request.FILES)
         if form.is_valid():
-            quantity = form.cleaned_data['quantity']
-            cart.add(product_id=product.id, quantity=quantity, update_quantity=False)
-
-            messages.success(request, "The product was added to the cart.")
-
-            return redirect('product:product', category_slug=category_slug, product_slug=product_slug)            
-    
-    else:
-        form = AddToCartForm()
-
-    similar_products = list(product.category.products.exclude(id=product.id))
-
-    # If more than 4 similar products, then get 4 random products 
-    if len(similar_products) >= 4:
-        similar_products = random.sample(similar_products, 4)
-    
-    context = {
-        'product': product,
-        'similar_products': similar_products,
-        'form': form,
-    }
-
-    return render(request, 'product/product.html', context)
-
-
-def category(request, category_slug):
-    category = get_object_or_404(Category, slug=category_slug)
-    return render(request,'product/category.html', {'category': category})
-
-
-def search(request):
-    query = request.GET.get('query', '') # second is default parameter which is empty
-    products = Product.objects.filter(Q(title__icontains=query) | Q(description__icontains=query))
-
-    return render(request, 'product/search.html', {'products':products, 'query': query})
+            subcategory = form.save()
+            return JsonResponse({'id': subcategory.id, 'name': subcategory.name}, status=201)
+        else:
+            return JsonResponse({'errors': form.errors}, status=400)
+    return JsonResponse({'error': 'Invalid request'}, status=400)
