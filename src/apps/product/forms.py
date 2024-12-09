@@ -8,15 +8,19 @@ class AddToCartForm(forms.Form):
     quantity = forms.IntegerField()
 
 
-
+class MediaForm(forms.ModelForm):
+    class Meta:
+        model = Media
+        fields = ['product','file']
 
 class ProductForm(forms.ModelForm):
+    media = MediaForm()
     class Meta:
         model = Product
         fields = [
             'name', 'description', 'category', 'sub_category', 'tags',
             'price', 'discount_price', 'stock_quantity', 'sku', 'currency',
-            'status', 'is_featured', 'country_of_origin', 'content','media'
+            'country_of_origin', 'content'
         ]
         widgets = {
             'description': forms.Textarea(attrs={'rows': 3}),
