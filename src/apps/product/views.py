@@ -81,8 +81,11 @@ class CreateProduct(CreateView):
         
         return render(request,template_name="vendor/add_product/addproduct.html",context={"categories":categories,'origins':origins})
     def post(self, request, *args, **kwargs):
-        
-        
+        product = Product.objects.filter(name="cage").first()
+        if product:
+            print(product.tags.all())   
+        else:
+            print("Product not found")
         data = request.POST
         category_name = data.get("category")
         category_obj = Category.objects.filter(name=category_name).first()
@@ -155,15 +158,20 @@ class CreateProduct(CreateView):
         )
         
         if data.get("tags"):
-         tag_names = data.get("tags")  # Assume this is an array of tag names
+         tag_string = data.get("tags")  # Assume this is an array of tag names
          tag_objs = []  # List to store Tag objects
-        for tag_name in tag_names:
-            tag_obj = Tag.objects.filter(name=tag_name).first()
-        if tag_obj:
-            tag_objs.append(tag_obj)
-    
+         tag_names = tag_string.split(",")
+
+        for tag_name in tag_names:         
+        #  print(tag_name)
+        # Check if the tag exists, otherwise create a new one
+         tag_obj, created = Tag.objects.get_or_create(name=tag_name)
+        # Append the tag object to the list
+         tag_objs.append(tag_obj)
+
+        # Set the tags for the product
         if tag_objs:
-         product.tags.set(tag_objs) # Set the tag to the product (assuming it's one tag)
+            product.tags.set(tag_objs)
 
         if data.get("country_of_origin"):
             origin_name = data.get("country_of_origin")  # Assuming country is passed as a single country name
