@@ -21,7 +21,10 @@
         <div>
           <label class="block text-sm font-medium mb-1">Currency</label>
           <select name="currency" class="w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-orange-500">
-            <option>Select Currency</option>
+            <option disabled selected>Select Currency</option>
+            <option value="PKR">PKR</option>
+            <option value="INR">INR</option>
+            <option value="USD">USD</option>
           </select>
         </div>
 
@@ -81,10 +84,23 @@
         <!-- Tags -->
         <div>
           <label class="block text-sm font-medium mb-1">Tags</label>
-          <input type="text" name="tags"
-            class="w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-orange-500">
+          <div class="flex space-x-2">
+            <input type="text" id="tagInput"
+              class="flex-1 border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-[#0B5D51]"
+              placeholder="Enter a tag">
+            <button type="button" id="addTagButton"
+              class="px-4 py-2 bg-[#0B5D51] text-white rounded-lg font-semibold  focus:outline-none focus:ring-2">
+              Add
+            </button>
+          </div>
         </div>
 
+        <!-- Tags Stack -->
+        <div class="col-span-2 mt-2">
+          <div id="tagStack" class="flex flex-wrap gap-2"></div>
+        </div>
+        <input type="hidden" name="tags" id="tagsInput">
+        
         <!-- Description -->
         <div>
           <label class="block text-sm font-medium mb-1">Description</label>
@@ -102,6 +118,7 @@
 
       <!-- Uploaded Images Stack -->
       <div id="imageStack" class="flex space-x-4 mt-6 overflow-x-auto"></div>
+      <input type="hidden" name="images" id="imagesInput">
 
       <!-- Upload Section -->
       <div class="w-full mt-6">

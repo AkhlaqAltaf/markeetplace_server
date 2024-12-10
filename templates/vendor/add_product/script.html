@@ -1,90 +1,150 @@
 <script>
+    // ========== Tag Management ==========
+    const tagInput = document.getElementById("tagInput");
+    const addTagButton = document.getElementById("addTagButton");
+    const tagStack = document.getElementById("tagStack");
+    const tagsInput = document.getElementById("tagsInput"); // Hidden input for tags
 
-    document.getElementById('categorySelect').addEventListener('change', function() {
-        const selectedCategory = this.value;
-        
-        const subcategorySelect = document.getElementById('subcategorySelect');
-    
+    function addTag() {
+        const tagValue = tagInput.value.trim();
+        if (!tagValue) return;
+
+        // Create Tag Element
+        const tagElement = document.createElement("div");
+        tagElement.className = "bg-green-500 text-white px-3 py-1 rounded-lg flex items-center space-x-2 cursor-pointer group";
+        tagElement.innerHTML = `
+            <span>${tagValue}</span>
+            <button class="hidden group-hover:inline text-sm text-gray-200 ml-2">&times;</button>
+        `;
+
+        // Add Delete Functionality
+        tagElement.addEventListener("click", () => {
+            tagStack.removeChild(tagElement);
+            updateTagsInput(); // Update hidden input after tag removal
+        });
+
+        // Append Tag and Clear Input
+        tagStack.appendChild(tagElement);
+        tagInput.value = "";
+
+        updateTagsInput(); // Update hidden input after adding a tag
+    }
+
+    function updateTagsInput() {        
+        const tags = Array.from(tagStack.children).map(tagElement =>
+            tagElement.querySelector("span").textContent
+        );
+        tagsInput.value = JSON.stringify(tags); // Store as JSON
+        console.log(tagsInput.value);
+    }
+
+    addTagButton.addEventListener("click", addTag);
+
+    tagInput.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") {
+            event.preventDefault();
+            addTag();
+        }
+    });
+
+    // ========== Subcategory Dropdown ==========
+    const categorySelect = document.getElementById("categorySelect");
+    const subcategorySelect = document.getElementById("subcategorySelect");
+
+    categorySelect.addEventListener("change", () => {
+        const selectedCategory = categorySelect.value;
+
         // Clear existing options
         subcategorySelect.innerHTML = '<option value="" disabled selected>Select Sub-Category</option>';
-        
-        // Fetch subcategories from the backend
+
+        // Fetch subcategories from backend
         fetch(`getcategories/${selectedCategory}/`)
-          .then(response => {
-            if (!response.ok) {
-              throw new Error('Network response was not ok');
-            }
-            return response.json(); // Parse JSON from response
-          })
-          .then(data => {
-            // Populate subcategory dropdown
-            console.log(data.sub_categories);
-            
-            data.subcategories.forEach(subcategory => {
-                console.log(subcategory);
-                
-              const option = document.createElement('option');
-              option.value = subcategory.id; // Use subcategory id for value
-              option.textContent = subcategory.name; // Use subcategory name for display
-              subcategorySelect.appendChild(option);
-            });
-          })
-          .catch(error => {
-            console.error('Error fetching subcategories:', error);
-          });
-      });
-    
-    
-    
-    
-    
-    
-    
-    
-    
-      CKEDITOR.replace('editor');
-      const uploadImagesInput = document.getElementById("uploadImages");
-      const imageStack = document.getElementById("imageStack");
-    
-      // Handle image upload
-      uploadImagesInput.addEventListener("change", (event) => {
+            .then((response) => {
+                if (!response.ok) throw new Error("Network response was not ok");
+                return response.json();
+            })
+            .then((data) => {
+                // Populate subcategory dropdown
+                data.subcategories.forEach((subcategory) => {
+                    const option = document.createElement("option");
+                    option.value = subcategory.name;
+                    option.textContent = subcategory.name;
+                    subcategorySelect.appendChild(option);
+                });
+            })
+            .catch((error) => console.error("Error fetching subcategories:", error));
+    });
+
+    // ========== Text Editor ==========
+    CKEDITOR.replace("editor");
+
+    // ========== Image Upload ==========
+    const uploadImagesInput = document.getElementById("uploadImages");
+    const imageStack = document.getElementById("imageStack");
+    const imagesInput = document.getElementById("imagesInput"); // Hidden input for images
+
+    function handleImageUpload(event) {
         const files = Array.from(event.target.files);
-    
+
         files.forEach((file) => {
-          const reader = new FileReader();
-          reader.onload = (e) => {
-            const imageDiv = document.createElement("div");
-            imageDiv.className = "relative w-24 h-24 flex-shrink-0";
-    
-            const img = document.createElement("img");
-            img.src = e.target.result;
-            img.alt = file.name;
-            img.className = "w-full h-full object-cover rounded-lg";
-    
-            const deleteButton = document.createElement("button");
-            deleteButton.className = "absolute top-1 right-1 bg-red-500 text-white text-xs rounded-full p-1 opacity-0 hover:opacity-100 transition-opacity";
-            deleteButton.innerText = "✕";
-    
-            // Delete functionality
-            deleteButton.addEventListener("click", () => {
-              imageDiv.remove();
-            });
-    
-            imageDiv.addEventListener("mouseenter", () => {
-              deleteButton.style.opacity = 1;
-            });
-            imageDiv.addEventListener("mouseleave", () => {
-              deleteButton.style.opacity = 0;
-            });
-    
-            imageDiv.appendChild(img);
-            imageDiv.appendChild(deleteButton);
-            imageStack.appendChild(imageDiv);
-          };
-          reader.readAsDataURL(file);
+            const reader = new FileReader();
+
+            reader.onload = (e) => {
+                const imageDiv = document.createElement("div");
+                imageDiv.className = "relative w-24 h-24 flex-shrink-0";
+
+                const img = document.createElement("img");
+                img.src = e.target.result;
+                img.alt = file.name;
+                img.className = "w-full h-full object-cover rounded-lg";
+
+                const deleteButton = document.createElement("button");
+                deleteButton.className = "absolute top-1 right-1 bg-red-500 text-white text-xs rounded-full p-1 opacity-0 hover:opacity-100 transition-opacity";
+                deleteButton.innerText = "✕";
+
+                // Delete functionality
+                deleteButton.addEventListener("click", () => {
+                    imageDiv.remove();
+                    updateImagesInput(); // Update hidden input after image removal
+                });
+
+                // Hover effects
+                imageDiv.addEventListener("mouseenter", () => {
+                    deleteButton.style.opacity = 1;
+                });
+                imageDiv.addEventListener("mouseleave", () => {
+                    deleteButton.style.opacity = 0;
+                });
+
+                // Append elements
+                imageDiv.appendChild(img);
+                imageDiv.appendChild(deleteButton);
+                imageStack.appendChild(imageDiv);
+
+                updateImagesInput(); // Update hidden input after adding an image
+            };
+
+            reader.readAsDataURL(file);
         });
-    
-        // Clear input value to allow re-uploading the same file if needed
+
+        // Clear input value for re-uploading same files
         event.target.value = "";
-      });
-    </script>
+    }
+
+    function updateImagesInput() {
+        const images = Array.from(imageStack.children).map(imageDiv =>
+            imageDiv.querySelector("img").src // Store base64 data or image URLs
+        );
+        imagesInput.value = JSON.stringify(images); // Store as JSON
+    }
+
+    uploadImagesInput.addEventListener("change", handleImageUpload);
+
+    // ========== Form Submission ==========
+    const productForm = document.getElementById("productForm");
+
+    productForm.addEventListener("submit", (e) => {
+        updateTagsInput(); // Ensure tags are up-to-date
+        updateImagesInput(); // Ensure images are up-to-date
+    });
+</script>
