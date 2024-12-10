@@ -124,3 +124,25 @@ class VendorDetailView(View):
 
 def addProductTest(request):
     return render(request,template_name="vendor/add_product/addproduct.html")
+
+
+def home(request):
+    return render(request, 'vendor/main/base.html')
+def storeAnalytics(request):
+    return render(request, 'vendor/storeanalytics.html')
+def Account(request):
+    return render(request, 'vendor/Account/base.html')
+def General(request):
+    return render(request, 'vendor/Account/General.html')
+def Billing(request):
+    return render(request, 'vendor/Account/Billing.html')
+def Team(request):
+    return render(request, 'vendor/Account/Team.html')
+def Notification(request):
+    return render(request, 'vendor/Account/Notifications.html')
+def Secuirity(request):
+    return render(request, 'vendor/Account/Secuirity.html')
+def CustomerList(request):
+    return render(request, 'vendor/customers/customerlist.html')
+def CustomerDetails(request):
+    return render(request, 'vendor/customers/customerdetail.html')
