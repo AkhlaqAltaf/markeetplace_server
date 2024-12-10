@@ -11,7 +11,5 @@ urlpatterns += [
 ]
 urlpatterns += [
     path('accounts/', include('src.apis.accounts.urls', namespace='accounts/')),
-
-
 ]
 

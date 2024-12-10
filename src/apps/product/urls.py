@@ -22,7 +22,12 @@ urlpatterns = [
     path('product_detail/<int:pk>/', views.ProductDetailView.as_view(), name='product-detail'),
     path('product_update/<int:pk>/', views.ProductUpdateView.as_view(), name='product-update'),
     path('product_delete/<int:pk>/', views.ProductDeleteView.as_view(), name='product-delete'),
-
+    
+    
+    # NEW URLS 
+    
+    path ('add_product/',views.CreateProduct.as_view(),name="addproduct"),
+    path('add_product/getcategories/<str:category>/',views.GetSubCategory.as_view(),name='subcategories')
     # Media (Product media upload)
     # path('media/upload/', views.MediaCreateView.as_view(), name='media-upload'),
     # path('media/delete/<int:pk>/', views.MediaDeleteView.as_view(), name='media-delete'),
