@@ -1,3 +1,6 @@
+
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -23,7 +26,8 @@
     <div id="sidebar" class="fixed top-0 left-0 transform -translate-x-full md:translate-x-0 md:h-full lg:w-[280px] bg-[#0B5D51] text-white flex-col items-start p-4 transition-transform z-[50] h-[100vh]">
       <!-- Logo Section -->
       <div class="mt-4 flex items-center justify-center">
-        <i class="fa-brands fa-drupal"></i>
+    <a href="#"><img src="{% static 'assets/logo-2.png' %}" alt="Logo" class="h-10 sm:h-16"></a>
+
       </div>
 
       <!-- Store Analytics -->
@@ -35,23 +39,13 @@
       <!-- Menu Items -->
       <nav class="flex-grow space-y-4 mt-6">
         <!-- Account -->
-        <a href="{% url 'vendor:account' %}" class="flex items-center space-x-4">
-          <i class="fas fa-user w-5 h-5"></i>
-          <span>Account</span>
+        <a href="{% url 'vendor:add' %}" class="flex items-center space-x-4">
+          <i class="fas fa-plus w-5 h-5"></i>
+          <span>Add Product</span>
         </a>
 
         <!-- Customers -->
-        <div class="relative">
-          <div class="flex items-center space-x-4 cursor-pointer dropdown-toggle" data-target="customersDropdown">
-            <i class="fas fa-users w-5 h-5"></i>
-            <span>Customers</span>
-            <i class="fas fa-chevron-down ml-auto"></i>
-          </div>
-          <div id="customersDropdown" class="hidden ml-8 mt-2 space-y-2 transition-transform ease-in-out duration-300">
-            <a href="{% url 'vendor:customers-list' %}" class="block">List</a>
-            <a href="{% url 'vendor:customers-details' %}" class="block">Details</a>
-          </div>
-        </div>
+
 
         <!-- Products -->
         <div class="relative">
@@ -113,14 +107,7 @@
           <i class="fas fa-calendar-alt w-5 h-5"></i>
           <span>Calendar</span>
         </a>
-        <a href="/auth" class="flex items-center space-x-4">
-          <i class="fas fa-lock w-5 h-5"></i>
-          <span>Auth</span>
-        </a>
-        <a href="/checkout" class="flex items-center space-x-4">
-          <i class="fas fa-credit-card w-5 h-5"></i>
-          <span>Checkout</span>
-        </a>
+
       </nav>
     </div>
   </div>

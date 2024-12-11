@@ -101,6 +101,8 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'marketplace_server.wsgi.application'
 
+DATA_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024  # 10 MB
+FILE_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024  # 10 MB
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases

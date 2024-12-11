@@ -52,10 +52,43 @@ class ProductDeleteView(DeleteView):
     success_url = reverse_lazy('product_list')
 
 # Product Detail View
+
 class ProductDetailView(DetailView):
     model = Product
-    template_name = "products/product_detail.html"
+    template_name = "products/product_detail/product_detail.html"
     context_object_name = "product"
+
+    def get_context_data(self, **kwargs):
+        # Get the context from the superclass
+        context = super().get_context_data(**kwargs)
+
+        # Serialize all products to JSON format
+        products = Product.objects.all()
+        print(len(products))
+        products_json = serialize('json', products)
+
+        product = self.get_object()
+        reviews = product.reviews.all()  # Assuming a related name `reviews` for the Product-Review relationship
+        total_reviews = reviews.count()
+
+        # Calculate rating percentages
+        rating_distribution = {rating: 0 for rating in range(1, 6)}  # Initialize for ratings 1 to 5
+
+        for review in reviews:
+            print("REVIEW : ",review.rating)
+            rating_distribution[review.rating] += 1  # Assuming `rating` is an attribute of Review
+
+        rating_percentages = {
+            rating: (count / total_reviews) * 100 if total_reviews > 0 else 0
+            for rating, count in rating_distribution.items()
+        }
+        print(rating_percentages)
+        # Add data to context
+        context['rating_percentages'] = rating_percentages
+        context['total_reviews'] = total_reviews
+        # Add the JSON data to the context
+        context['products'] = products_json
+        return context
 
 # SubCategory Inline Creation View (AJAX)
 def create_subcategory(request):

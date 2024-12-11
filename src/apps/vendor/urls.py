@@ -3,7 +3,8 @@ from django.urls import path
 from . import views
 from django.contrib.auth import views as auth_views
 
-
+from django.conf import settings
+from django.conf.urls.static import static
 app_name = 'vendor'
 
 
@@ -16,8 +17,8 @@ urlpatterns = [
     path('logout/', auth_views.LogoutView.as_view(), name="logout"),
     path('<int:vendor_id>/', views.VendorDetailView.as_view(), name="vendor"),
     path('test/',views.addProductTest,name="add"),
-    
-    
+    path('add_product/subcategory/<str:category>/',views.GetSubCategory.as_view(),name="subcategory"),
+    path('add_product/', views.CreateProduct.as_view(),name="add"),
     path('store-analytics/',views.storeAnalytics,name="store-analytics"),
     path('account/',views.Account,name="account"),
     path('billing/',views.Billing,name="billing"),
@@ -28,4 +29,4 @@ urlpatterns = [
     path('customers-list/',views.CustomerList,name="customers-list"),
     path('customers-details/',views.CustomerDetails,name="customers-details"),
 
-]
+]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -20,8 +20,10 @@ from django.urls import include, path
 from marketplace_server import settings
 from django.conf.urls.static import static
 
+from src.apps.core.admin import admin_site
+
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('admin/', admin_site.urls ),
     path('', include('src.apps.core.urls')),
     path('vendor/', include('src.apps.vendor.urls')),
     path('product/', include('src.apps.product.urls')),

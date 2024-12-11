@@ -1,8 +1,6 @@
 from django.contrib import  admin
 
+from src.apps.core.admin import admin_site
 from src.apps.whisper.models import HostInfo
 
-
-@admin.register(HostInfo)
-class HostInfoAdmin(admin.ModelAdmin):
-    list_filter = ('host_email',)
+admin_site.register(HostInfo)

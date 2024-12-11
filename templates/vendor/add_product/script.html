@@ -58,7 +58,7 @@
         subcategorySelect.innerHTML = '<option value="" disabled selected>Select Sub-Category</option>';
 
         // Fetch subcategories from backend
-        fetch(`getcategories/${selectedCategory}/`)
+        fetch(`subcategory/${selectedCategory}/`)
             .then((response) => {
                 if (!response.ok) throw new Error("Network response was not ok");
                 return response.json();

@@ -5,6 +5,6 @@ app_name = 'core'
 
 
 urlpatterns = [
-    path('', views.frontpage, name="home"),
+    path('', views.FrontPageView.as_view(), name="home"),
     path('contact-us/', views.contactpage, name="contact"),
 ]
