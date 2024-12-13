@@ -3,7 +3,7 @@
     const tagInput = document.getElementById("tagInput");
     const addTagButton = document.getElementById("addTagButton");
     const tagStack = document.getElementById("tagStack");
-    const tagsInput = document.getElementById("tagsInput"); // Hidden input for tags
+    const tagsInput = document.getElementById("tagsInput");
 
     function addTag() {
         const tagValue = tagInput.value.trim();
@@ -20,22 +20,21 @@
         // Add Delete Functionality
         tagElement.addEventListener("click", () => {
             tagStack.removeChild(tagElement);
-            updateTagsInput(); // Update hidden input after tag removal
+            updateTagsInput();
         });
 
         // Append Tag and Clear Input
         tagStack.appendChild(tagElement);
         tagInput.value = "";
 
-        updateTagsInput(); // Update hidden input after adding a tag
+        updateTagsInput();
     }
 
     function updateTagsInput() {        
         const tags = Array.from(tagStack.children).map(tagElement =>
             tagElement.querySelector("span").textContent
         );
-        tagsInput.value = JSON.stringify(tags); // Store as JSON
-        console.log(tagsInput.value);
+        tagsInput.value = JSON.stringify(tags);
     }
 
     addTagButton.addEventListener("click", addTag);
@@ -81,12 +80,16 @@
     // ========== Image Upload ==========
     const uploadImagesInput = document.getElementById("uploadImages");
     const imageStack = document.getElementById("imageStack");
-    const imagesInput = document.getElementById("imagesInput"); // Hidden input for images
+
+    const imageFiles = []; // Array to store files for submission
 
     function handleImageUpload(event) {
         const files = Array.from(event.target.files);
 
         files.forEach((file) => {
+            // Store the file in our imageFiles array
+            imageFiles.push(file);
+
             const reader = new FileReader();
 
             reader.onload = (e) => {
@@ -104,8 +107,14 @@
 
                 // Delete functionality
                 deleteButton.addEventListener("click", () => {
+                    // Remove from imageDiv
                     imageDiv.remove();
-                    updateImagesInput(); // Update hidden input after image removal
+
+                    // Remove from imageFiles array
+                    const index = imageFiles.indexOf(file);
+                    if (index > -1) {
+                        imageFiles.splice(index, 1);
+                    }
                 });
 
                 // Hover effects
@@ -120,8 +129,6 @@
                 imageDiv.appendChild(img);
                 imageDiv.appendChild(deleteButton);
                 imageStack.appendChild(imageDiv);
-
-                updateImagesInput(); // Update hidden input after adding an image
             };
 
             reader.readAsDataURL(file);
@@ -131,20 +138,71 @@
         event.target.value = "";
     }
 
-    function updateImagesInput() {
-        const images = Array.from(imageStack.children).map(imageDiv =>
-            imageDiv.querySelector("img").src // Store base64 data or image URLs
-        );
-        imagesInput.value = JSON.stringify(images); // Store as JSON
-    }
-
-    uploadImagesInput.addEventListener("change", handleImageUpload);
-
     // ========== Form Submission ==========
     const productForm = document.getElementById("productForm");
 
     productForm.addEventListener("submit", (e) => {
-        updateTagsInput(); // Ensure tags are up-to-date
-        updateImagesInput(); // Ensure images are up-to-date
+        // Prevent default form submission
+        e.preventDefault();
+
+        // Create FormData object
+        const formData = new FormData(productForm);
+
+        // Clear any existing file inputs
+        formData.delete('images');
+
+        // Append each file to the FormData
+        imageFiles.forEach(file => {
+            formData.append('images', file);
+        });
+
+        // Add tags to FormData
+        updateTagsInput();
+        const tags = JSON.parse(tagsInput.value);
+        formData.append('tags', JSON.stringify(tags));
+
+        // Get the CKEDITOR content
+        const editorContent = CKEDITOR.instances.editor.getData();
+        formData.append('content', editorContent);
+        
+        // Send form data via AJAX
+        fetch(productForm.action || window.location.href, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Success:', data);
+            if (data.success === false) {
+            showPopup('Error: ' + (data.message || 'Something went wrong.'));
+        } else {
+            showPopup('Success: Product submitted successfully!');
+        }
+            // Redirect or show success message
+        })
+        .catch(error => {
+            // Handle errors
+            console.error('Error:', error);
+        });
     });
+
+    function showPopup(message) {
+    const popup = document.createElement('div');
+    popup.className = 'fixed top-2 left-1/2 transform -translate-x-1/2 bg-black bg-opacity-70 text-white px-5 py-2 rounded-lg text-lg z-50'; 
+    popup.textContent = message;
+
+    // Append popup to the body or any desired container
+    document.body.appendChild(popup);
+
+    // Set a timeout to remove the popup after 3 seconds
+    setTimeout(() => {
+        popup.remove();
+    }, 3000);
+}
+
+    // Event Listeners
+    uploadImagesInput.addEventListener("change", handleImageUpload);
 </script>

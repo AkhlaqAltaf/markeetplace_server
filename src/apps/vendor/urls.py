@@ -17,8 +17,14 @@ urlpatterns = [
     path('logout/', auth_views.LogoutView.as_view(), name="logout"),
     path('<int:vendor_id>/', views.VendorDetailView.as_view(), name="vendor"),
     path('test/',views.addProductTest,name="add"),
+    
     path('add_product/subcategory/<str:category>/',views.GetSubCategory.as_view(),name="subcategory"),
-    path('add_product/', views.CreateProduct.as_view(),name="add"),
+    path('add_product/', views.AddProductView.as_view(),name="add"),
+
+    path('add_product_form/subcategory/<str:category>/',views.GetSubCategory.as_view(),name="subcategory"),
+    path('add_product_form/', views.AddProductView.as_view(),name="addproduct"),
+    
+    
     path('store-analytics/',views.storeAnalytics,name="store-analytics"),
     path('account/',views.Account,name="account"),
     path('billing/',views.Billing,name="billing"),
