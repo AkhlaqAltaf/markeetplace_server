@@ -286,7 +286,21 @@ def addProductTest(request):
 def home(request):
     return render(request, 'vendor/main/base.html')
 def storeAnalytics(request):
-    return render(request, 'vendor/storeanalytics.html')
+    return render(request, 'vendor/Analytics.html')
+def OrderList(request):
+    return render(request, 'vendor/order/orderlist.html')
+def OrderDetails(request):
+    return render(request, 'vendor/order/orderdetail.html')
+def OrderStatus(request):
+    return render(request, 'vendor/order/Status.html')
+def InvoiceList(request):
+    return render(request, 'vendor/invoice/invoicelist.html')
+def InvoiceDetails(request):
+    return render(request, 'vendor/invoice/invoicedetail.html')
+def Calender(request):
+    return render(request, 'vendor/calendar.html')
+def CreateProduct(request):
+    return render(request, 'vendor/products/createproduct.html')
 def Account(request):
     return render(request, 'vendor/Account/base.html')
 def General(request):

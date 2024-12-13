@@ -26,6 +26,13 @@ urlpatterns = [
     
     
     path('store-analytics/',views.storeAnalytics,name="store-analytics"),
+    path('create-product/',views.CreateProduct,name="create-product"),
+    path('order-list/',views.OrderList,name="order-list"),
+    path('order-details/',views.OrderDetails,name="order-details"),
+    path('order-status/',views.OrderStatus,name="order-status"),
+    path('invoice-list/',views.InvoiceList,name="invoice-list"),
+    path('invoice-details/',views.InvoiceDetails,name="invoice-details"),
+    path('calender/',views.Calender,name="calender"),
     path('account/',views.Account,name="account"),
     path('billing/',views.Billing,name="billing"),
     path('general/',views.General,name="general"),
