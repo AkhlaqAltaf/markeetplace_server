@@ -4,8 +4,8 @@ from src.apps.product.models import Product, Media, SubCategory
 from ckeditor.widgets import CKEditorWidget
 
 
-class AddToCartForm(forms.Form):
-    quantity = forms.IntegerField()
+# class AddToCartForm(forms.Form):
+#     quantity = forms.IntegerField()
 
 
 class MediaForm(forms.ModelForm):
@@ -14,13 +14,13 @@ class MediaForm(forms.ModelForm):
         fields = ['product','file']
 
 class ProductForm(forms.ModelForm):
-    media = MediaForm()
+    # media = MediaForm()
     class Meta:
         model = Product
         fields = [
             'name', 'description', 'category', 'sub_category', 'tags',
             'price', 'discount_price', 'stock_quantity', 'sku', 'currency',
-            'status', 'is_featured', 'country_of_origin', 'content'
+             'country_of_origin', 'content'
         ]
         widgets = {
             'description': forms.Textarea(attrs={'rows': 3}),
