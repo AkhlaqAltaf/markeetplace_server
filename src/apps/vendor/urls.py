@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from django.urls import path
+
 from . import views
 from django.contrib.auth import views as auth_views
 
@@ -19,13 +20,21 @@ urlpatterns = [
     path('test/',views.addProductTest,name="add"),
     
     path('add_product/subcategory/<str:category>/',views.GetSubCategory.as_view(),name="subcategory"),
-    path('add_product/', views.AddProductView.as_view(),name="add"),
+    path('add_product/', views.CreateProduct.as_view(),name="add"),
 
-    path('add_product_form/subcategory/<str:category>/',views.GetSubCategory.as_view(),name="subcategory"),
-    path('add_product_form/', views.AddProductView.as_view(),name="addproduct"),
+    # path('add_product_form/subcategory/<str:category>/',views.GetSubCategory.as_view(),name="subcategory"),
+    # path('add_product_form/', views.AddProductView.as_view(),name="addproduct"),
     
-    
+    # path('add_product_form/', CreateProduct.as_view(), name="addproduct"),
+
     path('store-analytics/',views.storeAnalytics,name="store-analytics"),
+    path('create-product/',views.ProductAdd,name="create-product"),
+    path('order-list/',views.OrderList,name="order-list"),
+    path('order-details/',views.OrderDetails,name="order-details"),
+    path('order-status/',views.OrderStatus,name="order-status"),
+    path('invoice-list/',views.InvoiceList,name="invoice-list"),
+    path('invoice-details/',views.InvoiceDetails,name="invoice-details"),
+    path('calender/',views.Calender,name="calender"),
     path('account/',views.Account,name="account"),
     path('billing/',views.Billing,name="billing"),
     path('general/',views.General,name="general"),
