@@ -28,7 +28,9 @@ urlpatterns = [
     # path('add_product_form/', CreateProduct.as_view(), name="addproduct"),
 
     path('store-analytics/',views.storeAnalytics,name="store-analytics"),
+    path('signup/',views.Register,name="signup"),
     path('create-product/',views.ProductAdd,name="create-product"),
+    path('product-list/',views.ProductList,name="product-list"),
     path('order-list/',views.OrderList,name="order-list"),
     path('order-details/',views.OrderDetails,name="order-details"),
     path('order-status/',views.OrderStatus,name="order-status"),

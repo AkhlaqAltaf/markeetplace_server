@@ -1,0 +1,86 @@
+{% extends 'vendor/main/base.html' %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/a076d05399.js"></script> <!-- Font Awesome Script -->
+    <title>Product List</title>
+</head>
+<body class="bg-gray-100">
+    {% block content %}
+
+    <div class="mt-10 mx-4 md:mx-10 lg:mx-20">
+        <!-- Heading Section -->
+        <div class="flex items-center justify-between mb-6">
+            <h1 class="text-3xl md:text-4xl font-bold text-gray-800">Products</h1>
+            <button class="flex items-center gap-2 bg-[#0B5D51] rounded-xl px-4 py-2 text-white">
+                <span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                    </svg>
+                </span>
+                Add
+            </button>
+        </div>
+
+        <!-- Navigation Section -->
+        <div class="flex items-center space-x-3 text-sm text-gray-800">
+            <p class="font-medium">Dashboard</p>
+            <span class="text-gray-400">•</span>
+            <p class="font-medium">Products</p>
+            <span class="text-gray-400">•</span>
+            <p class="text-gray-500">List</p>
+        </div>
+
+        <!-- Product Table Section -->
+        <div class="mt-8 bg-white shadow-lg rounded-lg p-6">
+            <!-- Search Bar -->
+            <div class="mb-6 relative">
+                <input type="text" id="search-input" placeholder="Search by product name or category" 
+                    class="w-full pl-10 pr-4 py-2 rounded-md focus:outline-none text-gray-700 bg-gray-100" 
+                    onkeyup="filterProducts()">
+                <!-- Search Icon -->
+                <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+            </div>
+
+            <hr class="my-4" />
+            <p class="text-sm text-gray-500">No filters applied</p>
+            <hr class="my-4" />
+
+            <!-- Product Table -->
+            <div class="overflow-x-auto">
+                <table class="min-w-full bg-white border-collapse">
+                    <thead>
+                        <tr class="bg-gray-100 text-sm">
+                            <th class="py-2 px-4 text-left text-gray-700"></th>
+                            <th class="py-2 px-4 text-left text-gray-700">NAME</th>
+                            <th class="py-2 px-4 text-left text-gray-700">STOCK</th>
+                            <th class="py-2 px-4 text-left text-gray-700">PRICE</th>
+                            <th class="py-2 px-4 text-left text-gray-700">SKU</th>
+                            <th class="py-2 px-4 text-left text-gray-700">STATUS</th>
+                            <th class="py-2 px-4 text-left text-gray-700">ACTIONS</th>
+                        </tr>
+                    </thead>
+                    <tbody id="product-table-body" class="divide-y divide-gray-200">
+                        <!-- Product rows dynamically rendered by JS -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination Controls -->
+            <div class="flex justify-end items-center mt-4">
+                <button id="prev-button" class="bg-green-700 text-white px-4 py-2 rounded" onclick="changePage(-1)" disabled>Previous</button>
+                <span id="page-info" class="mx-4 text-gray-700"></span>
+                <button id="next-button" class="bg-green-700 text-white px-4 py-2 rounded" onclick="changePage(1)">Next</button>
+            </div>
+        </div>
+    </div>
+    {% include 'vendor/products/script.html' %}
+
+         {% endblock content %}
+
+</body>
+</html>

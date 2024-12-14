@@ -1,10 +1,15 @@
 <!-- templates/main/base.html -->
+ {% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link rel="stylesheet" href="{% static 'css/salesRevenue.css' %}">
+
     <script src="https://kit.fontawesome.com/ac8aec1afa.js" crossorigin="anonymous"></script>
     <title>{% block title %}My Website{% endblock %}</title>
   </head>
@@ -55,5 +60,9 @@
         closeIcon.classList.toggle('hidden');
       });
     </script>
+    <script src="{% static 'js/salesRevenue.js' %}"></script>
+    <script src="{% static 'js/mainn.js' %}"></script>
+    <script src="{% static 'js/costBreakdown.js' %}"></script>
+
   </body>
 </html>
