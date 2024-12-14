@@ -298,6 +298,8 @@ def Calender(request):
     return render(request, 'vendor/calendar.html')
 def ProductAdd(request):
     return render(request, 'vendor/products/createproduct.html')
+def ProductList(request):
+    return render(request, 'vendor/products/productlist.html')
 def Account(request):
     return render(request, 'vendor/Account/base.html')
 def General(request):
