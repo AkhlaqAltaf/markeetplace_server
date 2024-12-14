@@ -164,20 +164,18 @@ class AddProductView(CreateView):
 
 
 
-class CreateProduct(CreateView):
+class CreateProduct(View):
+    # Template for GET request
     def get(self, request, *args, **kwargs):
         categories = Category.objects.all()
         origins = CountryOrigin.objects.all()
+        return render(request, "vendor/add_product/addproduct.html", context={"categories": categories, 'origins': origins})
 
-        return render(request, template_name="vendor/add_product/addproduct.html", context={"categories": categories, 'origins': origins})
-
+    # Handling POST request to create a product
     def post(self, request, *args, **kwargs):
-        global tag_objs, tag_names, origin_obj
         data = request.POST
-        # print(data)
         images = request.FILES.getlist('images')
-        print(images)
-
+        
         category_name = data.get("category")
         category_obj = Category.objects.filter(name=category_name).first()
         sub_category_obj = SubCategory.objects.filter(name=data.get("sub_category"), category=category_obj).first()
@@ -224,11 +222,11 @@ class CreateProduct(CreateView):
         if not SubCategory.objects.filter(name=sub_category_name, category=category_obj).exists():
             errors['sub_category'] = "Invalid subcategory selected for the chosen category."
 
-        # Check if there are validation errors
+        # If there are validation errors, return them
         if errors:
             return JsonResponse({'success': False, 'errors': errors}, status=400)
 
-        # If data is valid, proceed with database insertion
+        # Proceed with product creation if no errors
         vendor = Vendor.objects.all().first()
         product = Product.objects.create(
             name=data.get("name"),
@@ -245,8 +243,7 @@ class CreateProduct(CreateView):
         )
 
         # Handling the uploaded images
-        print("IMAGES",request.POST.get("images"))
-        for file in images:  # 'images' is the name of the file input field
+        for file in images:
             media = Media.objects.create(product=product, file=file)
 
         # Handling tags
@@ -268,7 +265,7 @@ class CreateProduct(CreateView):
 
         # Return success message
         return JsonResponse({'success': True, 'message': 'Product created successfully!'})
-
+           
 class GetSubCategory(View):
     def get(self, request, category):
         category_obj = Category.objects.filter(name=category).first()
@@ -299,7 +296,7 @@ def InvoiceDetails(request):
     return render(request, 'vendor/invoice/invoicedetail.html')
 def Calender(request):
     return render(request, 'vendor/calendar.html')
-def CreateProduct(request):
+def ProductAdd(request):
     return render(request, 'vendor/products/createproduct.html')
 def Account(request):
     return render(request, 'vendor/Account/base.html')

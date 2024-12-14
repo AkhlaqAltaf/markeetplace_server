@@ -139,69 +139,70 @@
     }
 
     // ========== Form Submission ==========
-    const productForm = document.getElementById("productForm");
+    // ========== Form Submission ========== 
+const productForm = document.getElementById("productForm");
 
-    productForm.addEventListener("submit", (e) => {
-        // Prevent default form submission
-        e.preventDefault();
+productForm.addEventListener("submit", (e) => {
+    // Prevent default form submission
+    e.preventDefault();
 
-        // Create FormData object
-        const formData = new FormData(productForm);
+    // Create FormData object
+    const formData = new FormData(productForm);
 
-        // Clear any existing file inputs
-        formData.delete('images');
+    // Clear any existing file inputs
+    formData.delete('images');
 
-        // Append each file to the FormData
-        imageFiles.forEach(file => {
-            formData.append('images', file);
-        });
-
-        // Add tags to FormData
-        updateTagsInput();
-        const tags = JSON.parse(tagsInput.value);
-        formData.append('tags', JSON.stringify(tags));
-
-        // Get the CKEDITOR content
-        const editorContent = CKEDITOR.instances.editor.getData();
-        formData.append('content', editorContent);
-        
-        // Send form data via AJAX
-        fetch(productForm.action || window.location.href, {
-            method: 'POST',
-            body: formData,
-            headers: {
-                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            console.log('Success:', data);
-            if (data.success === false) {
-            showPopup('Error: ' + (data.message || 'Something went wrong.'));
-        } else {
-            showPopup('Success: Product submitted successfully!');
-        }
-            // Redirect or show success message
-        })
-        .catch(error => {
-            // Handle errors
-            console.error('Error:', error);
-        });
+    // Append each file to the FormData
+    imageFiles.forEach(file => {
+        formData.append('images', file);
     });
 
-    function showPopup(message) {
-    const popup = document.createElement('div');
-    popup.className = 'fixed top-2 left-1/2 transform -translate-x-1/2 bg-black bg-opacity-70 text-white px-5 py-2 rounded-lg text-lg z-50'; 
-    popup.textContent = message;
+    // Add tags to FormData
+    updateTagsInput();
+    const tags = JSON.parse(tagsInput.value);
+    formData.append('tags', JSON.stringify(tags));
 
-    // Append popup to the body or any desired container
-    document.body.appendChild(popup);
+    // Get the CKEDITOR content
+    const editorContent = CKEDITOR.instances.editor.getData();
+    formData.append('content', editorContent);
 
-    // Set a timeout to remove the popup after 3 seconds
-    setTimeout(() => {
-        popup.remove();
-    }, 3000);
-}
+    // Send form data via AJAX
+    fetch(productForm.action, {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        // Handle successful submission
+        console.log('Success:', data);
+        
+        // Reset form fields
+        productForm.reset(); // Reset all form fields (including input fields)
+
+        // Reset the CKEditor content
+        CKEDITOR.instances.editor.setData(''); 
+
+        // Clear tags
+        tagStack.innerHTML = ''; 
+        tagsInput.value = '';
+
+        // Clear image stack
+        imageStack.innerHTML = ''; 
+
+        // Clear image files array
+        imageFiles.length = 0; 
+
+        // You can show a success message here or redirect to another page
+    })
+    .catch(error => {
+        // Handle errors
+        console.error('Error:', error);
+    });
+});
+
 
     // Event Listeners
     uploadImagesInput.addEventListener("change", handleImageUpload);
