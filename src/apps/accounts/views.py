@@ -56,7 +56,7 @@ class UserRegistrationView(View):
 class LogoutView(View):
     def get(self, request):
         logout(request)  # Log out the user
-        return redirect('core:home')  # Redirect to the home page or desired URL
+        return redirect('core:home')  # Redirect to /the home page or desired URL
 
 
 class AccountsView(View):
