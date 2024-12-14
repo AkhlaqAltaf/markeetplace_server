@@ -280,6 +280,11 @@ def addProductTest(request):
     return render(request,template_name="vendor/add_product/addproduct.html")
 
 
+
+def Register(request):
+    return render(request, 'vendor/registration/registration2.html')
+
+
 def home(request):
     return render(request, 'vendor/main/base.html')
 def storeAnalytics(request):
