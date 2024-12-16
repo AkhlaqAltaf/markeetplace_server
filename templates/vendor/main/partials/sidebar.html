@@ -20,6 +20,14 @@
             background: rgba(255,255,255,0.3);
             border-radius: 3px;
         }
+        .active {
+            background-color: #073741;
+            font-weight: bold;
+        }
+        .dropdown-active {
+            background-color: #094A49;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body class="bg-gray-100 font-sans">
@@ -42,26 +50,28 @@
 
             <!-- Store Analytics -->
             <a href="{% url 'vendor:store-analytics' %}" 
-               class="w-full flex items-center bg-[#073741]/50 hover:bg-[#073741]/70 
-                      px-4 py-3 rounded-lg transition-all duration-300 group mb-4">
-                <i class="fas fa-chart-line w-5 h-5 mr-4 group-hover:rotate-6 transition-transform"></i>
-                <span class="font-semibold text-[14px]">Store Analytics</span>
+            class="w-full flex items-center hover:bg-[#073741]/70 
+                   px-4 py-3 rounded-lg transition-all duration-300 group mb-4 
+                   {% if request.resolver_match.url_name == 'store-analytics' %}active{% endif %}">
+             <i class="fas fa-chart-line w-5 h-5 mr-4 group-hover:rotate-6 transition-transform"></i>
+             <span class="font-semibold text-[14px]">Store Analytics</span>
             </a>
 
             <!-- Navigation Menu -->
             <nav class="w-full space-y-2">
                 <!-- Add Product Direct Link -->
                 <a href="{% url 'vendor:add' %}" 
-                   class="w-full flex items-center px-4 py-3 hover:bg-[#073741]/50 rounded-lg transition-colors group">
-                    <i class="fas fa-plus w-5 h-5 mr-4 group-hover:rotate-90 transition-transform"></i>
-                    <span>Add Product</span>
-                </a>
-
+                class="w-full flex items-center px-4 py-3 hover:bg-[#073741]/50 rounded-lg transition-colors group 
+                       {% if request.resolver_match.url_name == 'add' %}active{% endif %}">
+                 <i class="fas fa-plus w-5 h-5 mr-4 group-hover:rotate-90 transition-transform"></i>
+                 <span>Add Product</span>
+             </a>             
                 <!-- Products Dropdown -->
                 <div class="relative dropdown-container">
                     <div class="dropdown-toggle w-full flex items-center justify-between 
                                 px-4 py-3 cursor-pointer hover:bg-[#073741]/50 rounded-lg 
-                                transition-colors group" data-target="productsDropdown">
+                                transition-colors group
+                                {% if request.resolver_match.url_name == 'product-list' or request.resolver_match.url_name == 'create-product' %} dropdown-active{% endif %}" data-target="productsDropdown">
                         <div class="flex items-center">
                             <i class="fas fa-box w-5 h-5 mr-4"></i>
                             <span>Products</span>
@@ -73,11 +83,13 @@
                                 text-white rounded-lg py-2 transition-all duration-300 
                                 ease-in-out transform origin-top">
                         <a href="{% url 'vendor:product-list' %}" 
-                           class="block px-4 py-2 hover:bg-white/20 transition-colors">
+                           class="block px-4 py-2 hover:bg-white/20 transition-colors
+                            {% if request.resolver_match.url_name == 'product-list' %}active{% endif %}">
                             Product List
                         </a>
                         <a href="{% url 'vendor:create-product'%}" 
-                           class="block px-4 py-2 hover:bg-white/20 transition-colors">
+                           class="block px-4 py-2 hover:bg-white/20 transition-colors
+                           {% if request.resolver_match.url_name == 'create-product' %}active{% endif %}">
                             Product Create
                         </a>
                     </div>
@@ -87,7 +99,8 @@
                 <div class="relative dropdown-container">
                     <div class="dropdown-toggle w-full flex items-center justify-between 
                                 px-4 py-3 cursor-pointer hover:bg-[#073741]/50 rounded-lg 
-                                transition-colors group" data-target="ordersDropdown">
+                                transition-colors group
+                                {% if request.resolver_match.url_name == 'order-list' or request.resolver_match.url_name == 'order-details' or request.resolver_match.url_name == 'order-status' %} dropdown-active{% endif %}" data-target="ordersDropdown">
                         <div class="flex items-center">
                             <i class="fas fa-shopping-cart w-5 h-5 mr-4"></i>
                             <span>Orders</span>
@@ -99,15 +112,18 @@
                                 text-white rounded-lg py-2 transition-all duration-300 
                                 ease-in-out transform origin-top">
                         <a href="{% url 'vendor:order-list' %}" 
-                           class="block px-4 py-2 hover:bg-white/20 transition-colors">
+                           class="block px-4 py-2 hover:bg-white/20 transition-colors
+                           {% if request.resolver_match.url_name == 'order-list' %}active{% endif %}">
                             List
                         </a>
                         <a href="{% url 'vendor:order-details' %}" 
-                           class="block px-4 py-2 hover:bg-white/20 transition-colors">
+                           class="block px-4 py-2 hover:bg-white/20 transition-colors
+                           {% if request.resolver_match.url_name == 'order-details' %}active{% endif %}">
                             Details
                         </a>
                         <a href="{% url 'vendor:order-status' %}" 
-                           class="block px-4 py-2 hover:bg-white/20 transition-colors">
+                           class="block px-4 py-2 hover:bg-white/20 transition-colors
+                           {% if request.resolver_match.url_name == 'order-status' %}active{% endif %}">
                             Order Status
                         </a>
                     </div>
@@ -117,7 +133,9 @@
                 <div class="relative dropdown-container">
                     <div class="dropdown-toggle w-full flex items-center justify-between 
                                 px-4 py-3 cursor-pointer hover:bg-[#073741]/50 rounded-lg 
-                                transition-colors group" data-target="invoiceDropdown">
+                                transition-colors group
+                                {% if request.resolver_match.url_name == 'invoice-list' or request.resolver_match.url_name == 'invoice-details' %} dropdown-active{% endif %}"
+                                  data-target="invoiceDropdown">
                         <div class="flex items-center">
                             <i class="fas fa-file-invoice-dollar w-5 h-5 mr-4"></i>
                             <span>Invoice</span>
@@ -129,11 +147,13 @@
                                 text-white rounded-lg py-2 transition-all duration-300 
                                 ease-in-out transform origin-top">
                         <a href="{% url 'vendor:invoice-list' %}" 
-                           class="block px-4 py-2 hover:bg-white/20 transition-colors">
+                           class="block px-4 py-2 hover:bg-white/20 transition-colors
+                           {% if request.resolver_match.url_name == 'invoice-list' %}active{% endif %}">
                             List
                         </a>
                         <a href="{% url 'vendor:invoice-details' %}" 
-                           class="block px-4 py-2 hover:bg-white/20 transition-colors">
+                           class="block px-4 py-2 hover:bg-white/20 transition-colors
+                           {% if request.resolver_match.url_name == 'invoice-details' %}active{% endif %}">
                             Details
                         </a>
                     </div>
@@ -141,7 +161,8 @@
 
                 <!-- Calendar -->
                 <a href="{% url 'vendor:calender'%}" 
-                   class="w-full flex items-center px-4 py-3 hover:bg-[#073741]/50 rounded-lg transition-colors group">
+                   class="w-full flex items-center px-4 py-3 hover:bg-[#073741]/50 rounded-lg transition-colors group
+                   {% if request.resolver_match.url_name == 'calender' %}active{% endif %}">
                     <i class="fas fa-calendar-alt w-5 h-5 mr-4 group-hover:scale-110 transition-transform"></i>
                     <span>Calendar</span>
                 </a>
