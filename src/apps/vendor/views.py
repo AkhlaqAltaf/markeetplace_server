@@ -278,6 +278,8 @@ class GetSubCategory(View):
         return JsonResponse({"subcategories": data})
 def addProductTest(request):
     return render(request,template_name="vendor/add_product/addproduct.html")
+def Checkout(request):
+    return render(request,template_name="vendor/add_product/vendorcheckout.html")
 
 
 

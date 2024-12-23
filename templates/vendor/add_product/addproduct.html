@@ -75,7 +75,7 @@
         </div>
 
         <div>
-          <label class="block text-sm font-medium mb-1">Product Sub Category</label>
+          <label class="block text-sm font-medium mb-1">Sub Category</label>
           <select name="sub_category" id="subcategorySelect" class="w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-orange-500">
             <option value="" disabled selected>Select Sub-Category</option>
           </select>
@@ -84,10 +84,10 @@
         <!-- Tags -->
         <div>
           <label class="block text-sm font-medium mb-1">Tags</label>
-          <div class="flex space-x-2">
-            <input type="text" id="tagInput"
-              class="flex-1 border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-[#0B5D51]"
-              placeholder="Enter a tag">
+          <div class="flex gap-2 flex-wrap">
+            <input type="number" name="stock_quantity"
+            class="w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-orange-500"
+            placeholder="Enter a tag">
             <button type="button" id="addTagButton"
               class="px-4 py-2 bg-[#0B5D51] text-white rounded-lg font-semibold  focus:outline-none focus:ring-2">
               Add

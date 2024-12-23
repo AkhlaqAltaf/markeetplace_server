@@ -23,12 +23,13 @@
     </style>
 </head>
 <body class="bg-gray-100 font-sans">
-    <div id="app" class="relative ">
-        <!-- Mobile Hamburger Menu -->
-     
-        <!-- Sidebar -->
+    <div id="app" class="relative">
+        <div id="sidebarToggle" class="md:hidden fixed top-6 left-4 z-[60]">
+            <i id="menuIcon" class="fas fa-bars text-[#0B5D51] text-3xl"></i>
+        </div>
+
         <div id="sidebar" class="fixed top-0 left-0 transform -translate-x-full md:translate-x-0 
-                                 md:h-full lg:w-[280px] bg-[#0B5D51] text-white 
+                                 md:h-full w-[280px] bg-[#0B5D51] text-white 
                                  flex flex-col items-start p-4 transition-transform 
                                  duration-500 ease-in-out shadow-2xl z-[50] h-screen 
                                  overflow-y-auto custom-scrollbar">
@@ -184,15 +185,20 @@
         });
 
         const sidebarToggle = document.getElementById('sidebarToggle');
-        const sidebar = document.getElementById('sidebar');
-        const menuIcon = document.getElementById('menuIcon');
-        const closeIcon = document.getElementById('closeIcon');
+const sidebar = document.getElementById('sidebar');
+const menuIcon = document.getElementById('menuIcon');
 
-        sidebarToggle.addEventListener('click', () => {
-            sidebar.classList.toggle('-translate-x-full');
-            menuIcon.classList.toggle('hidden');
-            closeIcon.classList.toggle('hidden');
-        });
+sidebarToggle.addEventListener('click', () => {
+    sidebar.classList.toggle('-translate-x-full');
+    // Change color based on sidebar state
+    if (sidebar.classList.contains('-translate-x-full')) {
+        menuIcon.classList.remove('text-white');
+        menuIcon.classList.add('text-[#0B5D51]');
+    } else {
+        menuIcon.classList.remove('text-[#0B5D51]');
+        menuIcon.classList.add('text-white');
+    }
+});
     </script>
 </body>
 </html>
