@@ -14,7 +14,7 @@
           {{ top_sale4.name }}
         </h1>
         <p class="text-gray-600 text-base leading-snug mt-2">
-            {{ top_sale4.description }}
+{{ top_sale4.description|slice:":30" }}
         </p>
         <a href="{% url 'product:product-detail' top_sale4.id %}" class="bg-orange-500 text-white font-bold px-6 py-2 mt-4 rounded flex items-center space-x-2">
           <span>Shop Now</span>
@@ -29,8 +29,7 @@
     </div>
       {% endif %}
     <!-- Second Card -->
- {% if top_sale6 %}
-
+ {% if top_sale5 %}
 
     <div class="bg-gray-900 flex flex-col md:flex-row justify-between items-center rounded-lg shadow-lg p-6 w-full h-auto text-white">
       <div class="flex flex-col items-center justify-center text-center md:text-left">
@@ -39,7 +38,7 @@
           {{ top_sale5.name }}
         </h1>
         <p class="text-gray-300 text-base leading-snug mt-2">
-            {{ top_sale5.description }}
+{{ top_sale5.description|slice:":30" }}
         </p>
         <a href="{% url 'product:product-detail' top_sale5.id %}" class="bg-orange-500 text-white font-bold px-6 py-2 mt-4 rounded flex items-center space-x-2">
           <span>Shop Now</span>

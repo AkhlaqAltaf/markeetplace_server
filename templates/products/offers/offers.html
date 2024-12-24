@@ -10,7 +10,7 @@
       <h1 class="text-2xl lg:text-5xl font-semibold">{{ top_sale7.name }}</h1>
       <p class="text-lg lg:text-xl">
 
-          {{ top_sale7.description }}
+{{ top_sale7.description|slice:":30" }}
       </p>
       <button class="bg-[#FA8232] text-white font-bold w-48 h-14 py-2 flex items-center justify-center rounded-md hover:bg-[#e8712e] transition">
         <span>Shop Now</span>

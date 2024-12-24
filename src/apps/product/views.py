@@ -416,15 +416,15 @@ class PlaceOrderView(View):
         return redirect('/')
 
 class OrderDetailView(View):
-    def get(self, request, order_id):
+    def get(self, request, id):
         try:
-            order = Order.objects.get(id=order_id, user=request.user)
+            order = Order.objects.get(id=id)
         except Order.DoesNotExist:
             messages.error(request, "Order does not exist.")
             return HttpResponseBadRequest("Order does not exist or you do not have permission to view it.")
 
         # Render a template with order details
-        return render(request, 'order_detail.html', {'order': order})
+        return render(request, 'order/order_detail.html', {'order': order})
 
 
 

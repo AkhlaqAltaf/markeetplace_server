@@ -177,107 +177,107 @@ class AddProductView(CreateView):
 
 
 
-# class CreateProduct(View):
-#     # Template for GET request
-#     def get(self, request, *args, **kwargs):
-#         categories = Category.objects.all()
-#         origins = CountryOrigin.objects.all()
-#         return render(request, "vendor/add_product/addproduct.html", context={"categories": categories, 'origins': origins})
-#
-#     # Handling POST request to create a product
-#     def post(self, request, *args, **kwargs):
-#         data = request.POST
-#         images = request.FILES.getlist('images')
-#
-#         category_name = data.get("category")
-#         category_obj = Category.objects.filter(name=category_name).first()
-#         sub_category_obj = SubCategory.objects.filter(name=data.get("sub_category"), category=category_obj).first()
-#
-#         # Validation Errors Dictionary
-#         errors = {}
-#
-#         # Required fields
-#         required_fields = ['name', 'price', 'stock_quantity', 'category', 'sub_category', 'description']
-#         for field in required_fields:
-#             if not data.get(field):
-#                 errors[field] = f"{field.replace('_', ' ').capitalize()} is required."
-#
-#         # Validate price
-#         price = data.get('price')
-#         if price:
-#             try:
-#                 price = float(price)
-#                 if price <= 0:
-#                     errors['price'] = "Price must be greater than 0."
-#             except ValueError:
-#                 errors['price'] = "Price must be a valid number."
-#
-#         sku = data.get('sku')
-#         if Product.objects.filter(sku=sku).exists():
-#             errors['sku'] = "This SKU is already in use. Please choose a unique SKU."
-#
-#         # Validate stock_quantity
-#         stock_quantity = data.get('stock_quantity')
-#         if stock_quantity:
-#             try:
-#                 stock_quantity = int(stock_quantity)
-#                 if stock_quantity < 0:
-#                     errors['stock_quantity'] = "Stock quantity must be 0 or more."
-#             except ValueError:
-#                 errors['stock_quantity'] = "Stock quantity must be an integer."
-#
-#         # Validate category
-#         if not Category.objects.filter(name=category_name).exists():
-#             errors['category'] = "Invalid category selected."
-#
-#         # Validate sub_category
-#         sub_category_name = data.get('sub_category')
-#         if not SubCategory.objects.filter(name=sub_category_name, category=category_obj).exists():
-#             errors['sub_category'] = "Invalid subcategory selected for the chosen category."
-#
-#         # If there are validation errors, return them
-#         if errors:
-#             return JsonResponse({'success': False, 'errors': errors}, status=400)
-#
-#         # Proceed with product creation if no errors
-#         vendor = Vendor.objects.all().first()
-#         product = Product.objects.create(
-#             name=data.get("name"),
-#             description=data.get("description"),
-#             category=category_obj,
-#             sub_category=sub_category_obj,
-#             price=price,
-#             discount_price=data.get("discount_price"),
-#             stock_quantity=stock_quantity,
-#             sku=data.get("sku"),
-#             currency=data.get("currency"),
-#             content=data.get("content"),
-#             vendor=vendor
-#         )
-#
-#         # Handling the uploaded images
-#         for file in images:
-#             media = Media.objects.create(product=product, file=file)
-#
-#         # Handling tags
-#         if data.get("tags"):
-#             tag_string = data.get("tags")
-#             tag_objs = []
-#             tag_names = tag_string.split(",")
-#             for tag_name in tag_names:
-#                 tag_obj, created = Tag.objects.get_or_create(name=tag_name)
-#                 tag_objs.append(tag_obj)
-#             product.tags.set(tag_objs)
-#
-#         # Handling the country of origin
-#         if data.get("country_of_origin"):
-#             origin_name = data.get("country_of_origin")
-#             origin_obj = CountryOrigin.objects.filter(name=origin_name).first()
-#             if origin_obj:
-#                 product.country_of_origin.set([origin_obj])
-#
-#         # Return success message
-#         return JsonResponse({'success': True, 'message': 'Product created successfully!'})
+class CreateProduct(View):
+    # Template for GET request
+    def get(self, request, *args, **kwargs):
+        categories = Category.objects.all()
+        origins = CountryOrigin.objects.all()
+        return render(request, "vendor/add_product/addproduct.html", context={"categories": categories, 'origins': origins})
+
+    # Handling POST request to create a product
+    def post(self, request, *args, **kwargs):
+        data = request.POST
+        images = request.FILES.getlist('images')
+
+        category_name = data.get("category")
+        category_obj = Category.objects.filter(name=category_name).first()
+        sub_category_obj = SubCategory.objects.filter(name=data.get("sub_category"), category=category_obj).first()
+
+        # Validation Errors Dictionary
+        errors = {}
+
+        # Required fields
+        required_fields = ['name', 'price', 'stock_quantity', 'category', 'sub_category', 'description']
+        for field in required_fields:
+            if not data.get(field):
+                errors[field] = f"{field.replace('_', ' ').capitalize()} is required."
+
+        # Validate price
+        price = data.get('price')
+        if price:
+            try:
+                price = float(price)
+                if price <= 0:
+                    errors['price'] = "Price must be greater than 0."
+            except ValueError:
+                errors['price'] = "Price must be a valid number."
+
+        sku = data.get('sku')
+        if Product.objects.filter(sku=sku).exists():
+            errors['sku'] = "This SKU is already in use. Please choose a unique SKU."
+
+        # Validate stock_quantity
+        stock_quantity = data.get('stock_quantity')
+        if stock_quantity:
+            try:
+                stock_quantity = int(stock_quantity)
+                if stock_quantity < 0:
+                    errors['stock_quantity'] = "Stock quantity must be 0 or more."
+            except ValueError:
+                errors['stock_quantity'] = "Stock quantity must be an integer."
+
+        # Validate category
+        if not Category.objects.filter(name=category_name).exists():
+            errors['category'] = "Invalid category selected."
+
+        # Validate sub_category
+        sub_category_name = data.get('sub_category')
+        if not SubCategory.objects.filter(name=sub_category_name, category=category_obj).exists():
+            errors['sub_category'] = "Invalid subcategory selected for the chosen category."
+
+        # If there are validation errors, return them
+        if errors:
+            return JsonResponse({'success': False, 'errors': errors}, status=400)
+
+        # Proceed with product creation if no errors
+        vendor = Vendor.objects.all().first()
+        product = Product.objects.create(
+            name=data.get("name"),
+            description=data.get("description"),
+            category=category_obj,
+            sub_category=sub_category_obj,
+            price=price,
+            discount_price=data.get("discount_price"),
+            stock_quantity=stock_quantity,
+            sku=data.get("sku"),
+            currency=data.get("currency"),
+            content=data.get("content"),
+            vendor=vendor
+        )
+
+        # Handling the uploaded images
+        for file in images:
+            media = Media.objects.create(product=product, file=file)
+
+        # Handling tags
+        if data.get("tags"):
+            tag_string = data.get("tags")
+            tag_objs = []
+            tag_names = tag_string.split(",")
+            for tag_name in tag_names:
+                tag_obj, created = Tag.objects.get_or_create(name=tag_name)
+                tag_objs.append(tag_obj)
+            product.tags.set(tag_objs)
+
+        # Handling the country of origin
+        if data.get("country_of_origin"):
+            origin_name = data.get("country_of_origin")
+            origin_obj = CountryOrigin.objects.filter(name=origin_name).first()
+            if origin_obj:
+                product.country_of_origin.set([origin_obj])
+
+        # Return success message
+        return JsonResponse({'success': True, 'message': 'Product created successfully!'})
            
 class GetSubCategory(View):
     def get(self, request, category):

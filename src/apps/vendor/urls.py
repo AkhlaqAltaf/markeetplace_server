@@ -24,7 +24,7 @@ urlpatterns = [
     path('test/',views.addProductTest,name="add"),
     path('update_order_status/<int:order_id>/', UpdateOrderStatusView.as_view(),name='update_order_status'),
     path('add_product/subcategory/<str:category>/',views.GetSubCategory.as_view(),name="subcategory"),
-    path('add_product/', views.AddProductView.as_view(),name="add"),
+    path('add_product/', views.CreateProduct.as_view(),name="add"),
 
 
     path('orders/', OrderListView.as_view(), name='orders'),
@@ -33,7 +33,6 @@ urlpatterns = [
 
     # path('add_product_form/subcategory/<str:category>/',views.GetSubCategory.as_view(),name="subcategory"),
     # path('add_product_form/', views.AddProductView.as_view(),name="addproduct"),
-    
     # path('add_product_form/', CreateProduct.as_view(), name="addproduct"),
     path('add-product/', views.add_product, name="add-product"),
     path('store-analytics/',views.storeAnalytics,name="store-analytics"),
