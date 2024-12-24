@@ -18,33 +18,60 @@
         `;
 
         // Add Delete Functionality
-        tagElement.addEventListener("click", () => {
-            tagStack.removeChild(tagElement);
+
+  document.addEventListener("DOMContentLoaded", function() {
+        // ========== Tag Management ==========
+        const tagInput = document.getElementById("tagInput");
+        const addTagButton = document.getElementById("addTagButton");
+        const tagStack = document.getElementById("tagStack");
+        const tagsInput = document.getElementById("tagsInput");
+
+        if (!tagsInput) {
+            console.error("Tags input not found");
+            return;
+        }
+
+        function addTag() {
+            const tagValue = tagInput.value.trim();
+            if (!tagValue) return;
+
+            // Create Tag Element
+            const tagElement = document.createElement("div");
+            tagElement.className = "bg-green-500 text-white px-3 py-1 rounded-lg flex items-center space-x-2 cursor-pointer group";
+            tagElement.innerHTML = `
+                <span>${tagValue}</span>
+                <button class="hidden group-hover:inline text-sm text-gray-200 ml-2">&times;</button>
+            `;
+
+            // Add Delete Functionality
+            tagElement.addEventListener("click", () => {
+                tagStack.removeChild(tagElement);
+                updateTagsInput();
+            });
+
+            // Append Tag and Clear Input
+            tagStack.appendChild(tagElement);
+            tagInput.value = "";
+
             updateTagsInput();
+        }
+
+        function updateTagsInput() {
+            const tags = Array.from(tagStack.children).map(tagElement =>
+                tagElement.querySelector("span").textContent
+            );
+            tagsInput.value = JSON.stringify(tags);
+        }
+
+        addTagButton.addEventListener("click", addTag);
+
+        tagInput.addEventListener("keydown", (event) => {
+            if (event.key === "Enter") {
+                event.preventDefault();
+                addTag();
+            }
         });
 
-        // Append Tag and Clear Input
-        tagStack.appendChild(tagElement);
-        tagInput.value = "";
-
-        updateTagsInput();
-    }
-
-    function updateTagsInput() {        
-        const tags = Array.from(tagStack.children).map(tagElement =>
-            tagElement.querySelector("span").textContent
-        );
-        tagsInput.value = JSON.stringify(tags);
-    }
-
-    addTagButton.addEventListener("click", addTag);
-
-    tagInput.addEventListener("keydown", (event) => {
-        if (event.key === "Enter") {
-            event.preventDefault();
-            addTag();
-        }
-    });
 
     // ========== Subcategory Dropdown ==========
     const categorySelect = document.getElementById("categorySelect");

@@ -1,27 +1,50 @@
-  <script>
-    function toggleTab(isSignIn) {
-      document.getElementById('signInForm').classList.toggle('hidden', !isSignIn);
-      document.getElementById('signUpForm').classList.toggle('hidden', isSignIn);
-      document.getElementById('signInTab').classList.toggle('text-gray-800', isSignIn);
-      document.getElementById('signUpTab').classList.toggle('text-gray-800', !isSignIn);
+<script>
+  function toggleTab(isSignIn) {
+    document.getElementById('signInForm').classList.toggle('hidden', !isSignIn);
+    document.getElementById('signUpForm').classList.toggle('hidden', isSignIn);
+    document.getElementById('signInTab').classList.toggle('text-gray-800', isSignIn);
+    document.getElementById('signUpTab').classList.toggle('text-gray-800', !isSignIn);
+
+    // Change the URL without reloading the page
+    if (isSignIn) {
+      history.pushState(null, '', '/accounts/login/'); // Change to your desired sign-in URL
+    } else {
+      history.pushState(null, '', '/accounts/signup/'); // Change to your desired sign-up URL
     }
+  }
 
-    function togglePassword(inputId) {
-      const input = document.getElementById(inputId);
-      input.type = input.type === 'password' ? 'text' : 'password';
+  function togglePassword(inputId) {
+      console.log(inputId);
+    const input = document.getElementById(inputId);
+    input.type = input.type === 'password' ? 'text' : 'password';
+  }
+
+  // Check the URL on page load to determine which form to show
+  window.onload = function() {
+    const currentUrl = window.location.href;
+    if (currentUrl.includes('signup')) {
+      toggleTab(false); // Show Sign Up form
+      // Set the Sign Up tab as active
+      signUpTab.classList.add('border-b-2', 'border-orange-500');
+      signInTab.classList.remove('border-b-2', 'border-orange-500');
+    } else {
+      toggleTab(true); // Show Sign In form
+      // Set the Sign In tab as active
+      signInTab.classList.add('border-b-2', 'border-orange-500');
+      signUpTab.classList.remove('border-b-2', 'border-orange-500');
     }
+  };
 
+  const signInTab = document.getElementById('signInTab');
+  const signUpTab = document.getElementById('signUpTab');
 
-    const signInTab = document.getElementById('signInTab');
-    const signUpTab = document.getElementById('signUpTab');
+  signInTab.addEventListener('click', () => {
+    signInTab.classList.add('border-b-2', 'border-orange-500');
+    signUpTab.classList.remove('border-b-2', 'border-orange-500');
+  });
 
-    signInTab.addEventListener('click', () => {
-        signInTab.classList.add('border-b-2', 'border-orange-500');
-        signUpTab.classList.remove('border-b-2', 'border-orange-500');
-    });
-
-    signUpTab.addEventListener('click', () => {
-        signUpTab.classList.add('border-b-2', 'border-orange-500');
-        signInTab.classList.remove('border-b-2', 'border-orange-500');
-    });
-  </script>
+  signUpTab.addEventListener('click', () => {
+    signUpTab.classList.add('border-b-2', 'border-orange-500');
+    signInTab.classList.remove('border-b-2', 'border-orange-500');
+  });
+</script>

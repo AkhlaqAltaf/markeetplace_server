@@ -128,6 +128,7 @@ class Media(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="media")
     file = models.FileField(upload_to="products/", default='https://via.placeholder.com/240x180.jpg')
     media_type = models.CharField(max_length=10, editable=False)  # Editable is False to set it programmatically.
+    is_primary = models.BooleanField(default=False)
 
     def make_thumbnail(self, image, size=(300, 200)):
         """
@@ -145,158 +146,71 @@ class Media(models.Model):
 
     def save(self, *args, **kwargs):
         """
-        Override the save method to handle file type and thumbnail creation.
+        Override the save method to handle file type and dynamically set media_type.
         """
         if self.file:
             # Extract the file extension
             ext = os.path.splitext(self.file.name)[1].lower()
 
-            # Check the file type and act accordingly
+            # Check the file type and set media_type accordingly
             if ext in ['.jpg', '.jpeg', '.png']:
-                # Set media_type as 'image'
                 self.media_type = 'image'
-
-                # Generate a thumbnail and replace the file
+                # Generate a thumbnail for images
                 self.file = self.make_thumbnail(self.file)
             elif ext in ['.mp4', '.avi', '.mov', '.mkv']:
-                # Set media_type as 'video'
                 self.media_type = 'video'
+            elif ext in ['.glb', '.gltf', '.obj', '.fbx']:
+                self.media_type = '3d'
             else:
-                raise ValueError(f"Unsupported file type: {ext}. Only images and videos are allowed.")
+                raise ValueError(f"Unsupported file type: {ext}. Only images, videos, and 3D models are allowed.")
 
         super().save(*args, **kwargs)  # Call the original save method
-#
+
+
+class TopPageProduct(models.Model):
+    product = models.OneToOneField(Product, on_delete=models.CASCADE, related_name='top_page')
+    order = models.PositiveSmallIntegerField(default=0)
+    def __str__(self):
+        return f"{self.product.name}"
+
+
+class WishListProduct(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='wish_list')
+    products = models.ManyToManyField(Product, related_name='wish_list', blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.user.name} Wish List"
 
 
 
+class Order(models.Model):
+    STATUS_CHOICES = [
+        ('pending', 'Pending'),
+        ('shipped', 'Shipped'),
+        ('delivered', 'Delivered'),
+        ('cancelled', 'Cancelled'),
+    ]
 
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    products = models.ManyToManyField('Product', through='OrderItem')
+    address = models.TextField()
+    city = models.CharField(max_length=100)
+    country = models.CharField(max_length=100)
+    postal_code = models.CharField(max_length=20)
+    payment_method = models.CharField(max_length=50)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')  # New status field
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
-# # Create your models here.
+    def __str__(self):
+        return f"Order {self.id} by {self.user.name}"
 
-#
-#
-#
-# class Product(models.Model):
-#     vendor = models.ForeignKey(Vendor, related_name="products", on_delete=models.CASCADE)
-#     name = models.CharField(max_length=255)
-#     country_of_origin = models.CharField(max_length=100)
-#     category = models.CharField(max_length=100)
-#     sub_category = models.CharField(max_length=100)
-#     summary = models.TextField()
-#     description = models.TextField()
-#
-#     def __str__(self):
-#         return self.name
-#
-#
-#
-# from PIL import Image
-# from io import BytesIO
-# from django.core.files import File
-#
-# class ProductMedia(models.Model):
-#     product = models.ForeignKey(Product, related_name='media', on_delete=models.CASCADE)
-#     media_type = models.CharField(max_length=10, choices=[('image', 'Image'), ('video', 'Video')])
-#     file = models.FileField(upload_to='uploads/')
-#     thumbnail = models.ImageField(upload_to='uploads/thumbnails/', blank=True, null=True)
-#
-#     def __str__(self):
-#         return f"{self.media_type} - {self.product.name}"
-#
-#     def save(self, *args, **kwargs):
-#         if self.media_type == 'image' and not self.thumbnail:
-#             self.thumbnail = self.make_thumbnail(self.file)
-#         super().save(*args, **kwargs)
-#
-#     def make_thumbnail(self, image, size=(300, 200)):
-#         img = Image.open(image)
-#         img.convert('RGB')
-#         img.thumbnail(size)
-#
-#         thumb_io = BytesIO()
-#         img.save(thumb_io, 'JPEG', quality=85)
-#
-#         thumbnail = File(thumb_io, name=image.name)
-#
-#         return thumbnail
-#
-#
-# class ShippingMethod(models.Model):
-#     product = models.OneToOneField(Product, on_delete=models.CASCADE)
-#     method = models.CharField(
-#         max_length=50,
-#         choices=[
-#             ('Ex-Mill', 'Ex-Mill'),
-#             ('FOB', 'FOB'),
-#             ('CNF', 'CNF'),
-#             ('CIF', 'CIF'),
-#             ('As Per Request', 'As Per Request'),
-#         ],
-#     )
-#     price_method = models.CharField(
-#         max_length=50,
-#         choices=[
-#             ('Letter Of Credit', 'Letter Of Credit'),
-#             ('Escrow', 'Escrow'),
-#             ('Telegraphic Transfer', 'Telegraphic Transfer'),
-#             ('Helgro Wallet', 'Helgro Wallet'),
-#             ('Crypto', 'Crypto'),
-#         ],
-#     )
-#
-#     def __str__(self):
-#         return f"Shipping: {self.method} | Pricing: {self.price_method} for {self.product.name}"
-# class Document(models.Model):
-#     product = models.ForeignKey(Product, related_name='documents', on_delete=models.CASCADE)
-#     document_name = models.CharField(max_length=255)
-#     file = models.FileField(upload_to='documents/')
-#
-#     def __str__(self):
-#         return self.document_name
-#
+class OrderItem(models.Model):
+    order = models.ForeignKey(Order, on_delete=models.CASCADE)
+    product = models.ForeignKey('Product', on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField()
 
-# class Product(models.Model):
-#     category = models.ForeignKey(Category, related_name='products', on_delete=models.CASCADE)
-#     vendor = models.ForeignKey(Vendor, related_name="products", on_delete=models.CASCADE)
-#     title = models.CharField(max_length=50)
-#     slug = models.SlugField(max_length=55)
-#     description = models.TextField(blank=True, null=True)
-#     price = models.DecimalField(max_digits=6, decimal_places=2)
-#     added_date = models.DateTimeField(auto_now_add=True)
-#     image = models.ImageField(upload_to='uploads/', blank=True, null=True)
-#     thumbnail = models.ImageField(upload_to='uploads/', blank=True, null=True) # Change uploads to thumbnails
-#
-#     class Meta:
-#         ordering = ['-added_date']
-#
-#     def __str__(self):
-#         return self.title
-#
-#
-#     def get_thumbnail(self):
-#         if self.thumbnail:
-#             return self.thumbnail.url
-#         else:
-#             if self.image:
-#                 self.thumbnail = self.make_thumbnail(self.image)
-#                 self.save()
-#                 return self.thumbnail.url
-#
-#             else:
-#                 # Default Image
-#                 return 'https://via.placeholder.com/240x180.jpg'
-#
-#     # Generating Thumbnail - Thumbnail is created when get_thumbnail is called
-#     def make_thumbnail(self, image, size=(300, 200)):
-#         img = Image.open(image)
-#         img.convert('RGB')
-#         img.thumbnail(size)
-#
-#         thumb_io = BytesIO()
-#         img.save(thumb_io, 'JPEG', quality=85)
-#
-#         thumbnail = File(thumb_io, name=image.name)
-#
-#         return thumbnail
-#
-
+    def __str__(self):
+        return f"{self.quantity} of {self.product.name}"

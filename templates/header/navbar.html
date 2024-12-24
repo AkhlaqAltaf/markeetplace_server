@@ -1,35 +1,40 @@
 {% load static %}
 <nav class="bg-[#073741] p-4 px-4 sm:px-24 flex items-center justify-between">
-    <a href="#"><img src="{% static 'assets/logo-2.png' %}" alt="Logo" class="h-10 sm:h-16"></a>
+    <a href="/"><img src="{% static 'assets/logo-2.png' %}" alt="Logo" class="h-10 sm:h-16"></a>
     <div id="nav-links" class="hidden sm:flex items-center gap-4">
-      <div class="relative mb-3">
-        <input type="text" class="pl-4 pr-10 py-2 border border-gray-300 rounded w-40 sm:w-64" placeholder="Search for products">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 absolute top-2 right-2 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M11 19a8 8 0 110-16 8 8 0 010 16z" />
-        </svg>
-      </div>
+        <form action="{% url 'product:search' %}" method="GET" class="relative mb-3">
+            <input type="text" name="q" class="pl-4 pr-10 py-2 border border-gray-300 rounded w-40 sm:w-64 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Search for products" required>
+            <button type="submit" class="absolute top-2 right-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M11 19a8 8 0 110-16 8 8 0 010 16z" />
+                </svg>
+            </button>
+        </form>
 
-      <div class="flex items-center justify-center gap-4 text-white">
-        <i class="fa fa-shopping-cart"></i>
-        <i class="fa fa-heart"></i>
-             {#ELSE IF CONDETION AND USER ACCOUNTS VIEW #}
+        <div class="flex items-center justify-center gap-4 text-white">
+            <a href="{% url 'cart:cart' %}"> <i class="fa fa-shopping-cart"></i>{% if cart %}({{cart|length}}){% endif %}</a>
+            <a href="{% url 'product:wish-list' %}"><i class="fa fa-heart"></i> </a>
+
+
             {% if request.user.vendor %}
-                <div class="navbar-item has-dropdown is-hoverable" >
+
+                <div class="navbar-item has-dropdown is-hoverable">
                     <a class="navbar-link is-capitalized">
                         <i class="fa fa-user"></i>
                         {{ request.user.vendor.name }}
                     </a>
 
                     <div class="navbar-dropdown">
-                        <a class="navbar-item" href="#">
-                            {{ request.user.vendor }}
+                        {% if request.user.vendor.verification_status %}
+                        <a class="navbar-item" href="{% url 'vendor:vendor' %}">
+                           Vendor Side
                         </a>
-                        <a class="navbar-item" href="{% url 'core:home' %}">
-                            Update Profile
-                        </a>
-                        <a class="navbar-item" href="{% url 'core:home' %}">
-                            List Product
-                        </a>
+                            {% else %}
+                                <p class="navbar-item">
+                           Wait For Verification
+                        </p>
+                            {% endif %}
+
                         <hr class="navbar-divider">
                         <a class="navbar-item" href="{% url 'accounts:logout' %}">
                             Logout
@@ -37,9 +42,11 @@
                     </div>
                 </div>
 
+
             {% elif request.user.is_authenticated %}
                 <div class="navbar-item has-dropdown is-hoverable" style="color: white">
-                    <a class="">
+                    <a class="navbar-link is-capitalized">
+                          <i class="fa fa-user"></i>
                         {{ request.user.name }}
                     </a>
 
@@ -47,10 +54,10 @@
                         <a class="navbar-item" href="#">
                             Profile
                         </a>
-                        <a class="navbar-item" href="#">
-                            Update Profile
-                        </a>
-                        <a class="navbar-item" href="#">
+                          <a class="navbar-item" href="{% url 'product:user_order_list' %}">
+                           My Orders
+                          </a>
+                        <a class="navbar-item" href="{% url 'vendor:become-vendor' %}">
                             Become Vendor
                         </a>
                         <hr class="navbar-divider">
@@ -60,21 +67,16 @@
                     </div>
                 </div>
 
+
+
             {% else %}
-
-
-{#                        <a class="button is-primary" href="{% url 'vendor:become-vendor' %}">#}
-{#                            <strong>Become Vendor</strong>#}
-{#                        </a>#}
-                        <a href="{% url 'accounts:accounts' %}">
-                            <i class="fa fa-user"></i>
-                        </a>
-
+                <a href="{% url 'accounts:accounts' %}">
+                    <i class="fa fa-user"></i>
+                </a>
             {% endif %}
-
-      </div>
+        </div>
     </div>
     <button id="menu-toggle" class="sm:hidden text-white focus:outline-none">
-      <i class="fa fa-bars text-xl"></i>
+        <i class="fa fa-bars text-xl"></i>
     </button>
-  </nav>
+</nav>

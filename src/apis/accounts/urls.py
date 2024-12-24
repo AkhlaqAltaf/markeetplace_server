@@ -1,12 +1,13 @@
-from django.urls import path
-from dj_rest_auth.views import LogoutView, PasswordChangeView
-from .views import UserCreateView, VerifyEmailView, CustomLoginView
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
+from src.apis.accounts.views import CustomUserViewSet, LoginView, LogoutView
 
 app_name = 'accounts'
+router = DefaultRouter()
+router.register(r'users', CustomUserViewSet)
+
 urlpatterns = [
-    path('register/', UserCreateView.as_view(), name='register'),
-    path('login/', CustomLoginView.as_view(), name='login'),
-    path('logout/', LogoutView.as_view(), name='rest_logout'),
-    path('password/change/', PasswordChangeView.as_view(), name='rest_password_change'),
-    path('verify-email/', VerifyEmailView.as_view(), name='verify-email'),
+    path('api/', include(router.urls)),
+    path('login/', LoginView.as_view(), name='login'),
+    path('logout/', LogoutView.as_view(), name='logout'),
 ]

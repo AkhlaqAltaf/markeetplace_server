@@ -8,7 +8,7 @@
     <!-- Form Start -->
     <form id="productForm" method="POST"  enctype="multipart/form-data">
       {% csrf_token %}
-      
+
       <div class="grid grid-cols-2 gap-6">
         <!-- Product Name and Description -->
         <div>
@@ -100,7 +100,7 @@
           <div id="tagStack" class="flex flex-wrap gap-2"></div>
         </div>
         <input type="hidden" name="tags" id="tagsInput">
-        
+
         <!-- Description -->
         <div>
           <label class="block text-sm font-medium mb-1">Description</label>

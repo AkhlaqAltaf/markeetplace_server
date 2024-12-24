@@ -35,16 +35,27 @@ def verify_email(request, token):
 
 
 class LoginView(View):
+    template_name = 'accounts/accounts.html'
+
+    def get(self,request):
+        form = CustomLoginForm()
+        return render(request, self.template_name,{'signin_form': form})
+
+
     def post(self, request):
         form = CustomLoginForm(request.POST)
         if form.is_valid():
             user = form.cleaned_data['user']
             login(request, user)
             return redirect('core:home')
-        return render(request, 'accounts/accounts.html', {'signin_form': form})
+        return render(request, self.template_name, {'signin_form': form})
 
 
 class UserRegistrationView(View):
+    template_name = 'accounts/accounts.html'
+    def get(self,request):
+        form = UserRegistrationForm()
+        return render(request, self.template_name,{'signin_form': form})
     def post(self, request):
         form = UserRegistrationForm(request.POST)
         if form.is_valid():
