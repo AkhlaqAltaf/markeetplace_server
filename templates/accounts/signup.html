@@ -1,4 +1,4 @@
-<form method="post" action="{% url 'accounts:register' %}">
+<form method="post" action="{% url 'accounts:signup' %}">
     {% csrf_token %}
 
  {% if signup_form.non_field_errors %}
@@ -8,6 +8,8 @@
       {% endfor %}
     </div>
   {% endif %}
+
+
     <div id="signUpForm" class="hidden space-y-6">
 
         <!-- Name Field -->
@@ -67,45 +69,31 @@
             {% endif %}
         </div>
 
-        <!-- Password Field -->
-        <div class="relative">
-            <label class="block text-sm font-medium text-gray-700" for="{{ signup_form.password.id_for_label }}">Password</label>
-            <input
-                type="password"
-                name="password"
-                id="{{ signup_form.password.id_for_label }}"
-                class="w-full border border-gray-300 p-2 rounded"
-                placeholder="Enter password"
-                value="{{ signup_form.password.value }}">
-            <i class="fas fa-eye absolute top-3 right-3 text-gray-500 cursor-pointer" onclick="togglePassword('signUpPassword')"></i>
-            {% if signup_form.password.errors %}
-                <div class="text-red-500 text-sm mt-1">
-                    {% for error in signup_form.password.errors %}
-                        <p>{{ error }}</p>
-                    {% endfor %}
-                </div>
-            {% endif %}
-        </div>
+      <!-- Password Field -->
+    <div class="relative">
+        <label class="block text-sm font-medium text-gray-700" for="password">Password</label>
+        <input
+            type="password"
+            name="password"
+            id="password"
+            class="w-full border border-gray-300 p-2 rounded"
+            placeholder="Enter password">
+        <i class="fas fa-eye absolute top-3 right-3 text-gray-500 cursor-pointer" onclick="togglePassword('password')"></i>
+        <div id="passwordError" class="text-red-500 text-sm mt-1"></div>
+    </div>
 
-        <!-- Confirm Password Field -->
-        <div class="relative">
-            <label class="block text-sm font-medium text-gray-700" for="{{ signup_form.confirm_password.id_for_label }}">Confirm Password</label>
-            <input
-                type="password"
-                name="confirm_password"
-                id="{{ signup_form.confirm_password.id_for_label }}"
-                class="w-full border border-gray-300 p-2 rounded"
-                placeholder="Confirm password"
-                value="{{ signup_form.confirm_password.value }}">
-            <i class="fas fa-eye absolute top-3 right-3 text-gray-500 cursor-pointer" onclick="togglePassword('confirmPassword')"></i>
-            {% if signup_form.confirm_password.errors %}
-                <div class="text-red-500 text-sm mt-1">
-                    {% for error in signup_form.confirm_password.errors %}
-                        <p>{{ error }}</p>
-                    {% endfor %}
-                </div>
-            {% endif %}
-        </div>
+    <!-- Confirm Password Field -->
+    <div class="relative">
+        <label class="block text-sm font-medium text-gray-700" for="confirm_password">Confirm Password</label>
+        <input
+            type="password"
+            name="confirm_password"
+            id="confirm_password"
+            class="w-full border border-gray-300 p-2 rounded"
+            placeholder="Confirm password">
+        <i class="fas fa-eye absolute top-3 right-3 text-gray-500 cursor-pointer" onclick="togglePassword('confirm_password')"></i>
+        <div id="confirmPasswordError" class="text-red-500 text-sm mt-1"></div>
+    </div>
 
         <!-- Terms & Conditions -->
         <div class="flex items-center">
@@ -129,8 +117,9 @@
         </div>
 
         <!-- Sign Up Button -->
-        <button type="submit" class="w-full py-2 bg-[#0B5D51] text-white rounded-lg">Sign Up</button>
-    </div>
+    <button type="submit" class="w-full py-2 bg-[#0B5D51] text-white rounded-lg">Sign Up</button>
+    </form>
+
 <script>
     function togglePassword(id) {
         var passwordField = document.getElementById(id);
@@ -139,6 +128,42 @@
         } else {
             passwordField.type = "password";
         }
+    }
+     function togglePassword(id) {
+        const passwordField = document.getElementById(id);
+        passwordField.type = passwordField.type === "password" ? "text" : "password";
+    }
+
+    function validateForm(event) {
+        let isValid = true;
+
+        // Clear existing errors
+        document.getElementById("passwordError").textContent = "";
+        document.getElementById("confirmPasswordError").textContent = "";
+
+        const password = document.getElementById("password").value;
+        const confirmPassword = document.getElementById("confirm_password").value;
+
+        // Validate Password
+        const strongPasswordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+        if (!strongPasswordRegex.test(password)) {
+            document.getElementById("passwordError").textContent =
+                "Password must be at least 8 characters, include an uppercase letter, a lowercase letter, a number, and a special character.";
+            isValid = false;
+        }
+
+        // Validate Confirm Password
+        if (password !== confirmPassword) {
+            document.getElementById("confirmPasswordError").textContent = "Passwords do not match.";
+            isValid = false;
+        }
+
+        // Prevent form submission if validation fails
+        if (!isValid) {
+            event.preventDefault();
+        }
+
+        return isValid;
     }
 </script>
 </form>

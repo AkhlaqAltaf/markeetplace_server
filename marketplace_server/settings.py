@@ -45,20 +45,16 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'ckeditor',
-    # APIS 
-    
+    # ACCOUNTS
     'src.apps.accounts.apps.AccountsAppConfig',
-
+    'src.apps.whisper.apps.WhisperConfig',
     #WEBSITE APPS
-
     'src.apps.core.apps.CoreConfig',
     'src.apps.vendor.apps.VendorConfig',
     'src.apps.product.apps.ProductConfig',
     'src.apps.cart.apps.CartConfig',
     'src.apps.order.apps.OrderConfig',
-    'src.apps.whisper.apps.WhisperConfig',
     'src.apps.website.apps.WebsiteConfig',
-    
     # REST APP
 
     'rest_framework',
@@ -73,12 +69,14 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+    # 'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware',  
-    'django.middleware.common.CommonMiddleware',  
+    'django.middleware.common.CommonMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',  # Add this line
+
 ]
 
 ROOT_URLCONF = 'marketplace_server.urls'
@@ -94,6 +92,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'src.apps.cart.context_processors.cart'
+
             ],
         },
     },
@@ -197,13 +197,12 @@ DEFAULT_EMAIL_FROM = 'Multi Vendor Site <akhlaqaltaf4@gmail.com>'
 
 
 
-LOGIN_URL = 'vendor:login'
-LOGIN_REDIRECT_URL = 'vendor:vendor-admin'
+# LOGIN_URL = 'vendor:login'
+LOGIN_REDIRECT_URL = 'vendor'
 LOGOUT_REDIRECT_URL = 'core:home'
-
+LOGIN_URL = '/accounts/'
 SESSION_COOKIE_AGE = 86400 # Day in Seconds
 CART_SESSION_ID = 'cart'
-
 
 # STRIPE PAYMENT
 STRIPE_PUB_KEY = 'pk_test_OKdhbDNME5KHtnpzYRBfNmEZ00mjM6DVsJ' # For JavaScript

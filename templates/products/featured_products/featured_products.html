@@ -3,16 +3,14 @@
   <div class="mt-12 grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-12  gap-6 px-6 md:px-16">
     <!-- Left Column -->
 
+{% if top_sale6 %}
 
 
     <div class="col-span-12 lg:col-span-4 md:w-full lg:col-span-4 bg-yellow-200 p-6 flex flex-col gap-6 h-auto">
-      <h6 class="text-red-500 text-sm text-center">COMPUTER & ACCESSORIES</h6>
-      <h1 class="text-2xl md:text-4xl text-center font-semibold">32% Discount</h1>
-      <p class="text-gray-600 text-center text-base">For all electronics products</p>
-      <div class="flex flex-col md:flex-row gap-4 items-center justify-center">
-        <p class="text-sm">Offers ends in:</p>
-        <p class="text-sm bg-white px-3 py-2 text-center">ENDS OF CHRISTMAS</p>
-      </div>
+      <h6 class="text-red-500 text-sm text-center">{{ top_sale6.name }}</h6>
+      <h1 class="text-2xl md:text-4xl text-center font-semibold">{{ top_sale6.discount_price }} Discount</h1>
+      <p class="text-gray-600 text-center text-base">For all electr</p>
+
       <div class="flex items-center justify-center">
         <button class="bg-orange-500 text-white font-bold w-40 h-12 py-2 flex items-center justify-center gap-2">
           <span>Shop Now</span>
@@ -26,17 +24,19 @@
       </div>
     </div>
 
-
+{% endif %}
 
     <div class="col-span-12 md:col-span-12 lg:col-span-8 flex-col">
       <div class="flex flex-col md:flex-row justify-between items-center mb-4">
         <h3 class="text-lg font-semibold">Featured Products</h3>
         <div class="flex flex-wrap gap-4 text-sm">
-          <a href="#" class="hover:underline hover:text-orange-500">All Products</a>
-          <a href="#" class="hover:underline hover:text-orange-500">Smart Phone</a>
-          <a href="#" class="hover:underline hover:text-orange-500">Laptop</a>
-          <a href="#" class="hover:underline hover:text-orange-500">Headphone</a>
-          <a href="#" class="hover:underline hover:text-orange-500">TV</a>
+          <a href="{% url 'product:all-product' %}" class="hover:underline hover:text-orange-500">All Products</a>
+            {% for category  in categories|slice:':4' %}
+          <a href="{% url 'product:category-product' category.id %}" class="hover:underline hover:text-orange-500">{{ category.name }}</a>
+{#          <a href="#" class="hover:underline hover:text-orange-500">Laptop</a>#}
+{#          <a href="#" class="hover:underline hover:text-orange-500">Headphone</a>#}
+{#          <a href="#" class="hover:underline hover:text-orange-500">TV</a>#}
+            {% endfor %}
         </div>
       </div>
 
@@ -44,49 +44,37 @@
         <!-- Sample Product Card -->
 
 
- {% for product in products %}
-       <div class="group flex w-full max-w-xs flex-col overflow-hidden rounded-lg border border-gray-100 bg-white shadow-md h-[350px]">
-          <a class="relative mx-3 mt-3 flex h-60 overflow-hidden rounded-xl" href="{% url 'product:product-detail' product.id %}">
-        {% with product.media.all|slice:":2" as media_list %}
-            {% if media_list|length > 0 %}
-                <!-- First Image -->
-                <img
-                    class="peer absolute top-0 right-0 h-full w-full object-cover"
-                    src="{{ media_list.0.file.url }}"
-                    alt="product image"
-                />
-            {% endif %}
-            {% if media_list|length > 1 %}
-                <!-- Second Image -->
-                <img
-                    class="peer absolute top-0 -right-96 h-full w-full object-cover transition-all delay-100 duration-1000 hover:right-0 peer-hover:right-0"
-                    src="{{ media_list.1.file.url }}"
-                    alt="product image"
-                />
-            {% endif %}
-        {% endwith %}
-    </a>
-            <div class="mt-4 px-3 pb-3">
-                <a  href="{% url 'product:product-detail' product.id %}">
-                    <h5 class="text-[20px] tracking-tight text-slate-600">{{ product.name }}</h5>
-                </a>
-                <div class="mt-1 mb-3 flex items-center justify-between">
-                    <p>
-
-                        <span class="text-[18px] font-bold text-slate-900">{{ product.price }}</span>
-                        <span class="text-[10px] text-slate-900 line-through">$699</span>
-                    </p>
-                </div>
-
-
-                <a href="#" class="flex items-center justify-center rounded-md bg-[#0B5D51] px-3 py-2 text-center text-sm font-medium text-white hover:bg-[#073741] hover:text-white focus:outline-none focus:ring-4 focus:ring-blue-300">
-                    Add to cart
-                </a>
+{% for product in products %}
+    <div class="group flex w-full max-w-xs flex-col overflow-hidden rounded-lg border border-gray-100 bg-white shadow-md h-[350px]">
+        <a  class="relative mx-3 mt-3 flex h-60 overflow-hidden rounded-xl" href="{% url 'product:product-detail' product.id %}">
+            {% with product.media.all|slice:":2" as media_list %}
+                {% if media_list|length > 0 %}
+                    <img class="peer absolute top-0 right-0 h-full w-full object-cover" src="{{ media_list.0.file.url }}" alt="product image" />
+                {% endif %}
+                {% if media_list|length > 1 %}
+                    <img class="peer absolute top-0 -right-96 h-full w-full object-cover transition-all delay-100 duration-1000 hover:right-0 peer-hover:right-0" src="{{ media_list.1.file.url }}" alt="product image" />
+                {% endif %}
+            {% endwith %}
+        </a>
+        <div class="mt-4 px-3 pb-3">
+            <a href="{% url 'product:product-detail' product.id %}">
+                <h5 class="text-[20px] tracking-tight text-slate-600">{{ product.name }}</h5>
+            </a>
+            <div class="mt-1 mb-3 flex items-center justify-between">
+                <p>
+                    <span class="text-[18px] font-bold text-slate-900">{{ product.price }}</span>
+                    <span class="text-[10px] text-slate-900 line-through">$699</span>
+                </p>
             </div>
+
+<div class="flex justify-center space-x-4">
+    {% include 'commons/addToCartButton.html' %}
+    {% include 'commons/addToWishList.html' %}
+</div>
         </div>
+    </div>
+{% endfor %}
 
-
-          {% endfor %}
       </div>
     </div>
   </div>

@@ -39,16 +39,16 @@ class CustomLoginForm(forms.Form):
 
 
 class UserRegistrationForm(forms.ModelForm):
-    name = forms.CharField(max_length=100, label="Name")
-    phone = forms.CharField(max_length=15, label="Phone Number")
+    name = forms.CharField(max_length=100)
+    phone = forms.CharField(max_length=15)
     email = forms.EmailField(label="Email")
-    password = forms.CharField(widget=forms.PasswordInput, label="Password")
-    confirm_password = forms.CharField(widget=forms.PasswordInput, label="Confirm Password")
-    terms = forms.BooleanField(required=True, label="I agree to the Terms and Privacy Policy")
+    password = forms.CharField(widget=forms.PasswordInput)
+    confirm_password = forms.CharField(widget=forms.PasswordInput)
+    terms = forms.BooleanField(required=True)
 
     class Meta:
         model = CustomUser
-        fields = ['name', 'phone', 'email', 'password']
+        fields = ['name', 'phone', 'email', 'password','confirm_password']
 
     def clean(self):
         cleaned_data = super().clean()

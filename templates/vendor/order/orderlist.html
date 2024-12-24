@@ -1,17 +1,7 @@
 {% extends 'vendor/main/base.html' %}
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Order List</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-50 min-h-screen text-gray-800">
   {% block content %}
   <div class="p-10">
-
 
   <!-- Header -->
   <div class="flex flex-col sm:flex-row justify-between items-center mb-4 ">
@@ -25,10 +15,9 @@
   <!-- Filters -->
   <div class="flex flex-wrap space-x-4 mb-4">
     <button class="text-teal-700 border-b-4 border-teal-700 pb-1 mb-2 sm:mb-0" onclick="filterOrders('ALL')">All</button>
-    <button class="text-gray-500 hover:text-teal-700 mb-2 sm:mb-0" onclick="filterOrders('CANCELED')">Canceled</button>
-    <button class="text-gray-500 hover:text-teal-700 mb-2 sm:mb-0" onclick="filterOrders('COMPLETE')">Completed</button>
+    <button class="text-gray-500 hover:text-teal-700 mb-2 sm:mb-0" onclick="filterOrders('CANCELLED')">Canceled</button>
+    <button class="text-gray-500 hover:text-teal-700 mb-2 sm:mb-0" onclick="filterOrders('DELIVERED')">Completed</button>
     <button class="text-gray-500 hover:text-teal-700 mb-2 sm:mb-0" onclick="filterOrders('PENDING')">Pending</button>
-    <button class="text-gray-500 hover:text-teal-700 mb-2 sm:mb-0" onclick="filterOrders('REJECTED')">Rejected</button>
   </div>
 
   <!-- Search -->
@@ -44,13 +33,38 @@
       <thead>
         <tr class="bg-gray-100 text-left text-sm">
           <th class="p-4">Order ID</th>
+            <th class="p-4">Order ID</th>
           <th class="p-4">Total</th>
           <th class="p-4">Status</th>
           <th class="p-4">Date</th>
+          <th class="p-4">Actions</th>
         </tr>
       </thead>
       <tbody id="ordersTable">
-        <!-- Orders will be dynamically added here -->
+        {% for order in orders %}
+
+        <tr>
+          <td class="p-4">{{ order.id }}</td>
+          <td class="p-4">${{ order.get_total_cost }}</td>
+          <td class="p-4">{{ order.get_status_display }}</td>
+          <td class="p-4">{{ order.created_at|date:"Y-m-d H:i" }}</td>
+          <td class="p-4">
+            <form method="post" action="{% url 'vendor:update_order_status' order.id %}" class="inline">
+              {% csrf_token %}
+              <select name="status" onchange="this.form.submit()">
+                <option value="pending" {% if order.status == 'pending' %}selected{% endif %}>Pending</option>
+                <option value="shipped" {% if order.status == 'shipped' %}selected{% endif %}>Shipped</option>
+                <option value="delivered" {% if order.status == 'delivered' %}selected{% endif %}>Delivered</option>
+                <option value="cancelled" {% if order.status == 'cancelled' %}selected{% endif %}>Cancelled</option>
+              </select>
+            </form>
+          <td>
+   <a href="{% url 'product:order-detail' order.id %}"> View</a>
+          </td>
+
+        </tr>
+
+        {% endfor %}
       </tbody>
     </table>
   </div>
@@ -59,11 +73,5 @@
   <div class="flex justify-center mt-4 space-x-2" id="pagination">
     <!-- Pagination buttons will be dynamically added here -->
   </div>
-</div>
-
-
- <script src="./orderlist.js"></script>
- {% endblock content %}
-</body>
-
-</html>
+</div
+  {% endblock content %}

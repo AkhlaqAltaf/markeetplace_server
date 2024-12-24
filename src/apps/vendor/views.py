@@ -1,16 +1,16 @@
+from django.contrib import messages
 from django.contrib.auth import login
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import JsonResponse
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import get_object_or_404
 # Converting Title into Slug
 from django.utils.text import slugify
 from django.views import View
 from django.views.generic import CreateView
 
-from src.apps.product.forms import MediaForm, ProductForm
-from src.apps.product.models import Category, CountryOrigin, Product, SubCategory, Tag, Media
-from src.apps.vendor.forms import  VendorForm
+from src.apps.product.forms import ProductForm
+from src.apps.product.models import Category, CountryOrigin, SubCategory, Tag, Media
+from src.apps.vendor.forms import VendorForm
 from src.apps.vendor.models import Vendor
+from .mixins import CheckVendorMixin
 
 
 # Create your views here.
@@ -28,7 +28,7 @@ class BecomeVendorView(View):
             vendor_form = VendorForm()
             return render(request, self.template_name, {'form': vendor_form})
         else:
-            return redirect('accounts:login')
+            return redirect('/accounts')
 
     def post(self, request):
         vendor_form = VendorForm(request.POST, request.FILES)
@@ -50,19 +50,15 @@ class BecomeVendorView(View):
         return render(request, self.template_name, {'form': vendor_form})
 
 
-class CheckVendorMixin:
-    """
-    Mixin to check if the user is a vendor. Redirect to become-vendor if not.
-    """
-    def dispatch(self, request, *args, **kwargs):
-        if not hasattr(request.user, 'vendor'):
-            return redirect('vendor:become-vendor')
-        return super().dispatch(request, *args, **kwargs)
+class VendorSiteView(CheckVendorMixin,View):
+    template_name = 'vendor/Analytics.html'
+    def get(self,request):
+        return  render(request, self.template_name)
 
 
-class VendorAdminView(LoginRequiredMixin, CheckVendorMixin, View):
-    template_name = 'vendor/vendor_admin.html'
-
+class VendorAdminView(CheckVendorMixin, View):
+    """This VIEW is For Vendor Admin Side"""
+    template_name = 'vendor/Analytics.html'
     def get(self, request, *args, **kwargs):
         vendor = request.user.vendor
         products = vendor.products.all()
@@ -84,7 +80,9 @@ class VendorAdminView(LoginRequiredMixin, CheckVendorMixin, View):
         return render(request, self.template_name, {'vendor': vendor, 'products': products, 'orders': orders})
 
 
-class EditVendorView(LoginRequiredMixin, CheckVendorMixin, View):
+
+
+class EditVendorView(CheckVendorMixin, View):
     template_name = 'vendor/edit_vendor.html'
 
     def get(self, request, *args, **kwargs):
@@ -124,13 +122,28 @@ class VendorDetailView(View):
     
     
     
-    
+class UpdateOrderStatusView(View):
+    def post(self, request, order_id):
+        try:
+            order = Order.objects.get(id=order_id)
+        except Order.DoesNotExist:
+            return HttpResponseBadRequest("Order does not exist.")
+
+        new_status = request.POST.get('status')
+        if new_status not in dict(Order.STATUS_CHOICES):
+            return HttpResponseBadRequest("Invalid status.")
+
+        order.status = new_status
+        order.save()
+
+        return JsonResponse({'success': True, 'new_status': order.status})
     
     
 class AddProductView(CreateView):
     
     def get(self,request):     
         form = ProductForm()
+
         categories = Category.objects.all()
         origins = CountryOrigin.objects.all()
         return render(request, 'vendor/add_product/addproduct.html', context={"categories": categories, 'origins': origins,'form': form})
@@ -147,7 +160,7 @@ class AddProductView(CreateView):
                     media = Media.objects.create(product=product, file=file)
 
             print("VALIDATED FORM")
-            return redirect('core:home')  # Or the appropriate page
+            return redirect('vendor:vendor')  # Or the appropriate page
 
         else:
             print("AGAIN PASS FORM ..",form.errors)
@@ -175,7 +188,7 @@ class CreateProduct(View):
     def post(self, request, *args, **kwargs):
         data = request.POST
         images = request.FILES.getlist('images')
-        
+
         category_name = data.get("category")
         category_obj = Category.objects.filter(name=category_name).first()
         sub_category_obj = SubCategory.objects.filter(name=data.get("sub_category"), category=category_obj).first()
@@ -287,8 +300,8 @@ def Register(request):
     return render(request, 'vendor/registration/registration2.html')
 
 
-def home(request):
-    return render(request, 'vendor/main/base.html')
+
+
 def storeAnalytics(request):
     return render(request, 'vendor/Analytics.html')
 def OrderList(request):
@@ -323,3 +336,181 @@ def CustomerList(request):
     return render(request, 'vendor/customers/customerlist.html')
 def CustomerDetails(request):
     return render(request, 'vendor/customers/customerdetail.html')
+
+
+from django.contrib.auth.decorators import login_required
+
+@login_required
+def add_product(request):
+    if request.method == 'POST':
+        form = ProductForm(request.POST, request.FILES)
+
+        if form.is_valid():
+            product = form.save(commit=False) # Because we have not given vendor yet
+            product.vendor = request.user.vendor
+            product.slug = slugify(product.title)
+            product.save() #finally save
+
+            return redirect('vendor:vendor-admin')
+
+    else:
+        form = ProductForm
+
+    return render(request, 'vendor/add_product.html', {'form': form})
+
+
+from django.http import JsonResponse, HttpResponseBadRequest
+from src.apps.product.models import Order, Product
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views import View
+
+class RemoveProductView(View):
+    def post(self, request, product_id):
+        # Get the product or return a 404 if it doesn't exist
+        product = get_object_or_404(Product, id=product_id, vendor=request.user.vendor)
+        # Delete the product
+        product.delete()
+        # Add a success message
+        messages.success(request, 'Product removed successfully.')
+
+        # Redirect to the product list page
+        return redirect('vendor:vendor_product_list')
+class VendorProductListView(View):
+    def get(self, request):
+        # Get products associated with the current vendor
+        products = Product.objects.filter(vendor=request.user.vendor)
+        print("PRODUCTS",products)
+        return render(request, 'vendor/products/productlist.html', {'products': products})
+# class EditProductView(View):
+#     def get(self, request, product_id):
+#         product = get_object_or_404(Product, id=product_id)
+#         form = ProductForm(instance=product)
+#         return render(request, 'vendor/products/edit_product.html', {'form': form})
+#
+#     def post(self, request, product_id):
+#         product = get_object_or_404(Product, id=product_id)
+#         form = ProductForm(request.POST, instance=product)
+#
+#         if form.is_valid():
+#             form.save()
+#             return redirect('vendor_product_list')
+#         else:
+#             return render(request, 'vendor/products/edit_product.html', {'form': form})
+#
+class OrderListView(LoginRequiredMixin, View):
+    def get(self, request):
+        # Get all products for the vendor
+        vendor_products = Product.objects.filter(vendor=request.user.vendor)  # Assuming the user has a related Vendor
+        # Get all orders that contain the vendor's products
+        orders = Order.objects.filter(products__in=vendor_products).distinct()
+        print("ORDERS ,",orders)
+
+        return render(request, 'vendor/order/orderlist.html', {'orders': orders})
+
+class OrderFilterView(LoginRequiredMixin, View):
+    def get(self, request, status):
+        # Get all products for the vendor
+        vendor_products = Product.objects.filter(vendor=request.user.vendor)  # Assuming the user has a related Vendor
+        # Filter orders based on status
+        if status == 'ALL':
+            orders = Order.objects.filter(products__in=vendor_products).distinct()
+        else:
+            orders = Order.objects.filter(products__in=vendor_products, status=status.lower()).distinct()
+        return render(request, 'vendor/order/orderlist.html', {'orders': orders})
+
+class UpdateOrderStatusView(LoginRequiredMixin, View):
+    def post(self, request, order_id):
+        new_status = request.POST.get('status')
+        try:
+            order = Order.objects.get(id=order_id)
+            # Check if the order contains products from the vendor
+            vendor_products = Product.objects.filter(vendor=request.user.vendor)
+            if not order.products.filter(id__in=vendor_products).exists():
+                messages.error(request, 'Product not found')
+                return HttpResponseBadRequest("You do not have permission to update this order.")
+
+            order.status = new_status
+            order.save()
+            messages.success(request, 'Your order has been updated.')
+            return redirect('vendor:orders')
+        except Order.DoesNotExist:
+            messages.success(request, 'Your order does not exist.')
+            return redirect("vendor:orders")
+
+
+
+
+
+# CREATING 3d MODEL
+
+
+import requests
+import base64
+from django.shortcuts import render, redirect
+from django.http import HttpResponse
+from .models import ThreeDModel
+
+
+def list_models(request):
+    models = ThreeDModel.objects.all()
+    return render(request, 'vendor/3d/list_models.html', {'models': models})
+
+def create_model(request):
+    if request.method == 'POST':
+        image = request.FILES['image']
+        model = ThreeDModel(image=image)
+        model.save()
+
+        API_KEY = "msy_UHB6LVZqUdTmETLWZXlqNQ6tv9fF5ydQkrvP"
+        API_URL = "https://api.meshy.ai/openapi/v1/image-to-3d"
+        headers = {
+            "Authorization": f"Bearer {API_KEY}"
+        }
+
+        with open(model.image.path, "rb") as image_file:
+            base64_image = f"data:image/jpeg;base64,{base64.b64encode(image_file.read()).decode('utf-8')}"
+
+        payload = {
+            "image_url": base64_image,
+            "enable_pbr": True,
+            "should_remesh": True,
+            "should_texture": True
+        }
+
+        response = requests.post(API_URL, headers=headers, json=payload)
+        response.raise_for_status()
+        response_data = response.json()
+        print("response",response_data)
+        model.task_id = response_data['result']
+        model.save()
+
+        return redirect('vendor:list_models')
+    return render(request, 'vendor/3d/create_model.html')
+from django.utils import timezone
+
+def download_model(request, pk):
+    model = ThreeDModel.objects.get(pk=pk)
+    if model.downloaded or (timezone.now() - model.created_at).total_seconds() / 60 < 10:
+        return HttpResponse("You can't download this model yet.")
+    else:
+        API_KEY = "msy_UHB6LVZqUdTmETLWZXlqNQ6tv9fF5ydQkrvP"
+        API_URL = f"https://api.meshy.ai/openapi/v1/image-to-3d/{model.task_id}"
+        headers = {
+            "Authorization": f"Bearer {API_KEY}"
+        }
+
+        response = requests.get(API_URL, headers=headers)
+        response.raise_for_status()
+        response_data = response.json()
+
+        preview_model_url = response_data["model_urls"]["glb"]
+        preview_model_response = requests.get(preview_model_url)
+        preview_model_response.raise_for_status()
+
+        model.downloaded = True
+        model.save()
+        messages.success(request, "Model downloaded successfully.")
+
+        response = HttpResponse(preview_model_response.content, content_type='model/gltf-binary')
+        response['Content-Disposition'] = 'attachment; filename="model.glb"'
+        return response

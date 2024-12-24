@@ -30,7 +30,7 @@
         updateTagsInput();
     }
 
-    function updateTagsInput() {        
+    function updateTagsInput() {
         const tags = Array.from(tagStack.children).map(tagElement =>
             tagElement.querySelector("span").textContent
         );

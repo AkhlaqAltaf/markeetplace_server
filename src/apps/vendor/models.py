@@ -63,4 +63,11 @@ class Vendor(models.Model):
         return sum((item.product.price * item.quantity) for item in items)
 
 
-    
+class ThreeDModel(models.Model):
+    image = models.ImageField(upload_to='images/')
+    task_id = models.CharField(max_length=255, blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    downloaded = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"3D Model {self.id}"

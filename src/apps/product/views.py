@@ -1,13 +1,19 @@
+from symtable import Class
+
+from django.contrib import messages
 from django.views import View
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
 from django.urls import reverse_lazy
 from django.shortcuts import get_object_or_404, redirect, render
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseBadRequest
 
+from ..cart import cart
+from ..cart.cart import Cart
 from ..vendor.models import Vendor
 
-from .models import Category, CountryOrigin, Product, Media, SubCategory, Tag
+from .models import Category, CountryOrigin, Product, Media, SubCategory, Tag, WishListProduct, Order, OrderItem
 from .forms import ProductForm, SubCategoryForm
+from django.db.models import Q
 
 # List View for Products
 class ProductListView(ListView):
@@ -238,3 +244,222 @@ class GetSubCategory(View):
         data = [{"id": sub.pk, "name": sub.name} for sub in sub_categories]
 
         return JsonResponse({"subcategories": data})
+
+
+
+class ProductDetail3DView(DetailView):
+    model = Product
+    template_name = "products/product_detail/3d_model.html"
+    context_object_name = "product"
+
+    def get_context_data(self, **kwargs):
+        # Get the context from the superclass
+        context = super().get_context_data(**kwargs)
+
+        # Serialize all products to JSON format
+        products = Product.objects.all()
+        print(len(products))
+        products_json = serialize('json', products)
+
+        product = self.get_object()
+        reviews = product.reviews.all()  # Assuming a related name `reviews` for the Product-Review relationship
+        total_reviews = reviews.count()
+
+        # Calculate rating percentages
+        rating_distribution = {rating: 0 for rating in range(1, 6)}  # Initialize for ratings 1 to 5
+
+        for review in reviews:
+            print("REVIEW : ",review.rating)
+            rating_distribution[review.rating] += 1  # Assuming `rating` is an attribute of Review
+
+        rating_percentages = {
+            rating: (count / total_reviews) * 100 if total_reviews > 0 else 0
+            for rating, count in rating_distribution.items()
+        }
+        print(rating_percentages)
+        # Add data to context
+        context['rating_percentages'] = rating_percentages
+        context['total_reviews'] = total_reviews
+        # Add the JSON data to the context
+        context['products'] = products_json
+        return context
+
+
+
+class AddToCartView(View):
+
+    def get(self, request,id):
+        pass
+    def post(self, request, id,quantity):
+        product = get_object_or_404(Product, id=id)
+        print(product)
+
+        cart = Cart(request)
+        cart.add(product_id=product.id, quantity=quantity, update_quantity=False)
+        return  JsonResponse({'success': True})
+
+
+
+
+class AllProductsView(View):
+    def get(self, request):
+        products = Product.objects.all()
+        context = {'products': products}
+        return render(request, "products/all_products.html", context)
+
+class CategoryProductsView(View):
+    def get(self, request,id):
+        category = get_object_or_404(Category, id=id)
+        products = Product.objects.filter(category=category)
+        context = {'products': products}
+        return render(request, "products/all_products.html", context)
+
+
+def search(request):
+    query = request.GET.get('query', '') # second is default parameter which is empty
+    products = Product.objects.filter(Q(title__icontains=query) | Q(description__icontains=query))
+
+    return render(request, 'product/search.html', {'products':products, 'query': query})
+
+
+class WishListProductsCreateView(View):
+    def post(self, request, id):
+        user = request.user
+        # Get the product object
+        try:
+            product = Product.objects.get(id=id)
+        except Product.DoesNotExist:
+            return HttpResponseBadRequest("Product does not exist.")
+
+        # Check if the product is already in the user's wishlist
+        if not WishListProduct.objects.filter(user=user, products=product).exists():
+            # If not, create a new wishlist entry
+            wishlist, created = WishListProduct.objects.get_or_create(user=user)
+            wishlist.products.add(product)  # Add the product to the wishlist
+        messages.success(request, "Your action was successful!")
+
+        # Return a success response
+        return JsonResponse({'success': True})
+
+class WishListProductsView(View):
+    def get(self,request):
+        user = request.user
+        wishlists = WishListProduct.objects.filter(user=user)
+        products = [wishlist.products.all() for wishlist in wishlists]
+        print(products[0])
+        context = {'products':products[0]}
+
+        return render(request,'products/wishlist/wishlist.html',context)
+
+from django.contrib.auth.mixins import LoginRequiredMixin
+
+class RemoveFromWishlistView(LoginRequiredMixin, View):
+    def post(self, request, product_id):
+        wishlist = get_object_or_404(WishListProduct, user=request.user)
+        product = get_object_or_404(Product, id=product_id)
+
+        # Remove the product from the wishlist
+        wishlist.products.remove(product)
+        messages.success(request, "Your action was successful!")
+        return redirect('product:wishlist')
+
+
+class PlaceOrderView(View):
+    def post(self, request):
+        cart = Cart(request)  # Initialize the cart
+        user = request.user
+        address = request.POST.get('addressInput')
+        street = request.POST.get('street')
+        city = request.POST.get('city')
+        country = request.POST.get('country')
+        postal_code = request.POST.get('postalCode')
+        payment_method = request.POST.get('payment_method')  # Assuming you have a way to get this
+
+        # Validate the input
+        if not all([address, street, city, country, postal_code, payment_method]):
+            return HttpResponseBadRequest("All fields are required.")
+
+        # Create the order
+        order = Order.objects.create(
+            user=user,
+            address=address,
+            city=city,
+            country=country,
+            postal_code=postal_code,
+            payment_method=payment_method
+        )
+        order.save()
+        print("ORDER SAVED...........")
+        # Process each item in the cart
+        for product_id, item in cart.cart.items():
+            quantity = item['quantity']  # Get the quantity from the cart
+
+            try:
+                product = Product.objects.get(id=product_id)  # Get the product
+                if product.stock_quantity < quantity:
+                    return HttpResponseBadRequest(f"Not enough stock for product ID {product_id}. Available: {product.stock_quantity}")
+
+                # Create order item
+                order_item = OrderItem.objects.create(order=order, product=product, quantity=quantity)
+                order_item.save()
+                print("ORDER SAVED.......")
+                # Update the stock quantity
+                product.stock_quantity -= quantity
+                product.save()  # Save the updated product
+
+            except Product.DoesNotExist:
+                return HttpResponseBadRequest(f"Product with ID {product_id} does not exist.")
+
+        # Clear the cart after placing the order
+        cart.clear()  # Use the clear method from the Cart class
+        messages.success(request, "Your order was successful!")
+        return redirect('/')
+
+class OrderDetailView(View):
+    def get(self, request, id):
+        try:
+            order = Order.objects.get(id=id)
+        except Order.DoesNotExist:
+            messages.error(request, "Order does not exist.")
+            return HttpResponseBadRequest("Order does not exist or you do not have permission to view it.")
+
+        # Render a template with order details
+        return render(request, 'order/order_detail.html', {'order': order})
+
+
+
+from django.shortcuts import render, redirect
+from django.views import View
+from django.http import JsonResponse, HttpResponseBadRequest
+from .models import Order
+from django.contrib.auth.mixins import LoginRequiredMixin
+
+class UserOrderListView(LoginRequiredMixin, View):
+    def get(self, request):
+        # Get all orders for the logged-in user
+        orders = Order.objects.filter(user=request.user)
+        return render(request, 'order/order_list.html', {'orders': orders})
+
+class CancelOrderView(LoginRequiredMixin, View):
+    def post(self, request, order_id):
+        try:
+            order = Order.objects.get(id=order_id, user=request.user)
+            if order.status == 'pending':  # Allow cancellation only if the order is pending
+                order.status = 'cancelled'
+                order.save()
+                messages.success(request, "Your order has been cancelled.")
+                return redirect('product:user_order_list')
+            else:
+                messages.success(request, "Your order has been cancelled.")
+                return redirect('product:user_order_list')
+        except Order.DoesNotExist:
+            messages.error(request, "Your order does not exist.")
+            return redirect('product:user_order_list')
+
+
+
+class ProductSearchView(View):
+    def get(self, request):
+        query = request.GET.get('q', '')
+        products = Product.objects.filter(name__icontains=query)  # Adjust the field as necessary
+        return render(request, 'products/all_products.html', {'products': products, 'query': query})
