@@ -40,23 +40,39 @@
         <!-- Price and Discount Price -->
         <div>
           <label for="{{ form.currency.id_for_label }}" class="block text-sm font-medium mb-1">Currency</label>
-          <select name="currency" class="w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-orange-500">
+          <select id="{{ form.currency.id_for_label }}" name="currency" class="w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-orange-500">
             <option disabled selected>Select Currency</option>
             <option value="PKR">PKR</option>
             <option value="INR">INR</option>
             <option value="USD">USD</option>
           </select>
+
+              {% if form.currency.errors %}
+          <div class="text-red-500 text-sm mt-1">
+            {% for error in form.currency.errors %}
+              <p>{{ error }}</p>
+            {% endfor %}
+          </div>
+        {% endif %}
         </div>
 
         <div>
           <label for="{{ form.price.id_for_label }}" class="block text-sm font-medium mb-1">Price</label>
-          <input type="number" name="price" step="0.1"
+          <input id="{{ form.price.id_for_label }}" type="number" name="price" step="0.1"
             class="w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-orange-500">
+
+               {% if form.price.errors %}
+          <div class="text-red-500 text-sm mt-1">
+            {% for error in form.price.errors %}
+              <p>{{ error }}</p>
+            {% endfor %}
+          </div>
+        {% endif %}
         </div>
 
         <div>
           <label for="{{ form.discount_price.id_for_label }}" class="block text-sm font-medium mb-1">Discount Price</label>
-          <input type="number" name="discount_price" step="0.1"
+          <input id="{{ form.discount_price.id_for_label }}" type="number" name="discount_price" step="0.1"
             class="w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-orange-500">
         </div>
 
