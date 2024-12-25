@@ -1,3 +1,4 @@
+import json
 from django.contrib import messages
 from django.contrib.auth import login
 from django.shortcuts import get_object_or_404
@@ -5,12 +6,14 @@ from django.shortcuts import get_object_or_404
 from django.utils.text import slugify
 from django.views import View
 from django.views.generic import CreateView
-
+from datetime import datetime
 from src.apps.product.forms import ProductForm
 from src.apps.product.models import Category, CountryOrigin, SubCategory, Tag, Media
 from src.apps.vendor.forms import VendorForm
 from src.apps.vendor.models import Vendor
 from .mixins import CheckVendorMixin
+import base64
+from django.core.files.base import ContentFile
 
 
 # Create your views here.
@@ -137,18 +140,16 @@ class UpdateOrderStatusView(View):
         order.save()
 
         return JsonResponse({'success': True, 'new_status': order.status})
-    
+
+
     
 class AddProductView(CreateView):
     
     def get(self,request):     
         form = ProductForm()
-
         categories = Category.objects.all()
         origins = CountryOrigin.objects.all()
         return render(request, 'vendor/add_product/addproduct.html', context={"categories": categories, 'origins': origins,'form': form})
-
-
     def post(self,request):
         form = ProductForm(request.POST)
         print(request.POST.get('sub_category'))
@@ -156,19 +157,37 @@ class AddProductView(CreateView):
             product = form.save(commit=False)
             product.vendor = request.user.vendor
             product.save()
-            images = request.FILES.getlist('images')
-            if images:               
-                for file in images:  
-                    media = Media.objects.create(product=product, file=file)
-
+            images_data = request.POST.getlist('images')
+# Check if the list is not empty and parse it
+            if images_data:
+                images_data = json.loads(images_data[0])  # Parse the first item in the list
+            else:
+                images_data = []            
+            for image in images_data:
+                file = self.convert_base64_image(image)
+                if file:         
+                   media = Media.objects.create(product=product, file=file)
+                   
             print("VALIDATED FORM")
-            return redirect('vendor:vendor')  # Or the appropriate page
+            return redirect('vendor:add')  # Or the appropriate page
 
         else:
             print("AGAIN PASS FORM ..",form.errors)
             categories = Category.objects.all()
             origins = CountryOrigin.objects.all()
             return render(request, 'vendor/add_product/addproduct.html', context={"categories": categories, 'origins': origins,'form': form})
+
+    def convert_base64_image(self,base64_data):
+        data = next(iter(base64_data.values()))
+        if data.startswith("data:image"):
+            data = data.split(",")[1]  
+        # Decode the base64 string into binary data
+        file_data = base64.b64decode(data)
+        file_name = datetime.now()
+        content_file = ContentFile(file_data,name=f"{file_name}.jpg")
+        print(content_file)
+        return content_file
+
 
 
 
