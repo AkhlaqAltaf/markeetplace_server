@@ -22,8 +22,9 @@
 
     <!-- Main Header -->
     <header class="main-header">
+      <div class=" md:flex md:flex-row items-center">
       <h1>Store Analytics</h1>
-      <button class="sync-button">
+      <button class="sync-button md:ml-10">
         <svg
           width="20"
           height="20"
@@ -42,6 +43,7 @@
         </svg>
         <span>Sync Data</span>
       </button>
+    </div>
     </header>
 
     <div class="container">
@@ -300,7 +302,7 @@
             <canvas id="cost-breakdown-chart"></canvas>
           </div>
           <div class="cost-table">
-            <table>
+            <table class="responsive-table">
               <thead>
                 <tr>
                   <th>Top Channel</th>

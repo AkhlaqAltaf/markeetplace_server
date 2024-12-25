@@ -461,7 +461,6 @@ body {
 
 .sales-info {
   width: 81px;
-  text-align: left;
 }
 
 .sales-info h6 {
@@ -648,3 +647,134 @@ body {
   background-color: #f3f4f6;
   border-radius: 8px;
 }
+
+
+.product-item {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #ddd;
+    padding: 10px;
+  }
+
+  .product-info {
+    display: flex;
+    align-items: center;
+    flex: 1;
+  }
+
+  .product-image {
+    max-width: 100px;
+    margin-right: 15px;
+  }
+
+  .product-details h3,
+  .product-details p {
+    margin: 0;
+    font-size: 1rem;
+  }
+
+  .sales-info {
+    flex: 0 0 auto;
+    margin-left: auto;
+    text-align: left;
+    padding-left: 20px;
+  }
+
+  .rank-badge {
+    background-color: silver;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 10px;
+    font-size: 0.9rem;
+  }
+
+  /* Responsive Styles */
+  @media (max-width: 767px) {
+    .product-item {
+      flex-direction: column;
+      text-align: center;
+    }
+
+    .product-info {
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .product-image {
+      max-width: 100%;
+      margin-bottom: 10px;
+    }
+
+    .sales-info {
+      margin-top: 10px;
+    }
+
+    .rank-badge {
+      margin-top: 10px;
+    }
+  }
+
+  /* Additional responsiveness for very small devices */
+  @media (max-width: 480px) {
+    .product-details h3 {
+      font-size: 1.1rem;
+    }
+
+    .product-details p {
+      font-size: 0.9rem;
+    }
+    .sales-info {
+      margin-top: 10px;
+      margin: 0 auto;
+    }
+    .sales-info h6 {
+      font-size: 1.2rem;
+    }
+  }
+
+
+
+
+
+  /* Table Styles */
+   .responsive-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+  }
+
+  .responsive-table th, .responsive-table td {
+    padding: 5px;
+    text-align: center;
+  }
+
+  .channel-info {
+    display: flex;
+    align-items: center;;
+  }
+
+  .channel-info .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+  }
+
+  .strategy {
+    background-color: #073741;
+  }
+
+  .outsourcing {
+    background-color: #0B5D51;
+  }
+
+  .marketing {
+    background-color: #FF5722;
+  }
+
+  .others {
+    background-color: #9C27B0;
+  }
+
+  /* Responsive Styles *
