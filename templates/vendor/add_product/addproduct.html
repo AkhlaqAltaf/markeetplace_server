@@ -4,12 +4,11 @@
 <div id="page" class="bg-gray-50 p-6">
   <div class="max-w-4xl mx-auto bg-white shadow-md p-6 rounded-lg">
     <h1 class="text-xl font-semibold mb-4">Product Details</h1>
-    <!-- Form Start -->
-    <form id="productForm" method="POST"  enctype="multipart/form-data">
-      {% csrf_token %}
 
-             {#ERROR SECTION#}
-        {% if form.non_field_errors %}
+    <!-- Form Start -->
+    <form id="productForm" action="{% url 'vendor:add' %}" method="POST"  enctype="multipart/form-data">
+       {% csrf_token %}
+      {% if form.non_field_errors %}
         <div class="text-red-500 text-sm mt-1">
           {% for error in form.non_field_errors %}
             <p>{{ error }}</p>
@@ -17,17 +16,15 @@
         </div>
       {% endif %}
 
-
-      <div class="grid grid-cols-2 gap-6">
+      <div  class="grid grid-cols-2 gap-6">
         <!-- Product Name and Description -->
         <div>
-          <label  for="{{ form.name.id_for_label }}" class="block text-sm font-medium mb-1">Product Name</label>
-          <input id="{{ form.name.id_for_label }}" type="text" name="name"
+          <label  class="block text-sm font-medium mb-1">Product Name</label>
+          <input type="text" name="name"
             class="w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-orange-500"
           value="{{ form.name.value|default:"" }}"
           >
-
-             {% if form.name.errors %}
+                    {% if form.name.errors %}
           <div class="text-red-500 text-sm mt-1">
             {% for error in form.name.errors %}
               <p>{{ error }}</p>
@@ -36,18 +33,17 @@
         {% endif %}
         </div>
 
-
         <!-- Price and Discount Price -->
         <div>
-          <label for="{{ form.currency.id_for_label }}" class="block text-sm font-medium mb-1">Currency</label>
-          <select id="{{ form.currency.id_for_label }}" name="currency" class="w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-orange-500">
+          <label class="block text-sm font-medium mb-1">Currency</label>
+          <select name="currency" class="w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-orange-500">
             <option disabled selected>Select Currency</option>
             <option value="PKR">PKR</option>
             <option value="INR">INR</option>
             <option value="USD">USD</option>
           </select>
 
-              {% if form.currency.errors %}
+            {% if form.currency.errors %}
           <div class="text-red-500 text-sm mt-1">
             {% for error in form.currency.errors %}
               <p>{{ error }}</p>
@@ -57,13 +53,13 @@
         </div>
 
         <div>
-          <label for="{{ form.price.id_for_label }}" class="block text-sm font-medium mb-1">Price</label>
-          <input id="{{ form.price.id_for_label }}" type="number" name="price" step="0.1"
+          <label class="block text-sm font-medium mb-1">Price</label>
+          <input type="number" name="price" step="0.1"
             class="w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-orange-500"
-            value="{{ form.price.value|default:"" }}"
-          >
+                    value="{{ form.price.value|default:"" }}"
 
-               {% if form.price.errors %}
+          >
+                              {% if form.price.errors %}
           <div class="text-red-500 text-sm mt-1">
             {% for error in form.price.errors %}
               <p>{{ error }}</p>
@@ -73,16 +69,15 @@
         </div>
 
         <div>
-          <label for="{{ form.discount_price.id_for_label }}" class="block text-sm font-medium mb-1">Discount Price</label>
-          <input id="{{ form.discount_price.id_for_label }}" type="number" name="discount_price" step="0.1"
+          <label class="block text-sm font-medium mb-1">Discount Price</label>
+          <input type="number" name="discount_price" step="0.1"
             class="w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-orange-500"
-                      value="{{ form.discount_price.value|default:"" }}"
+                    value="{{ form.discount_price.value|default:"" }}"
 
           >
-
-               {% if form.price.errors %}
+                              {% if form.discount_price.errors %}
           <div class="text-red-500 text-sm mt-1">
-            {% for error in form.price.errors %}
+            {% for error in form.discount_price.errors %}
               <p>{{ error }}</p>
             {% endfor %}
           </div>
@@ -90,15 +85,15 @@
         </div>
 
         <div>
-          <label for="{{ form.sku.id_for_label }}" class="block text-sm font-medium mb-1">SKU</label>
-          <input id="{{ form.sku.id_for_label }}" type="number" name="sku"
+          <label class="block text-sm font-medium mb-1">SKU</label>
+          <input type="number" name="sku"
             class="w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-orange-500"
- value="{{ form.discount_price.value|default:"" }}"          >
+                    value="{{ form.sku.value|default:"" }}"
 
-
-               {% if form.price.errors %}
+          >
+                              {% if form.sku.errors %}
           <div class="text-red-500 text-sm mt-1">
-            {% for error in form.price.errors %}
+            {% for error in form.sku.errors %}
               <p>{{ error }}</p>
             {% endfor %}
           </div>
@@ -107,16 +102,17 @@
 
         <!-- Country of Origin and Currency -->
         <div>
-          <label for="{{ form.country_of_origin.id_for_label }}" class="block text-sm font-medium mb-1">Country Of Origin</label>
+          <label class="block text-sm font-medium mb-1">Country Of Origin</label>
           <select name="country_of_origin" class="w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-orange-500">
             <option value="" disabled selected>Select Country</option>
             {% for origin in origins %}
-            <option value="{{ origin.name }}">{{ origin.name }}</option>
+            <option value="{{ origin.id }}">{{ origin.name }}</option>
             {% endfor %}
           </select>
-                {% if form.price.errors %}
+
+                          {% if form.country_of_origin.errors %}
           <div class="text-red-500 text-sm mt-1">
-            {% for error in form.price.errors %}
+            {% for error in form.country_of_origin.errors %}
               <p>{{ error }}</p>
             {% endfor %}
           </div>
@@ -125,50 +121,36 @@
 
         <!-- Stock Quantity and SKU -->
         <div>
-          <label for="{{ form.stock_quantity.id_for_label }}" class="block text-sm font-medium mb-1">Stock Quantity</label>
-          <input id="{{ form.stock_quantity.id_for_label }}" type="number" name="stock_quantity"
+          <label class="block text-sm font-medium mb-1">Stock Quantity</label>
+          <input type="number" name="stock_quantity"
             class="w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-orange-500"
-       value="{{ form.discount_price.value|default:"" }}"
+                    value="{{ form.stock_quantity.value|default:"" }}"
+
           >
-              {% if form.price.errors %}
-          <div class="text-red-500 text-sm mt-1">
-            {% for error in form.price.errors %}
+
+
+            {% if form.stock_quantity.errors %}
+             <div class="text-red-500 text-sm mt-1">
+
+              {% for error in form.stock_quantity.errors %}
               <p>{{ error }}</p>
             {% endfor %}
           </div>
         {% endif %}
         </div>
-
-             <div>
-          <label for="{{ form.country_of_origin.id_for_label }}" class="block text-sm font-medium mb-1">Country Of Origin</label>
-          <select name="country_of_origin" class="w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-orange-500">
-            <option value="" disabled selected>Select Country</option>
-            {% for origin in origins %}
-            <option value="{{ origin.name }}">{{ origin.name }}</option>
-            {% endfor %}
-          </select>
-                     {% if form.price.errors %}
-          <div class="text-red-500 text-sm mt-1">
-            {% for error in form.price.errors %}
-              <p>{{ error }}</p>
-            {% endfor %}
-          </div>
-        {% endif %}
-        </div>
-
         <!-- Category and Sub Category -->
         <div>
           <label class="block text-sm font-medium mb-1">Product Category</label>
           <select name="category" id="categorySelect" class="w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-orange-500">
             <option value="" disabled selected>Select Category</option>
             {% for category in categories %}
-            <option value="{{ category.name }}">{{ category.name }}</option>
+            <option value="{{ category.id }}">{{ category.name }}</option>
             {% endfor %}
           </select>
 
-                {% if form.price.errors %}
+                          {% if form.category.errors %}
           <div class="text-red-500 text-sm mt-1">
-            {% for error in form.price.errors %}
+            {% for error in form.category.errors %}
               <p>{{ error }}</p>
             {% endfor %}
           </div>
@@ -176,52 +158,41 @@
         </div>
 
         <div>
-          <label class="block text-sm font-medium mb-1">Product Sub Category</label>
-          <select name="sub_category" id="subcategorySelect" class="w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-orange-500">
+          <label class="block text-sm font-medium mb-1">Sub Category</label>
+          <select name="sub_category" id="subcategorySelect"
+                  class="w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-orange-500">
+
             <option value="" disabled selected>Select Sub-Category</option>
           </select>
 
+            {% if form.sub_category.errors %}
+          <div class="text-red-500 text-sm mt-1">
+            {% for error in form.sub_category.errors %}
+              <p>{{ error }}</p>
+            {% endfor %}
+          </div>
+        {% endif %}
         </div>
 
-{#        <!-- Tags -->#}
-{#        <div>#}
-{#          <label class="block text-sm font-medium mb-1">Tags</label>#}
-{#          <div class="flex space-x-2">#}
-{#            <input type="text" id="tagInput"#}
-{#              class="flex-1 border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-[#0B5D51]"#}
-{#              placeholder="Enter a tag">#}
-{#            <button type="button" id="addTagButton"#}
-{#              class="px-4 py-2 bg-[#0B5D51] text-white rounded-lg font-semibold  focus:outline-none focus:ring-2">#}
-{#              Add#}
-{#            </button>#}
-{#          </div>#}
-{#        </div>#}
-{##}
-{#        <!-- Tags Stack -->#}
-{#        <div class="col-span-2 mt-2">#}
-{#          <div id="tagStack" class="flex flex-wrap gap-2"></div>#}
-{#        </div>#}
-{#        <input type="hidden" name="tags" id="tagsInput">#}
 
-        <!-- Description -->
         <div>
-          <label for="{{ form.description.id_for_label }}" class="block text-sm font-medium mb-1">Description</label>
-          <textarea id="{{ form.description.id_for_label }}" name="description"
+          <label class="block text-sm font-medium mb-1">Description</label>
+          <textarea name="description"
             class="w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-orange-500"
-           value="{{ form.discount_price.value|default:"" }}"
-          ></textarea>
+                    value="{{ form.name.value|default:"" }}"
 
+          ></textarea>
         </div>
+
+                        {% if form.description.errors %}
+          <div class="text-red-500 text-sm mt-1">
+            {% for error in form.description.errors %}
+              <p>{{ error }}</p>
+            {% endfor %}
+          </div>
+        {% endif %}
       </div>
 
-      <!-- Content -->
-{#      <div>#}
-{#        <label class="block text-sm font-medium mb-1">Content</label>#}
-{#        <textarea name="content" id="editor"#}
-{#          class="w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-orange-500"#}
-{#         value="{{ form.discount_price.value|default:"" }}"#}
-{#        ></textarea>#}
-{#      </div>#}
 
       <!-- Uploaded Images Stack -->
       <div id="imageStack" class="flex space-x-4 mt-6 overflow-x-auto"></div>
@@ -236,10 +207,18 @@
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                 d="M3 16l-1 5h19l-1-5m-4-4V3H8v9m5 7l1.4-1.6L21 20M8 3H7V5M17 3h-1v2M7 20h10M4 3l1 2 2 3M20 5l-1 2-2 3" />
             </svg>
-            <input type="file" name="images" id="uploadImages" multiple class="hidden">
+            <input type="file" name="images" id="uploadImages"  class="hidden" multiple accept="image/*">
             <p class="text-sm mt-2 text-gray-500">Upload Images</p>
           </label>
         </div>
+
+                            {% if form.media.errors %}
+          <div class="text-red-500 text-sm mt-1">
+            {% for error in form.media.errors %}
+              <p>{{ error }}</p>
+            {% endfor %}
+          </div>
+        {% endif %}
       </div>
 
       <!-- Submit Button -->
@@ -252,8 +231,5 @@
     <!-- Form End -->
   </div>
 </div>
-
-<script src="https://cdn.ckeditor.com/4.16.0/standard/ckeditor.js"></script>
 {% include "vendor/add_product/script.html" %}
 {% endblock content %}
-

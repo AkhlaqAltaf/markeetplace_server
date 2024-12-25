@@ -147,9 +147,11 @@ class AddProductView(CreateView):
         categories = Category.objects.all()
         origins = CountryOrigin.objects.all()
         return render(request, 'vendor/add_product/addproduct.html', context={"categories": categories, 'origins': origins,'form': form})
-    
+
+
     def post(self,request):
         form = ProductForm(request.POST)
+        print(request.POST.get('sub_category'))
         if form.is_valid():
             product = form.save(commit=False)
             product.vendor = request.user.vendor
@@ -164,7 +166,9 @@ class AddProductView(CreateView):
 
         else:
             print("AGAIN PASS FORM ..",form.errors)
-            return render(request, 'vendor/add_product/addproduct.html', {'form': form})
+            categories = Category.objects.all()
+            origins = CountryOrigin.objects.all()
+            return render(request, 'vendor/add_product/addproduct.html', context={"categories": categories, 'origins': origins,'form': form})
 
 
 
@@ -182,7 +186,7 @@ class CreateProduct(View):
     def get(self, request, *args, **kwargs):
         categories = Category.objects.all()
         origins = CountryOrigin.objects.all()
-        return render(request, "vendor/add_product/addproduct.html", context={"categories": categories, 'origins': origins})
+        return render(request, "vendor/add_product/addproduct.html.html", context={"categories": categories, 'origins': origins})
 
     # Handling POST request to create a product
     def post(self, request, *args, **kwargs):
@@ -278,10 +282,12 @@ class CreateProduct(View):
 
         # Return success message
         return JsonResponse({'success': True, 'message': 'Product created successfully!'})
-           
+
+
+
 class GetSubCategory(View):
     def get(self, request, category):
-        category_obj = Category.objects.filter(name=category).first()
+        category_obj = Category.objects.filter(id=category).first()
         if not category_obj:
             return JsonResponse({"error": "Category not found"}, status=404)
         sub_categories = SubCategory.objects.filter(category=category_obj)
@@ -290,7 +296,7 @@ class GetSubCategory(View):
 
         return JsonResponse({"subcategories": data})
 def addProductTest(request):
-    return render(request,template_name="vendor/add_product/addproduct.html")
+    return render(request,template_name="vendor/add_product/addproduct.html.html")
 
 
 
