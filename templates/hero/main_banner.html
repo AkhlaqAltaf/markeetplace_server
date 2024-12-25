@@ -12,7 +12,7 @@
         </div>
         <h1 class="text-[32px] md:text-[48px] font-[600]">{{ top_sale.name }}</h1>
         <p class="text-[16px] md:text-[18px]">
-            {{ top_sale.description }}
+            {{ top_sale.description|slice:"30" }}
         </p>
         <a href="{% url 'product:product-detail' top_sale.id %}" class="bg-[#073741] text-white font-[700] w-[120px] md:w-[150px] h-[50px] md:h-[70px] py-2 md:py-3 flex items-center justify-center">
           <span>Shop Now</span>

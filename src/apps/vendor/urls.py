@@ -33,9 +33,8 @@ urlpatterns = [
 
     # path('add_product_form/subcategory/<str:category>/',views.GetSubCategory.as_view(),name="subcategory"),
     # path('add_product_form/', views.AddProductView.as_view(),name="addproduct"),
-    
     # path('add_product_form/', CreateProduct.as_view(), name="addproduct"),
-    path('add-product/', views.add_product, name="add-product"),
+    # path('add-product/', views.add_product, name="add-product"),
     path('store-analytics/',views.storeAnalytics,name="store-analytics"),
     path('signup/',views.Register,name="signup"),
     path('create-product/',views.ProductAdd,name="create-product"),
