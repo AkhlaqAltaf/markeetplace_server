@@ -19,6 +19,8 @@
                                 />
                             {% endif %}
                         {% endfor %}
+
+
                     </div>
 
                     <!-- Main Image Section -->
@@ -48,23 +50,7 @@
                     {{ product.description }}
                 </p>
 
-{#                    {% for tag in product.tags.all %}#}
-{#                        {% with tag|lower as tag_lower %}#}
-{#                            {% if tag_lower == "new" %}#}
-{#                                <span class="border p-1 bg-[#37A398] text-white rounded-md">{{ tag }}</span>#}
-{#                            {% elif tag_lower == "hot" %}#}
-{#                                <span class="border p-1 bg-[#FF5733] text-white rounded-md">{{ tag }}</span>#}
-{#                            {% elif tag_lower == "sale" %}#}
-{#                                <span class="border p-1 bg-[#FFC300] text-[#073741] rounded-md">{{ tag }}</span>#}
-{#                            {% elif tag_lower == "featured" %}#}
-{#                                <span class="border p-1 bg-[#1F7A77] text-white rounded-md">{{ tag }}</span>#}
-{#                            {% elif tag_lower == "limited" %}#}
-{#                                <span class="border p-1 bg-[#CC0033] text-white rounded-md">{{ tag }}</span>#}
-{#                            {% else %}#}
-{#                                <span class="border p-1 bg-gray-300 text-black rounded-md">{{ tag }}</span>#}
-{#                            {% endif %}#}
-{#                        {% endwith %}#}
-{#                    {% endfor %}#}
+
                 </div>
             </div>
 
