@@ -7,7 +7,9 @@
 
     <!-- Form Start -->
     <form id="productForm" action="{% url 'vendor:add' %}" method="POST"  enctype="multipart/form-data">
+
        {% csrf_token %}
+
       {% if form.non_field_errors %}
         <div class="text-red-500 text-sm mt-1">
           {% for error in form.non_field_errors %}
