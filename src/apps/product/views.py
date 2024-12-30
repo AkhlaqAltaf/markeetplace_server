@@ -1,6 +1,7 @@
 from symtable import Class
 
 from django.contrib import messages
+from django.db.models import Min, Max
 from django.views import View
 from django.http import JsonResponse
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
@@ -309,12 +310,36 @@ class AllProductsView(View):
         # Get all unique categories
         categories = Category.objects.all()
 
-        # Define the price ranges (modify as necessary)
-        prices_range = {
-            'low': 'Under $50',
-            'medium': 'Under $100',
-            'high': 'Under $200',
-        }
+        # Get the minimum and maximum product prices and round them to the nearest integer
+        min_price = Product.objects.aggregate(Min('price'))['price__min']
+        max_price = Product.objects.aggregate(Max('price'))['price__max']
+
+        # Ensure the prices are whole numbers
+        if min_price is not None and max_price is not None:
+            min_price = round(min_price)
+            max_price = round(max_price)
+
+            # Calculate the range and step size dynamically
+            price_range_span = max_price - min_price
+            num_buckets = 5  # Start with 5 price ranges (can be adjusted based on product count)
+            
+            # If the price range is large, increase the number of buckets
+            if price_range_span > 500:
+                num_buckets = 10  # Use more buckets for large price ranges
+            elif price_range_span > 200:
+                num_buckets = 7  # Use 7 buckets for medium price ranges
+
+            price_step = round(price_range_span / num_buckets)  # Divide the price range into dynamic parts
+
+            # Create dynamic price ranges
+            prices_range = {}
+            for i in range(num_buckets):
+                upper_limit = min_price + (i + 1) * price_step
+                prices_range[f'bucket_{i + 1}'] = f'Under ${upper_limit}'
+            prices_range['high'] = f'Under ${max_price}'  # Ensure we have a final 'high' range
+
+        else:
+            prices_range = {}
 
         # Filter products based on category and price range
         products = Product.objects.all().select_related('category')
@@ -323,12 +348,11 @@ class AllProductsView(View):
             products = products.filter(category__name__in=filter_values)
 
         if price_filter:
-            if price_filter == 'low':
-                products = products.filter(price__lt=50)
-            elif price_filter == 'medium':
-                products = products.filter(price__lt=100)
-            elif price_filter == 'high':
-                products = products.filter(price__lt=200)
+            price_parts = price_filter.split('_')
+            if len(price_parts) == 2:
+                bucket_index = int(price_parts[1]) - 1
+                price_threshold = min_price + (bucket_index + 1) * price_step
+                products = products.filter(price__lt=price_threshold)
 
         # If the request is AJAX, return the filtered products in a partial response
         if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
@@ -338,7 +362,7 @@ class AllProductsView(View):
         context = {
             'products': products,
             'categories': categories,  # Pass the unique categories to the template
-            'prices_range': prices_range,  # Pass the price ranges to the template
+            'prices_range': prices_range,  # Pass the dynamic price ranges to the template
             'selected_price': price_filter  # Pass the selected price filter to highlight the active one
         }
         return render(request, "products/all_products.html", context)
