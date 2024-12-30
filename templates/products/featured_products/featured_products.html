@@ -1,84 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
 
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <title>Product Carousel</title>
+  <style>
+    .custom-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
 
-  <div class="mt-12 grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-12  gap-6 px-6 md:px-16">
-    <!-- Left Column -->
+    .product-card {
+      transform: translateY(0);
+      transition: all 0.3s ease;
+    }
 
-{% if top_sale6 %}
+    .product-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+    }
 
+    .image-hover-effect {
+      transition: transform 0.5s ease-in-out;
+    }
 
-    <div class="col-span-12 lg:col-span-4 md:w-full lg:col-span-4 bg-yellow-200 p-6 flex flex-col gap-6 h-auto">
-      <h6 class="text-red-500 text-sm text-center">{{ top_sale6.name }}</h6>
-      <h1 class="text-2xl md:text-4xl text-center font-semibold">{{ top_sale6.discount_price }} Discount</h1>
-      <p class="text-gray-600 text-center text-base">For all electr</p>
+    .image-hover-effect:hover {
+      transform: scale(1.1);
+    }
 
-      <div class="flex items-center justify-center">
-        <button class="bg-orange-500 text-white font-bold w-40 h-12 py-2 flex items-center justify-center gap-2">
-          <span>Shop Now</span>
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
-            <path fill-rule="evenodd" d="M10.293 14.707a1 1 0 010-1.414L12.586 11H4a1 1 0 110-2h8.586l-2.293-2.293a1 1 0 111.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
-          </svg>
-        </button>
-      </div>
-      <div>
-        <img src="../assets/Electronic.png" alt="Electronic" class="w-full md:w-auto md:mx-auto">
-      </div>
-    </div>
+    .nav-button {
+      opacity: 0.7;
+      transition: all 0.3s ease;
+    }
 
-{% endif %}
+    .nav-button:hover {
+      opacity: 1;
+      transform: scale(1.1);
+    }
 
-    <div class="col-span-12 md:col-span-12 lg:col-span-8 flex-col">
-      <div class="flex flex-col md:flex-row justify-between items-center mb-4">
-        <h3 class="text-lg font-semibold">Featured Products</h3>
-        <div class="flex flex-wrap gap-4 text-sm">
-          <a href="{% url 'product:all-product' %}" class="hover:underline hover:text-orange-500">All Products</a>
-            {% for category  in categories|slice:':4' %}
-          <a href="{% url 'product:category-product' category.id %}" class="hover:underline hover:text-orange-500">{{ category.name }}</a>
-{#          <a href="#" class="hover:underline hover:text-orange-500">Laptop</a>#}
-{#          <a href="#" class="hover:underline hover:text-orange-500">Headphone</a>#}
-{#          <a href="#" class="hover:underline hover:text-orange-500">TV</a>#}
-            {% endfor %}
-        </div>
-      </div>
+    .price-tag {
+      position: relative;
+      overflow: hidden;
+    }
 
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        <!-- Sample Product Card -->
+    .price-tag::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: #f97316;
+      transition: width 0.3s ease;
+    }
 
+    .product-card:hover .price-tag::after {
+      width: 100%;
+    }
 
-{% for product in products %}
-    <div class="group flex w-full max-w-xs flex-col overflow-hidden rounded-lg border border-gray-100 bg-white shadow-md h-[350px]">
-        <a  class="relative mx-3 mt-3 flex h-60 overflow-hidden rounded-xl" href="{% url 'product:product-detail' product.id %}">
-            {% with product.media.all|slice:":2" as media_list %}
-                {% if media_list|length > 0 %}
-                    <img class="peer absolute top-0 right-0 h-full w-full object-cover" src="{{ media_list.0.file.url }}" alt="product image" />
-                {% endif %}
-                {% if media_list|length > 1 %}
-                    <img class="peer absolute top-0 -right-96 h-full w-full object-cover transition-all delay-100 duration-1000 hover:right-0 peer-hover:right-0" src="{{ media_list.1.file.url }}" alt="product image" />
-                {% endif %}
-            {% endwith %}
-        </a>
-        <div class="mt-4 px-3 pb-3">
-            <a href="{% url 'product:product-detail' product.id %}">
-                <h5 class="text-[20px] tracking-tight text-slate-600">{{ product.name }}</h5>
+    @keyframes slide-up {
+      0% {
+          transform: translateY(50%);
+          opacity: 0;
+      }
+      100% {
+          transform: translateY(0);
+          opacity: 1;
+      }
+  }
+
+  .animate-slide-up {
+      animation: slide-up 0.5s ease-out;
+  }
+  </style>
+</head>
+
+<body class="bg-gray-50">
+  <div class="mt-12 flex flex-col gap-5 px-6 md:px-16 max-w-[1440px] mx-auto">
+    <h2
+      class="text-3xl font-bold text-center bg-gradient-to-r from-orange-600 to-red-600 text-transparent bg-clip-text">
+      Featured Products</h2>
+
+    <div class="relative">
+      <button
+        class="nav-button absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 z-10 bg-white rounded-full p-3 shadow-lg"
+        onclick="scrollProducts(-1)">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M15 18l-6-6 6-6" />
+        </svg>
+      </button>
+
+      <div id="productScrollContainer"
+        class="flex overflow-x-scroll custom-scrollbar gap-6 p-6 max-w-screen overflow-hidden">
+        <div class="flex gap-6">
+          {% for product in products %}
+          <div
+            class="product-card flex flex-col overflow-hidden rounded-xl border border-gray-200 bg-white shadow-lg h-[350px] min-w-[250px]">
+            <a class="relative mx-3 mt-3 flex h-60 overflow-hidden rounded-xl"
+              href="{% url 'product:product-detail' product.id %}">
+              {% with product.media.all|slice:":2" as media_list %}
+              {% if media_list|length > 0 %}
+              <img class="image-hover-effect absolute top-0 right-0 h-full w-full object-cover"
+                src="{{ media_list.0.file.url }}" alt="product image" />
+              {% endif %}
+              {% if media_list|length > 1 %}
+              <img
+                class="image-hover-effect absolute top-0 -right-96 h-full w-full object-cover transition-all delay-100 duration-1000 hover:right-0 peer-hover:right-0"
+                src="{{ media_list.1.file.url }}" alt="product image" />
+              {% endif %}
+              {% endwith %}
             </a>
-            <div class="mt-1 mb-3 flex items-center justify-between">
-                <p>
-                    <span class="text-[18px] font-bold text-slate-900">{{ product.price }}</span>
-                    <span class="text-[10px] text-slate-900 line-through">$699</span>
+            <div class="mt-4 px-4 pb-4">
+              <a href="{% url 'product:product-detail' product.id %}"
+                class="block hover:text-orange-500 transition-colors duration-300">
+                <h5 class="text-lg font-semibold text-gray-800 truncate">{{ product.name }}</h5>
+              </a>
+              <div class="mt-2 mb-4 flex items-center justify-between">
+                <p class="price-tag">
+                  <span class="text-xl font-bold text-orange-500">{{ product.price }}</span>
+                  <span class="ml-2 text-sm text-gray-400 line-through">$699</span>
                 </p>
+              </div>
+              <div class="flex justify-center space-x-4">
+                <button
+                  class="addToCartButton w-20 flex items-center justify-center rounded-md bg-[#0B5D51] px-3 py-2 text-center text-sm font-medium text-white hover:bg-[#073741] hover:text-white focus:outline-none focus:ring-4 focus:ring-blue-300 shadow-lg transition duration-300 ease-in-out transform hover:scale-105"
+                  data-product-id="{{ product.id }}" data-quantity="1">
+                  <i class="fa fa-shopping-cart"></i>
+                </button>
+                {% include 'commons/addToWishList.html' %}
+              </div>
             </div>
-
-<div class="flex justify-center space-x-4">
-    {% include 'commons/addToCartButton.html' %}
-    {% include 'commons/addToWishList.html' %}
-</div>
+          </div>
+          {% endfor %}
         </div>
-    </div>
-{% endfor %}
-
       </div>
+
+      <button
+        class="nav-button absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 z-10 bg-white rounded-full p-3 shadow-lg"
+        onclick="scrollProducts(1)">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M9 18l6-6-6-6" />
+        </svg>
+      </button>
     </div>
   </div>
 
+  <!-- Red Popup Modal (Move this outside product cards) -->
+  <div id="cartPopup" class="fixed inset-0 z-50 hidden bg-black bg-opacity-50 flex items-center justify-center">
+    <div class="bg-red-500 rounded-lg p-6 w-80 text-center shadow-lg animate-slide-up">
+      <div class="flex items-center justify-center mb-4">
+        <i class="fa fa-shopping-cart text-white text-5xl"></i>
+      </div>
+      <h2 class="text-lg font-semibold text-white">Product Added to Cart!</h2>
+      <p class="text-sm text-white mt-2">Your product has been successfully added to your shopping cart.</p>
+      <button id="popupClose"
+        class="mt-4 bg-white text-red-500 px-4 py-2 rounded-md shadow-md hover:bg-gray-200 focus:outline-none transition duration-300">
+        Close
+      </button>
+    </div>
+  </div>
+
+  <script>
+    const productContainer = document.getElementById("productScrollContainer");
+    const productCardWidth = 266; // 250px + 16px gap
+
+    function scrollProducts(direction) {
+      productContainer.scrollBy({
+        left: direction * productCardWidth,
+        behavior: "smooth"
+      });
+    }
+
+    document.querySelectorAll('.addToCartButton').forEach(function(button) {
+      button.addEventListener('click', function() {
+          const productId = button.getAttribute('data-product-id');  // Get product ID from the button
+          const quantity = button.getAttribute('data-quantity');  // Get quantity from the button
+
+          // Construct the URL for the AddToCartView
+          const url = `/product/addToCart/${productId}/${quantity}/`;
+
+          // Send the POST request using fetch
+          fetch(url, {
+              method: 'POST',  // Use POST method
+              headers: {
+                  'Content-Type': 'application/json',  // Send JSON data
+                  'X-CSRFToken': '{{ csrf_token }}',  // Include CSRF token for security
+              },
+              body: JSON.stringify({ 'product_id': productId, 'quantity': quantity })  // Request body
+          })
+          .then(response => response.json())
+          .then(data => {
+              if (data.success) {
+                  // Show red popup on success
+                  const popup = document.getElementById('cartPopup');
+                  popup.classList.remove('hidden');
+                  
+                  // Auto-close popup after 3 seconds
+                  setTimeout(() => {
+                      popup.classList.add('hidden');
+                  }, 3000);
+              } else {
+                  console.error('Error adding product to cart');
+              }
+          })
+          .catch(error => {
+              console.error('Error:', error);
+          });
+      });
+  });
+
+  // Close popup manually
+  document.getElementById('popupClose').addEventListener('click', function() {
+      document.getElementById('cartPopup').classList.add('hidden');
+  });
+  </script>
+</body>
 
 
-
+</html>

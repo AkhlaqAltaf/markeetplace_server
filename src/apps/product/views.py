@@ -336,7 +336,7 @@ class WishListProductsCreateView(View):
             # If not, create a new wishlist entry
             wishlist, created = WishListProduct.objects.get_or_create(user=user)
             wishlist.products.add(product)  # Add the product to the wishlist
-        messages.success(request, "Your action was successful!")
+        messages.success(request, "Product added to wish list!")
 
         # Return a success response
         return JsonResponse({'success': True})

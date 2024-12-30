@@ -6,7 +6,6 @@
 </button>
 
 <script>
-// Attach event listeners to all "Add to Wishlist" buttons dynamically
 document.querySelectorAll('.addToWishListButton').forEach(function(button) {
     button.addEventListener('click', function() {
         const productId = button.getAttribute('data-product-id');  // Get product ID from the button
