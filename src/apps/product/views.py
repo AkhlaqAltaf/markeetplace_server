@@ -2,6 +2,7 @@ from symtable import Class
 
 from django.contrib import messages
 from django.views import View
+from django.http import JsonResponse
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
 from django.urls import reverse_lazy
 from django.shortcuts import get_object_or_404, redirect, render
@@ -299,13 +300,49 @@ class AddToCartView(View):
         return  JsonResponse({'success': True})
 
 
-
-
 class AllProductsView(View):
     def get(self, request):
-        products = Product.objects.all()
-        context = {'products': products}
+        # Get filter values from request
+        filter_values = request.GET.getlist('filter')  # Multiple selected filters
+        price_filter = request.GET.get('price', None)
+
+        # Get all unique categories
+        categories = Category.objects.all()
+
+        # Define the price ranges (modify as necessary)
+        prices_range = {
+            'low': 'Under $50',
+            'medium': 'Under $100',
+            'high': 'Under $200',
+        }
+
+        # Filter products based on category and price range
+        products = Product.objects.all().select_related('category')
+
+        if filter_values:
+            products = products.filter(category__name__in=filter_values)
+
+        if price_filter:
+            if price_filter == 'low':
+                products = products.filter(price__lt=50)
+            elif price_filter == 'medium':
+                products = products.filter(price__lt=100)
+            elif price_filter == 'high':
+                products = products.filter(price__lt=200)
+
+        # If the request is AJAX, return the filtered products in a partial response
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return render(request, "products/includes/product_grid.html", {'products': products})
+
+        # Pass the filtered data to the full page render
+        context = {
+            'products': products,
+            'categories': categories,  # Pass the unique categories to the template
+            'prices_range': prices_range,  # Pass the price ranges to the template
+            'selected_price': price_filter  # Pass the selected price filter to highlight the active one
+        }
         return render(request, "products/all_products.html", context)
+
 
 class CategoryProductsView(View):
     def get(self, request,id):

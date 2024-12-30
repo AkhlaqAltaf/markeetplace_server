@@ -24,6 +24,8 @@ urlpatterns = [
     path('test/',views.addProductTest,name="add"),
     path('update_order_status/<int:order_id>/', UpdateOrderStatusView.as_view(),name='update_order_status'),
     path('add_product/subcategory/<str:category>/',views.GetSubCategory.as_view(),name="subcategory"),
+    path('add_bulk/subcategory/<str:category>/', views.GetSubCategory.as_view(), name="subcategory"),
+
     path('add_product/', views.AddProductView.as_view(),name="add"),
 
 
@@ -61,4 +63,5 @@ urlpatterns = [
     path('models/', views.list_models, name='list_models'),
     path('models/create/', views.create_model, name='create_model'),
     path('models/<pk>/download/', views.download_model, name='download_model'),
+    path('add_bulk/',views.AddBulkProductsView.as_view(),name='add_bulk')
               ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

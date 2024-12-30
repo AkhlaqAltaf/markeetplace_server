@@ -1,5 +1,3 @@
-{% extends 'vendor/main/base.html' %}
-
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -11,16 +9,13 @@
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
-    {% comment %} {% include "vendor/styles.css" %} {% endcomment %}
+    <link rel="stylesheet" href="styles.css" />
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
     />
   </head>
-  
   <body>
-    {% block content %}
-
     <!-- Main Header -->
     <header class="main-header">
       <h1>Store Analytics</h1>
@@ -171,7 +166,7 @@
                   <p>in Accessories</p>
                 </div>
               </div>
-              <div class="sales-info text-red">
+              <div class="sales-info">
                 <h6>13,153</h6>
                 <p>in sales</p>
               </div>
@@ -179,7 +174,6 @@
                 <span>#1</span>
               </div>
             </li>
-            
             <li class="product-item">
               <div class="product-info">
                 <img
@@ -355,8 +349,8 @@
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="salesRevenue.js"></script>
+    <script src="main.js"></script>
     <script src="costBreakdown.js"></script>
-    {% endblock %}
-
   </body>
 </html>
