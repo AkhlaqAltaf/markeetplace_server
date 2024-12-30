@@ -7,33 +7,44 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://kit.fontawesome.com/ac8aec1afa.js" crossorigin="anonymous"></script>
-    <title>Enhanced Sidebar</title>
+    <title>Responsive Sidebar</title>
     <style>
         /* Custom scrollbar for sidebar */
         .custom-scrollbar::-webkit-scrollbar {
             width: 6px;
         }
         .custom-scrollbar::-webkit-scrollbar-track {
-            background: rgba(255,255,255,0.1);
+            background: rgba(255, 255, 255, 0.1);
         }
         .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: rgba(255,255,255,0.3);
+            background: rgba(255, 255, 255, 0.3);
             border-radius: 3px;
         }
     </style>
 </head>
 <body class="bg-gray-100 font-sans">
     <div id="app" class="relative">
-        <div id="sidebarToggle" class="md:hidden fixed top-6 left-4 z-[60]">
-            <i id="menuIcon" class="fas fa-bars text-[#0B5D51] text-3xl"></i>
-        </div>
 
+        <!-- Mobile Navigation Bar -->
+        <div class="text-white flex items-center justify-between px-6 py-3 md:hidden">
+            <button id="sidebarToggle" class="text-[#073741] text-lg ml-auto">
+                <i id="menuIcon" class="fas fa-bars"></i>
+            </button>
+        </div>
+        
+
+        <!-- Sidebar -->
         <div id="sidebar" class="fixed top-0 left-0 transform -translate-x-full md:translate-x-0 
                                  md:h-full w-[280px] bg-[#0B5D51] text-white 
                                  flex flex-col items-start p-4 transition-transform 
                                  duration-500 ease-in-out shadow-2xl z-[50] h-screen 
                                  overflow-y-auto custom-scrollbar">
             
+            <div class="w-full flex justify-end mb-4 md:hidden">
+                <button id="sidebarClose" class="text-white text-lg focus:outline-none">
+                     <i class="fas fa-times"></i>
+                </button>
+            </div>
             <!-- Logo Section -->
             <div class="mt-4 mb-8 flex items-center justify-center w-full">
                 <a href="#" class="transition-transform hover:scale-105">
@@ -77,13 +88,13 @@
                            class="block px-4 py-2 hover:bg-white/20 transition-colors">
                             Product List
                         </a>
-                        <a href="{% url 'vendor:add'%}"
+                        <a href="{% url 'vendor:add_bulk'%}"
                            class="block px-4 py-2 hover:bg-white/20 transition-colors">
-                            Product Create
+                            Create Bulk
                         </a>
-                           <a href="{% url 'vendor:list_models'%}"
+                        <a href="{% url 'vendor:list_models'%}"
                            class="block px-4 py-2 hover:bg-white/20 transition-colors">
-                            3d Model
+                            3D Model
                         </a>
                     </div>
                 </div>
@@ -155,6 +166,19 @@
     </div>
 
     <script>
+        // Toggle Sidebar Visibility
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        const sidebar = document.getElementById('sidebar');
+        const menuIcon = document.getElementById('menuIcon');
+        const closeIcon = document.getElementById('closeIcon');
+
+        sidebarToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('-translate-x-full');
+            menuIcon.classList.toggle('hidden');
+            closeIcon.classList.toggle('hidden');
+        });
+
+        // Handle Dropdown Menus
         document.querySelectorAll('.dropdown-toggle').forEach(toggle => {
             toggle.addEventListener('click', () => {
                 const target = toggle.dataset.target;
@@ -167,7 +191,7 @@
                         const otherTarget = otherToggle.dataset.target;
                         const otherDropdown = document.getElementById(otherTarget);
                         const otherArrow = otherToggle.querySelector('.dropdown-arrow');
-                        
+
                         otherDropdown.classList.add('hidden');
                         otherArrow.classList.remove('rotate-90');
                         otherArrow.classList.add('rotate-0');
@@ -176,7 +200,7 @@
 
                 // Toggle the clicked dropdown
                 dropdown.classList.toggle('hidden');
-                
+
                 // Rotate arrow
                 if (dropdown.classList.contains('hidden')) {
                     arrow.classList.remove('rotate-90');
@@ -188,21 +212,16 @@
             });
         });
 
-        const sidebarToggle = document.getElementById('sidebarToggle');
-const sidebar = document.getElementById('sidebar');
-const menuIcon = document.getElementById('menuIcon');
 
-sidebarToggle.addEventListener('click', () => {
-    sidebar.classList.toggle('-translate-x-full');
-    // Change color based on sidebar state
-    if (sidebar.classList.contains('-translate-x-full')) {
-        menuIcon.classList.remove('text-white');
-        menuIcon.classList.add('text-[#0B5D51]');
-    } else {
-        menuIcon.classList.remove('text-[#0B5D51]');
-        menuIcon.classList.add('text-white');
-    }
-});
+        // Sidebar Close Button
+            const sidebarClose = document.getElementById('sidebarClose');
+
+            sidebarClose.addEventListener('click', () => {
+                sidebar.classList.add('-translate-x-full');
+                menuIcon.classList.remove('hidden');
+                closeIcon.classList.add('hidden');
+            });
+
     </script>
 </body>
 </html>

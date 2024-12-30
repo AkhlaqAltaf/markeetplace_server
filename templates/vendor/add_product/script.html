@@ -34,34 +34,7 @@
     // ========== Image Upload ==========
     const uploadImagesInput = document.getElementById("uploadImages");
     const imageStack = document.getElementById("imageStack");
-
-
-uploadImagesInput.addEventListener("change", (event) => {
-    const files = Array.from(event.target.files);
-
-    // Clear the image stack for new uploads
-    imageStack.innerHTML = "";
-
-    files.forEach((file) => {
-        const reader = new FileReader();
-
-        reader.onload = (e) => {
-            const imageDiv = document.createElement("div");
-            imageDiv.className = "relative w-24 h-24 flex-shrink-0";
-
-            const img = document.createElement("img");
-            img.src = e.target.result;
-            img.alt = file.name;
-            img.className = "w-full h-full object-cover rounded-lg";
-
-            imageDiv.appendChild(img);
-            imageStack.appendChild(imageDiv);
-        };
-
-        reader.readAsDataURL(file);
-    });
-});
-
+    const imagesInput = document.getElementById("imagesInput");
 
     const imageFiles = []; // Array to store files for submission
 
@@ -97,6 +70,9 @@ uploadImagesInput.addEventListener("change", (event) => {
                     if (index > -1) {
                         imageFiles.splice(index, 1);
                     }
+
+                    // Update the hidden input with the updated array of files
+                    updateImagesInput();
                 });
 
                 // Hover effects
@@ -118,58 +94,56 @@ uploadImagesInput.addEventListener("change", (event) => {
 
         // Clear input value for re-uploading same files
         event.target.value = "";
+
+        // Update the hidden input field initially
+        updateImagesInput();
     }
 
-    // ========== Form Submission ==========
-    // ========== Form Submission ========== 
-const productForm = document.getElementById("productForm");
+    // Update the hidden input field with the current array of files
+    function updateImagesInput() {
+    const filePromises = imageFiles.map((file) => {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
 
-{#productForm.addEventListener("submit", (e) => {#}
-{#    // Prevent default form submission#}
-{#    e.preventDefault();#}
-{##}
-{#    // Create FormData object#}
-{#    const formData = new FormData(productForm);#}
-{##}
-{#    // Clear any existing file inputs#}
-{#    formData.delete('images');#}
-{##}
-{#    // Append each file to the FormData#}
-{#    imageFiles.forEach(file => {#}
-{#        formData.append('images', file);#}
-{#    });#}
-{##}
-{#    // Send form data via AJAX#}
-{#    fetch(productForm.action, {#}
-{#        method: 'POST',#}
-{#        body: formData,#}
-{#        headers: {#}
-{#            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value#}
-{#        }#}
-{#    })#}
-{#    .then(response => response.json())#}
-{#    .then(data => {#}
-{#        // Handle successful submission#}
-{#        console.log('Success:', data);#}
-{#        window.location.reload();#}
-{#        // Reset form fields#}
-{#        productForm.reset(); // Reset all form fields (including input fields)#}
-{##}
-{#        // Clear image stack#}
-{#        imageStack.innerHTML = '';#}
-{##}
-{#        // Clear image files array#}
-{#        imageFiles.length = 0;#}
-{##}
-{#        // You can show a success message here or redirect to another page#}
-{#    })#}
-{#    .catch(error => {#}
-{#        // Handle errors#}
-{#        console.error('Error:', error);#}
-{#    });#}
-{#});#}
+            reader.onload = function (event) {
+                // The result is a base64 string
+                resolve({
+                    file: event.target.result, // Base64 encoded file
+                });
+            };
+
+            reader.onerror = function (error) {
+                reject(error);
+            };
+
+            // Read the file as a data URL (Base64 encoded string)
+            reader.readAsDataURL(file);
+        });
+    });
+
+    // Wait for all files to be processed and then set the input value
+    Promise.all(filePromises)
+        .then((fileArray) => {            
+            imagesInput.value = JSON.stringify(fileArray); // Set the value to the JSON string
+        })
+        .catch((error) => {
+            console.error('Error encoding file:', error);
+        });
+}
 
 
-    // Event Listeners
+    const form = document.getElementById("productForm");
+    form.addEventListener("submit", (e) => {
+        // e.preventDefault();
+        function logImagesData() {
+            const imagesData = imagesInput.value;
+            console.log(imagesData); // Parse and log the JSON data
+        }
+
+        logImagesData();
+
+    })
+
+    // Event listener for file input
     uploadImagesInput.addEventListener("change", handleImageUpload);
 </script>

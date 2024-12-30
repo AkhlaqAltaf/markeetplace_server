@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>Shop Page</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+  </head>
+  <body>
+    <div class="container">
+      <div class="shop-layout">
+        <!-- Sidebar (25%) -->
+        <button class="hamburger-menu" id="sidebarToggle">
+          <i class="fas fa-bars"></i>
+        </button>
+        <div class="sidebar" id="sidebar">
+          <div class="sidebar-header">
+            <h2 class="section-heading">FILTERS</h2>
+            <button class="close-sidebar" id="closeSidebar">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+          <h2 class="section-heading">CATEGORY</h2>
+          <div class="checkbox-group">
+            <label class="checkbox-item">
+              <input type="checkbox" data-category="Electronics and Devices" />
+              Electronics and Devices
+            </label>
+            <label class="checkbox-item">
+              <input type="checkbox" data-category="Computer Accessories" />
+              Computer Accessories
+            </label>
+            <label class="checkbox-item">
+              <input type="checkbox" data-category="SmartPhone" />
+              SmartPhone
+            </label>
+            <label class="checkbox-item">
+              <input type="checkbox" data-category="Headphone" />
+              Headphone
+            </label>
+            <label class="checkbox-item">
+              <input type="checkbox" data-category="Mobile Accessories" />
+              Mobile Accessories
+            </label>
+            <label class="checkbox-item">
+              <input type="checkbox" data-category="Gaming Console" />
+              Gaming Console
+            </label>
+            <label class="checkbox-item">
+              <input type="checkbox" data-category="Camera & Photo" />
+              Camera & Photo
+            </label>
+            <label class="checkbox-item">
+              <input type="checkbox" data-category="TV & Homes Appliances" />
+              TV & Homes Appliances
+            </label>
+            <label class="checkbox-item">
+              <input type="checkbox" data-category="Watchs & Accessories" />
+              Watchs & Accessories
+            </label>
+            <label class="checkbox-item">
+              <input type="checkbox" data-category="GPS & Navigation" />
+              GPS & Navigation
+            </label>
+            <label class="checkbox-item">
+              <input type="checkbox" data-category="Warable Technology" />
+              Warable Technology
+            </label>
+          </div>
+
+          <hr class="divider" />
+
+          <h2 class="section-heading">PRICE RANGE</h2>
+          <input type="range" class="price-range" min="0" max="10000" />
+          <div class="price-inputs">
+            <button class="price-input">Min price</button>
+            <button class="price-input">Max price</button>
+          </div>
+
+          <div class="checkbox-group">
+            <label class="checkbox-item">
+              <input type="checkbox" />
+              All Price
+            </label>
+            <label class="checkbox-item">
+              <input type="checkbox" />
+              Under $20
+            </label>
+            <label class="checkbox-item">
+              <input type="checkbox" />
+              $25 to $100
+            </label>
+            <label class="checkbox-item">
+              <input type="checkbox" />
+              $100 to $300
+            </label>
+            <label class="checkbox-item">
+              <input type="checkbox" />
+              $300 to $500
+            </label>
+            <label class="checkbox-item">
+              <input type="checkbox" />
+              $500 to $1,000
+            </label>
+            <label class="checkbox-item">
+              <input type="checkbox" />
+              $1,000 to $10,000
+            </label>
+          </div>
+
+          <hr class="divider" />
+
+          <h2 class="section-heading">POPULAR BRANDS</h2>
+          <div class="brands-grid">
+            <div class="brand-row">
+              <div class="brand-item">
+                <input type="checkbox" data-brand="Apple" />
+                <span>Apple</span>
+              </div>
+              <div class="brand-item">
+                <input type="checkbox" data-brand="Samsung" />
+                <span>Samsung</span>
+              </div>
+            </div>
+            <div class="brand-row">
+              <div class="brand-item">
+                <input type="checkbox" data-brand="Sony" />
+                <span>Sony</span>
+              </div>
+              <div class="brand-item">
+                <input type="checkbox" data-brand="Google" />
+                <span>Google</span>
+              </div>
+            </div>
+            <div class="brand-row">
+              <div class="brand-item">
+                <input type="checkbox" data-brand="Canon" />
+                <span>Canon</span>
+              </div>
+              <div class="brand-item">
+                <input type="checkbox" data-brand="Logitech" />
+                <span>Logitech</span>
+              </div>
+            </div>
+            <div class="brand-row">
+              <div class="brand-item">
+                <input type="checkbox" data-brand="Garmin" />
+                <span>Garmin</span>
+              </div>
+              <div class="brand-item">
+                <input type="checkbox" data-brand="Asus" />
+                <span>Asus</span>
+              </div>
+            </div>
+          </div>
+
+          <hr class="divider" />
+
+          <h2 class="section-heading">POPULAR TAG</h2>
+          <div class="tags-container">
+            <div class="tags-row">
+              <span class="tag">Game</span>
+              <span class="tag">iPhone</span>
+              <span class="tag">TV</span>
+              <span class="tag">Asus Laptops</span>
+            </div>
+            <div class="tags-row">
+              <span class="tag">Macbook</span>
+              <span class="tag">SSD</span>
+              <span class="tag">Graphics Card</span>
+            </div>
+            <div class="tags-row">
+              <span class="tag">Power Bank</span>
+              <span class="tag">Smart TV</span>
+              <span class="tag">Speaker</span>
+            </div>
+            <div class="tags-row">
+              <span class="tag">Tablet</span>
+              <span class="tag">Microwave</span>
+              <span class="tag">Samsung</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Main Content (75%) -->
+        <div class="main-content">
+          <div class="top-bar">
+            <div class="search-bar">
+              <input
+                type="text"
+                id="searchInput"
+                placeholder="Search for anything..."
+              />
+              <i class="fas fa-search"></i>
+            </div>
+            <div class="sort-by">
+              <h3>Sort by:</h3>
+              <select class="sort-dropdown" id="sortSelect">
+                <option value="popular">Most Popular</option>
+                <option value="priceAsc">Price: Low to High</option>
+                <option value="priceDesc">Price: High to Low</option>
+                <option value="nameAsc">Name: A to Z</option>
+                <option value="nameDesc">Name: Z to A</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="filters-bar">
+            <div class="active-filters">
+              <p>Active Filters:</p>
+              <div class="filter-tag">
+                Electronic Devices
+                <i class="fas fa-times"></i>
+              </div>
+              <div class="filter-tag">
+                5 Star Rating
+                <i class="fas fa-times"></i>
+              </div>
+            </div>
+            <div class="results-count">
+              <span id="totalProducts">0</span>
+              <span>Results found.</span>
+            </div>
+          </div>
+
+          <div class="products-grid" id="productsContainer"></div>
+
+          <div class="pagination">
+            <button class="nav-btn" id="prevPage">
+              <i class="fas fa-arrow-left"></i>
+            </button>
+            <div class="page-numbers" id="pageNumbers"></div>
+            <button class="nav-btn" id="nextPage">
+              <i class="fas fa-arrow-right"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="products.js"></script>
+    <script src="filters.js"></script>
+    <script src="sidebar.js"></script>
+  </body>
+</html>
