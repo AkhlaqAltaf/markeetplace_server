@@ -11,12 +11,13 @@
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
-    <!-- {% include "vendor/styles.css" %} -->
+    {% comment %} {% include "vendor/styles.css" %} {% endcomment %}
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
     />
   </head>
+  
   <body>
     {% block content %}
 
@@ -170,7 +171,7 @@
                   <p>in Accessories</p>
                 </div>
               </div>
-              <div class="sales-info">
+              <div class="sales-info text-red">
                 <h6>13,153</h6>
                 <p>in sales</p>
               </div>
@@ -178,6 +179,7 @@
                 <span>#1</span>
               </div>
             </li>
+            
             <li class="product-item">
               <div class="product-info">
                 <img

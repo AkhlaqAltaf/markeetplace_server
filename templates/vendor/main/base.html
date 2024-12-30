@@ -19,12 +19,12 @@
       <!-- Include Sidebar Partial -->
       {% include 'vendor/main/partials/sidebar.html' %}
 
-      <div class="ml-[280px] w-[75vw]">
-        <!-- Page content will be injected here -->
-        {% block content %}
-        {% endblock %}
-      </div>
-    </div>
+  <div class="ml-0 lg:ml-[280px] md:ml-[240px] w-full lg:w-[75vw]">
+    <!-- Page content will be injected here -->
+    {% block content %}
+    {% endblock %}
+</div>
+
 
     <!-- JavaScript for Dropdown and Sidebar Toggle -->
     <script>
