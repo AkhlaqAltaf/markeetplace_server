@@ -1,41 +1,96 @@
 {% extends 'core/base.html' %}
 
 {% block content %}
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        <!-- Sample Product Card -->
+    <form id="filters-form" method="get" action="{% url 'product:all-product' %}">
+      <!-- Filters Section -->
+      <div class="flex justify-center mb-6 space-x-4">
+          <!-- Category Checkboxes -->
+          <div class="flex flex-col space-y-2">
+              <h3 class="font-semibold text-lg">Categories</h3>
+              {% for category in categories %}
+                  <label>
+                      <input type="checkbox" name="filter" value="{{ category.name }}" class="filter-checkbox">
+                      {{ category.name }}
+                  </label>
+              {% endfor %}
+          </div>
 
-
-{% for product in products %}
-    <div class="group flex w-full max-w-xs flex-col overflow-hidden rounded-lg border border-gray-100 bg-white shadow-md h-[350px]">
-        <a class="relative mx-3 mt-3 flex h-60 overflow-hidden rounded-xl" href="{% url 'product:product-detail' product.id %}">
-            {% with product.media.all|slice:":2" as media_list %}
-                {% if media_list|length > 0 %}
-                    <img class="peer absolute top-0 right-0 h-full w-full object-cover" src="{{ media_list.0.file.url }}" alt="product image" />
-                {% endif %}
-                {% if media_list|length > 1 %}
-                    <img class="peer absolute top-0 -right-96 h-full w-full object-cover transition-all delay-100 duration-1000 hover:right-0 peer-hover:right-0" src="{{ media_list.1.file.url }}" alt="product image" />
-                {% endif %}
-            {% endwith %}
-        </a>
-        <div class="mt-4 px-3 pb-3">
-            <a href="{% url 'product:product-detail' product.id %}">
-                <h5 class="text-[20px] tracking-tight text-slate-600">{{ product.name }}</h5>
-            </a>
-            <div class="mt-1 mb-3 flex items-center justify-between">
-                <p>
-                    <span class="text-[18px] font-bold text-slate-900">{{ product.price }}</span>
-                    <span class="text-[10px] text-slate-900 line-through">$699</span>
-                </p>
-            </div>
-            <div class="flex justify-center space-x-4">
-    {% include 'commons/addToCartButton.html' %}
-    {% include 'commons/addToWishList.html' %}
-</div>
-        </div>
-    </div>
-{% endfor %}
-
+          <!-- Pricing Filter Section -->
+          <div class="flex flex-col space-y-2">
+              <h3 class="font-semibold text-lg">Price Ranges</h3>
+              {% for value, label in prices_range.items %}
+                  <label>
+                      <input type="checkbox" name="price" value="{{ value }}" class="price-checkbox">
+                      {{ label }}
+                  </label>
+              {% endfor %}
+          </div>
       </div>
 
+      <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 transition hidden">Apply Filters</button>
+    </form>
 
-{% endblock content %}
+    <!-- Product Grid Section -->
+    <div id="product-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
+        {% for product in products %}
+            <div class="group flex w-full max-w-xs flex-col overflow-hidden rounded-lg border border-gray-100 bg-white shadow-md h-[350px]">
+                <a class="relative mx-3 mt-3 flex h-60 overflow-hidden rounded-xl" href="{% url 'product:product-detail' product.id %}">
+                    {% with product.media.all|slice:":2" as media_list %}
+                        {% if media_list|length > 0 %}
+                            <img class="peer absolute top-0 right-0 h-full w-full object-cover" src="{{ media_list.0.file.url }}" alt="product image" />
+                        {% endif %}
+                        {% if media_list|length > 1 %}
+                            <img class="peer absolute top-0 -right-96 h-full w-full object-cover transition-all delay-100 duration-1000 hover:right-0 peer-hover:right-0" src="{{ media_list.1.file.url }}" alt="product image" />
+                        {% endif %}
+                    {% endwith %}
+                </a>
+                <div class="mt-4 px-3 pb-3">
+                    <a href="{% url 'product:product-detail' product.id %}">
+                        <h5 class="text-[20px] tracking-tight text-slate-600">{{ product.name }}</h5>
+                    </a>
+                    <div class="mt-1 mb-3 flex items-center justify-between">
+                        <p>
+                            <span class="text-[18px] font-bold text-slate-900">{{ product.price }}</span>
+                            <span class="text-[10px] text-slate-900 line-through">$699</span>
+                        </p>
+                    </div>
+                    <div class="flex justify-center space-x-4">
+                        {% include 'commons/addToCartButton.html' %}
+                        {% include 'commons/addToWishList.html' %}
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const form = document.getElementById("filters-form");
+
+            form.addEventListener("change", function (e) {
+                e.preventDefault();  // Prevent form submission
+
+                const formData = new FormData(form);  // Collect form data
+
+                // Send the data via AJAX
+                fetch("{% url 'product:all-product' %}", {
+                    method: "GET",
+                    headers: {
+                        "X-CSRFToken": "{{ csrf_token }}",
+                    },
+                    body: formData
+                })
+                .then(response => response.text())
+                .then(data => {
+                    // Update the product grid with the new filtered data
+                    document.getElementById("product-grid").innerHTML = data;
+                })
+                .catch(error => {
+                    console.error("Error:", error);
+                });
+            });
+        });
+    </script>
+{% endblock %}
