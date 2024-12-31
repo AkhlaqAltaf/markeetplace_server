@@ -1,6 +1,7 @@
 from symtable import Class
 
 from django.contrib import messages
+from django.db.models import Min, Max
 from django.views import View
 from django.http import JsonResponse
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
@@ -302,44 +303,68 @@ class AddToCartView(View):
 
 class AllProductsView(View):
     def get(self, request):
-        # Get filter values from request
-        filter_values = request.GET.getlist('filter')  # Multiple selected filters
-        price_filter = request.GET.get('price', None)
+        # Get filter values from the request (multiple selected filters)
+        filter_values = request.GET.getlist('filter')  # Categories selected via checkboxes
+        price_filter = request.GET.get('price', None)  # Single price range filter
 
-        # Get all unique categories
+        # Get all unique categories for the filter checkboxes
         categories = Category.objects.all()
 
-        # Define the price ranges (modify as necessary)
-        prices_range = {
-            'low': 'Under $50',
-            'medium': 'Under $100',
-            'high': 'Under $200',
-        }
+        # Get the minimum and maximum product prices
+        min_price = Product.objects.aggregate(Min('price'))['price__min']
+        max_price = Product.objects.aggregate(Max('price'))['price__max']
 
-        # Filter products based on category and price range
+        # Ensure the prices are whole numbers
+        if min_price is not None and max_price is not None:
+            min_price = round(min_price)
+            max_price = round(max_price)
+
+            # Calculate the range and step size dynamically based on the price span
+            price_range_span = max_price - min_price
+            num_buckets = 3  # Default to 5 price ranges (this can be adjusted)
+            
+            if price_range_span > 500:
+                num_buckets = 10  # More buckets for large price ranges
+            elif price_range_span > 200:
+                num_buckets = 7  # Use 7 buckets for medium price ranges
+
+            price_step = round(price_range_span / num_buckets)
+
+            # Create dynamic price ranges
+            prices_range = {}
+            for i in range(num_buckets):
+                upper_limit = min_price + (i + 1) * price_step
+                prices_range[f'bucket_{i + 1}'] = f'Under ${upper_limit}'
+            prices_range['high'] = f'Under ${max_price}'  # Final high range
+
+        else:
+            prices_range = {}
+
+        # Filter products based on selected categories
         products = Product.objects.all().select_related('category')
 
         if filter_values:
             products = products.filter(category__name__in=filter_values)
 
+        # Filter by price range if selected
         if price_filter:
-            if price_filter == 'low':
-                products = products.filter(price__lt=50)
-            elif price_filter == 'medium':
-                products = products.filter(price__lt=100)
-            elif price_filter == 'high':
-                products = products.filter(price__lt=200)
+            price_parts = price_filter.split('_')
+            if len(price_parts) == 2:
+                bucket_index = int(price_parts[1]) - 1
+                price_threshold = min_price + (bucket_index + 1) * price_step
+                products = products.filter(price__lt=price_threshold)
 
-        # If the request is AJAX, return the filtered products in a partial response
+        # Check if the request is an AJAX request
         if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
             return render(request, "products/includes/product_grid.html", {'products': products})
 
         # Pass the filtered data to the full page render
         context = {
             'products': products,
-            'categories': categories,  # Pass the unique categories to the template
-            'prices_range': prices_range,  # Pass the price ranges to the template
-            'selected_price': price_filter  # Pass the selected price filter to highlight the active one
+            'categories': categories,  # Pass all categories for the filter checkboxes
+            'prices_range': prices_range,  # Dynamic price ranges
+            'selected_filters': filter_values,  # Keep track of selected categories
+            'selected_price': price_filter  # Keep track of the selected price range
         }
         return render(request, "products/all_products.html", context)
 
