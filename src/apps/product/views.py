@@ -321,7 +321,7 @@ class AllProductsView(View):
 
             # Calculate the range and step size dynamically based on the price span
             price_range_span = max_price - min_price
-            num_buckets = 5  # Default to 5 price ranges (this can be adjusted)
+            num_buckets = 3  # Default to 5 price ranges (this can be adjusted)
             
             if price_range_span > 500:
                 num_buckets = 10  # More buckets for large price ranges
