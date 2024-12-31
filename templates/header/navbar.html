@@ -12,66 +12,58 @@
         </form>
 
         <div class="flex items-center justify-center gap-4 text-white">
-            <a href="{% url 'cart:cart' %}"> <i class="fa fa-shopping-cart"></i>{% if cart %}({{cart|length}}){% endif %}</a>
-            <a href="{% url 'product:wish-list' %}"><i class="fa fa-heart"></i> </a>
-
+            <a href="{% url 'cart:cart' %}"> <i class="fa fa-shopping-cart text-2xl transition-transform transform hover:scale-225 hover:text-green-700 hover:shadow-lg"></i>{% if cart %}({{cart|length}}){% endif %}</a>
+            <a href="{% url 'product:wish-list' %}">
+                <i class="fa fa-heart text-2xl transition-transform transform hover:scale-225 hover:text-red-700 hover:shadow-lg"></i> </a>
 
             {% if request.user.vendor %}
-
                 <div class="navbar-item has-dropdown is-hoverable">
-                    <a class="navbar-link is-capitalized">
-                        <i class="fa fa-user"></i>
+                    <a class="navbar-link is-capitalized custom-user-icon">
+                        <i class="fa fa-user text-2xl mr-3 transition-transform transform hover:scale-225 hover:text-blue-700 hover:shadow-lg"></i>
                         {{ request.user.vendor.name }}
                     </a>
 
-                    <div class="navbar-dropdown">
+                    <div class="navbar-dropdown custom-dropdown">
                         {% if request.user.vendor.verification_status %}
                         <a class="navbar-item" href="{% url 'vendor:vendor' %}">
                            Vendor Side
                         </a>
-                            {% else %}
-                                <p class="navbar-item">
+                        {% else %}
+                        <p class="navbar-item">
                            Wait For Verification
                         </p>
-                            {% endif %}
+                        {% endif %}
 
                         <hr class="navbar-divider">
                         <a class="navbar-item" href="{% url 'accounts:logout' %}">
-                            Logout
-                        </a>
+@@ -42,21 +41,20 @@
                     </div>
                 </div>
 
-
             {% elif request.user.is_authenticated %}
-                <div class="navbar-item has-dropdown is-hoverable" style="color: white">
-                    <a class="navbar-link is-capitalized">
-                          <i class="fa fa-user"></i>
+                <div class="navbar-item has-dropdown is-hoverable">
+                    <a class="navbar-link is-capitalized custom-user-icon">
+                        <i class="fa fa-user text-2xl mr-3 transition-transform transform hover:scale-225 hover:text-blue-700 hover:shadow-lg"></i>
                         {{ request.user.name }}
                     </a>
 
-                    <div class="navbar-dropdown">
+                    <div class="navbar-dropdown custom-dropdown">
                         <a class="navbar-item" href="#">
                             Profile
                         </a>
-                          <a class="navbar-item" href="{% url 'product:user_order_list' %}">
+                        <a class="navbar-item" href="{% url 'product:user_order_list' %}">
                            My Orders
-                          </a>
+                        </a>
                         <a class="navbar-item" href="{% url 'vendor:become-vendor' %}">
                             Become Vendor
                         </a>
-                        <hr class="navbar-divider">
-                        <a class="navbar-item" href="{% url 'accounts:logout' %}">
-                            Logout
-                        </a>
+@@ -67,16 +65,60 @@
                     </div>
                 </div>
 
-
-
             {% else %}
                 <a href="{% url 'accounts:accounts' %}">
-                    <i class="fa fa-user"></i>
+                    <i class="fa fa-user text-2xl transition-transform transform hover:scale-225 hover:text-blue-700 hover:shadow-lg"></i>
                 </a>
             {% endif %}
         </div>
@@ -80,3 +72,46 @@
         <i class="fa fa-bars text-xl"></i>
     </button>
 </nav>
+<style>
+    .custom-user-icon i {
+        color: white;
+        transition: color 0.1s, transform 0.3s;
+    }
+    
+    .custom-user-icon i:hover {
+        color: #1E90FF; 
+        transform: scale(1.25);
+    }
+    
+    .custom-user-icon {
+        color: white;
+    }
+    
+    .custom-user-icon:hover {
+        color:rgb(0, 0, 0); 
+    }
+    .custom-dropdown {
+        background-color: #073741;
+        border: 1px solid #1E90FF;
+        border-radius: 8px;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        padding: 10px;
+        min-width: 200px;
+    }
+    .custom-dropdown .navbar-item {
+        color: white;
+        padding: 10px 15px;
+        transition: background-color 0.3s, color 0.3s;
+    }
+    
+    .custom-dropdown .navbar-item:hover {
+        background-color: #1E90FF;
+        color: white;
+        border-radius: 5px;
+    }
+    
+    .custom-dropdown .navbar-divider {
+        border-top: 1px solid #1E90FF;
+        margin: 10px 0;
+    }
+</style>

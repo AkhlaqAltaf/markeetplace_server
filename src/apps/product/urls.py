@@ -42,7 +42,7 @@ urlpatterns = [
                        name='remove_from_wishlist'),
 
     path ('add_product/',views.CreateProduct.as_view(),name="addproduct"),
-    path('add_product/getcategories/<str:category>/',views.GetSubCategory.as_view(),name='subcategories'),
+    path('add_product/subcategory/<str:category>/', views.GetSubCategory.as_view(), name='subcategories'),
     path('order-detail/<int:id>/',views.OrderDetailView.as_view(),name='order-detail'),
     # Media (Product media upload)
     # path('media/upload/', views.MediaCreateView.as_view(), name='media-upload'),

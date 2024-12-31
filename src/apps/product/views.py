@@ -237,14 +237,14 @@ from django.core.serializers import serialize
         
 class GetSubCategory(View):
     def get(self, request, category):
+        print(f"Received category: {category}")  # Debug
         category_obj = Category.objects.filter(name=category).first()
         if not category_obj:
             return JsonResponse({"error": "Category not found"}, status=404)
 
         sub_categories = SubCategory.objects.filter(category=category_obj)
-        # Simplify the response to include only id and name
+        print(f"Subcategories: {sub_categories}")  # Debug
         data = [{"id": sub.pk, "name": sub.name} for sub in sub_categories]
-
         return JsonResponse({"subcategories": data})
 
 

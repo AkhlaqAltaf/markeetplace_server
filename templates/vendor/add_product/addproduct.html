@@ -164,14 +164,6 @@
           <select name="sub_category" id="subcategorySelect" class="w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-orange-500">
             <option value="" disabled selected>Select Sub-Category</option>
           </select>
-
-            {% if form.sub_category.errors %}
-          <div class="text-red-500 text-sm mt-1">
-            {% for error in form.sub_category.errors %}
-              <p>{{ error }}</p>
-            {% endfor %}
-          </div>
-        {% endif %}
         </div>
 
 
@@ -233,3 +225,36 @@
 </div>
 {% include "vendor/add_product/script.html" %}
 {% endblock content %}
+
+{% block script %}
+<script>
+document.getElementById('categorySelect').addEventListener('change', function() {
+    const categoryId = this.value; // Get the selected category ID
+    const subcategorySelect = document.getElementById('subcategorySelect');
+
+    // Clear existing subcategory options
+    subcategorySelect.innerHTML = '<option value="" disabled selected>Select Subcategory</option>';
+
+    // Make an AJAX request to fetch subcategories
+    fetch(`/add_product/subcategory/${categoryId}/`) // Adjust the URL to match your view
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            // Populate the subcategory dropdown
+            data.subcategories.forEach(subcategory => {
+                const option = document.createElement('option');
+                option.value = subcategory.id;
+                option.textContent = subcategory.name;
+                subcategorySelect.appendChild(option);
+            });
+        })
+        .catch(error => {
+            console.error('Error fetching subcategories:', error);
+        });
+});
+</script>
+{% endblock script %}
