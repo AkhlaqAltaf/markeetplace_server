@@ -3,7 +3,7 @@ from symtable import Class
 from django.contrib import messages
 from django.db.models import Min, Max
 from django.views import View
-from django.http import JsonResponse
+from django.http import HttpResponse, JsonResponse
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
 from django.urls import reverse_lazy
 from django.shortcuts import get_object_or_404, redirect, render
@@ -11,6 +11,7 @@ from django.http import JsonResponse, HttpResponseBadRequest
 from ..cart import cart
 from ..cart.cart import Cart
 from ..vendor.models import Vendor
+from django import forms
 
 from .models import Category, CountryOrigin, Product, Media, SubCategory, Tag, WishListProduct, Order, OrderItem
 from .forms import ProductForm, SubCategoryForm
@@ -525,3 +526,18 @@ class ProductSearchView(View):
         query = request.GET.get('q', '')
         products = Product.objects.filter(name__icontains=query)  # Adjust the field as necessary
         return render(request, 'products/all_products.html', {'products': products, 'query': query})
+
+class ForgotEmailForm(forms.Form):
+    email = forms.EmailField()
+
+def forgot_email_view(request):
+    if request.method == 'POST':
+        form = ForgotEmailForm(request.POST)
+        if form.is_valid():
+            email = form.cleaned_data['email']
+            # Perform the email processing logic here (e.g., send a reset email).
+            return HttpResponse(f"A reset email has been sent to {email}!")
+    else:
+        form = ForgotEmailForm()
+
+    return render(request, 'accounts/forgetEmail.html', {'form': form})

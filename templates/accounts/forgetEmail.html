@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <title>Forgot Email</title>
+</head>
+<body class="flex items-center justify-center min-h-screen bg-gray-100">
+  <div class="w-full max-w-md">
+    {% if user_logged_in %}
+      <!-- If user is logged in, show message and prevent access -->
+      <div class="bg-white shadow-md rounded-lg p-6 space-y-6">
+        <h2 class="text-center text-2xl font-semibold text-gray-700">Access Denied</h2>
+        <p class="text-center text-sm text-gray-600">You are already logged in and cannot access the Forgot Email page.</p>
+      </div>
+    {% else %}
+      {% if not verification_code_sent and not verification_successful %}
+        <!-- Email Form -->
+        <form method="post" class="bg-white shadow-md rounded-lg p-6 space-y-6">
+          {% csrf_token %}
+          <h2 class="text-center text-2xl font-semibold text-gray-700">Forgot Email</h2>
+          <p class="text-center text-sm text-gray-600">Enter your email address and we will send you a verification code.</p>
+          
+          <div>
+            <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              required
+              class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-0 focus:outline-none focus:border-gray-500 sm:text-sm"
+              placeholder="Enter your email"
+            />
+          </div>
+
+          <button
+            type="submit"
+            class="w-full py-2 px-4 text-white font-semibold rounded-md shadow-md"
+            style="background-color: #0B5D51;"
+          >
+            Send Mail
+          </button>
+        </form>
+      {% elif verification_successful %}
+        <!-- Set New Password Form -->
+        <div class="bg-white shadow-md rounded-lg p-6 space-y-6">
+          <h2 class="text-center text-2xl font-semibold text-gray-700">Set New Password</h2>
+          <p class="text-center text-sm text-gray-600">Please enter your new password and confirm it.</p>
+
+          <form method="post" class="space-y-4">
+            {% csrf_token %}
+
+            <div>
+              <label for="new_password" class="block text-sm font-medium text-gray-700">New Password</label>
+              <input
+                type="password"
+                id="new_password"
+                name="new_password"
+                required
+                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-0 focus:outline-none focus:border-gray-500 sm:text-sm"
+                placeholder="Enter your new password"
+              />
+            </div>
+
+            <div>
+              <label for="confirm_password" class="block text-sm font-medium text-gray-700">Confirm New Password</label>
+              <input
+                type="password"
+                id="confirm_password"
+                name="confirm_password"
+                required
+                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-0 focus:outline-none focus:border-gray-500 sm:text-sm"
+                placeholder="Confirm your new password"
+              />
+            </div>
+
+            <button
+              type="submit"
+              class="w-full py-2 px-4 text-white font-semibold rounded-md shadow-md"
+              style="background-color: #0B5D51;"
+            >
+              Set New Password
+            </button>
+          </form>
+        </div>
+      {% else %}
+        <!-- Verification Code Form -->
+        <div class="bg-white shadow-md rounded-lg p-6 space-y-6">
+          <h2 class="text-center text-2xl font-semibold text-gray-700">Enter Verification Code</h2>
+          <p class="text-center text-sm text-gray-600">Please enter the verification code we sent to your email.</p>
+
+          <form method="post" class="space-y-4">
+            {% csrf_token %}
+            
+            <div>
+              <label for="verification_code" class="block text-sm font-medium text-gray-700">Verification Code</label>
+              <input
+                type="number"
+                id="verification_code"
+                name="verification_code"
+                required
+                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-0 focus:outline-none focus:border-gray-500 sm:text-sm"
+                placeholder="Enter the 6-digit code"
+              />
+            </div>
+            
+            <button
+              type="submit"
+              class="w-full py-2 px-4 text-white font-semibold rounded-md shadow-md"
+              style="background-color: #0B5D51;"
+            >
+              Verify Code
+            </button>
+          </form>
+        </div>
+      {% endif %}
+    {% endif %}
+
+    <!-- Display message after form submission -->
+    {% if message %}
+      <div class="mt-4 text-center text-lg font-semibold">
+        <p class="{% if message_type == 'success' %}text-green-600{% else %}text-red-600{% endif %}">{{ message }}</p>
+      </div>
+    {% endif %}
+  </div>
+</body>
+</html>
