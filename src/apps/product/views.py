@@ -8,7 +8,6 @@ from django.views.generic import ListView, CreateView, UpdateView, DeleteView, D
 from django.urls import reverse_lazy
 from django.shortcuts import get_object_or_404, redirect, render
 from django.http import JsonResponse, HttpResponseBadRequest
-
 from ..cart import cart
 from ..cart.cart import Cart
 from ..vendor.models import Vendor
@@ -239,6 +238,7 @@ class GetSubCategory(View):
     def get(self, request, category):
         print(f"Received category: {category}")  # Debug
         category_obj = Category.objects.filter(name=category).first()
+        print(category_obj)
         if not category_obj:
             return JsonResponse({"error": "Category not found"}, status=404)
 

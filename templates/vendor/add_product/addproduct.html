@@ -6,9 +6,8 @@
     <h1 class="text-xl font-semibold mb-4">Product Details</h1>
 
     <!-- Form Start -->
-    <form id="productForm" action="{% url 'vendor:add' %}" method="POST"  enctype="multipart/form-data">
-
-       {% csrf_token %}
+    <form id="productForm" action="{% url 'vendor:add' %}" method="POST" enctype="multipart/form-data">
+      {% csrf_token %}
 
       {% if form.non_field_errors %}
         <div class="text-red-500 text-sm mt-1">
@@ -18,21 +17,20 @@
         </div>
       {% endif %}
 
-      <div  class="grid grid-cols-2 gap-6">
+      <div class="grid grid-cols-2 gap-6">
         <!-- Product Name and Description -->
         <div>
-          <label  class="block text-sm font-medium mb-1">Product Name</label>
+          <label class="block text-sm font-medium mb-1">Product Name</label>
           <input type="text" name="name"
             class="w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-orange-500"
-          value="{{ form.name.value|default:"" }}"
-          >
-                    {% if form.name.errors %}
-          <div class="text-red-500 text-sm mt-1">
-            {% for error in form.name.errors %}
-              <p>{{ error }}</p>
-            {% endfor %}
-          </div>
-        {% endif %}
+            value="{{ form.name.value|default:'' }}">
+          {% if form.name.errors %}
+            <div class="text-red-500 text-sm mt-1">
+              {% for error in form.name.errors %}
+                <p>{{ error }}</p>
+              {% endfor %}
+            </div>
+          {% endif %}
         </div>
 
         <!-- Price and Discount Price -->
@@ -44,62 +42,55 @@
             <option value="INR">INR</option>
             <option value="USD">USD</option>
           </select>
-
-            {% if form.currency.errors %}
-          <div class="text-red-500 text-sm mt-1">
-            {% for error in form.currency.errors %}
-              <p>{{ error }}</p>
-            {% endfor %}
-          </div>
-        {% endif %}
+          {% if form.currency.errors %}
+            <div class="text-red-500 text-sm mt-1">
+              {% for error in form.currency.errors %}
+                <p>{{ error }}</p>
+              {% endfor %}
+            </div>
+          {% endif %}
         </div>
 
         <div>
           <label class="block text-sm font-medium mb-1">Price</label>
           <input type="number" name="price" step="0.1"
             class="w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-orange-500"
-                    value="{{ form.price.value|default:"" }}"
-
-          >
-                              {% if form.price.errors %}
-          <div class="text-red-500 text-sm mt-1">
-            {% for error in form.price.errors %}
-              <p>{{ error }}</p>
-            {% endfor %}
-          </div>
-        {% endif %}
+            value="{{ form.price.value|default:'' }}">
+          {% if form.price.errors %}
+            <div class="text-red-500 text-sm mt-1">
+              {% for error in form.price.errors %}
+                <p>{{ error }}</p>
+              {% endfor %}
+            </div>
+          {% endif %}
         </div>
 
         <div>
           <label class="block text-sm font-medium mb-1">Discount Price</label>
           <input type="number" name="discount_price" step="0.1"
             class="w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-orange-500"
-                    value="{{ form.discount_price.value|default:"" }}"
-
-          >
-                              {% if form.discount_price.errors %}
-          <div class="text-red-500 text-sm mt-1">
-            {% for error in form.discount_price.errors %}
-              <p>{{ error }}</p>
-            {% endfor %}
-          </div>
-        {% endif %}
+            value="{{ form.discount_price.value|default:'' }}">
+          {% if form.discount_price.errors %}
+            <div class="text-red-500 text-sm mt-1">
+              {% for error in form.discount_price.errors %}
+                <p>{{ error }}</p>
+              {% endfor %}
+            </div>
+          {% endif %}
         </div>
 
         <div>
           <label class="block text-sm font-medium mb-1">SKU</label>
           <input type="number" name="sku"
             class="w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-orange-500"
-                    value="{{ form.sku.value|default:"" }}"
-
-          >
-                              {% if form.sku.errors %}
-          <div class="text-red-500 text-sm mt-1">
-            {% for error in form.sku.errors %}
-              <p>{{ error }}</p>
-            {% endfor %}
-          </div>
-        {% endif %}
+            value="{{ form.sku.value|default:'' }}">
+          {% if form.sku.errors %}
+            <div class="text-red-500 text-sm mt-1">
+              {% for error in form.sku.errors %}
+                <p>{{ error }}</p>
+              {% endfor %}
+            </div>
+          {% endif %}
         </div>
 
         <!-- Country of Origin and Currency -->
@@ -108,17 +99,16 @@
           <select name="country_of_origin" class="w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-orange-500">
             <option value="" disabled selected>Select Country</option>
             {% for origin in origins %}
-            <option value="{{ origin.id }}">{{ origin.name }}</option>
+              <option value="{{ origin.id }}">{{ origin.name }}</option>
             {% endfor %}
           </select>
-
-                          {% if form.country_of_origin.errors %}
-          <div class="text-red-500 text-sm mt-1">
-            {% for error in form.country_of_origin.errors %}
-              <p>{{ error }}</p>
-            {% endfor %}
-          </div>
-        {% endif %}
+          {% if form.country_of_origin.errors %}
+            <div class="text-red-500 text-sm mt-1">
+              {% for error in form.country_of_origin.errors %}
+                <p>{{ error }}</p>
+              {% endfor %}
+            </div>
+          {% endif %}
         </div>
 
         <!-- Stock Quantity and SKU -->
@@ -126,37 +116,32 @@
           <label class="block text-sm font-medium mb-1">Stock Quantity</label>
           <input type="number" name="stock_quantity"
             class="w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-orange-500"
-                    value="{{ form.stock_quantity.value|default:"" }}"
-
-          >
-
-
-            {% if form.stock_quantity.errors %}
-             <div class="text-red-500 text-sm mt-1">
-
+            value="{{ form.stock_quantity.value|default:'' }}">
+          {% if form.stock_quantity.errors %}
+            <div class="text-red-500 text-sm mt-1">
               {% for error in form.stock_quantity.errors %}
-              <p>{{ error }}</p>
-            {% endfor %}
-          </div>
-        {% endif %}
+                <p>{{ error }}</p>
+              {% endfor %}
+            </div>
+          {% endif %}
         </div>
+
         <!-- Category and Sub Category -->
         <div>
           <label class="block text-sm font-medium mb-1">Product Category</label>
           <select name="category" id="categorySelect" class="w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-orange-500">
             <option value="" disabled selected>Select Category</option>
             {% for category in categories %}
-            <option value="{{ category.id }}">{{ category.name }}</option>
+              <option value="{{ category.name }}">{{ category.name }}</option>
             {% endfor %}
           </select>
-
-                          {% if form.category.errors %}
-          <div class="text-red-500 text-sm mt-1">
-            {% for error in form.category.errors %}
-              <p>{{ error }}</p>
-            {% endfor %}
-          </div>
-        {% endif %}
+          {% if form.category.errors %}
+            <div class="text-red-500 text-sm mt-1">
+              {% for error in form.category.errors %}
+                <p>{{ error }}</p>
+              {% endfor %}
+            </div>
+          {% endif %}
         </div>
 
         <div>
@@ -164,19 +149,21 @@
           <select name="sub_category" id="subcategorySelect" class="w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-orange-500">
             <option value="" disabled selected>Select Sub-Category</option>
           </select>
+          {% if form.sub_category.errors %}
+            <div class="text-red-500 text-sm mt-1">
+              {% for error in form.sub_category.errors %}
+                <p>{{ error }}</p>
+              {% endfor %}
+            </div>
+          {% endif %}
         </div>
-
 
         <div>
           <label class="block text-sm font-medium mb-1">Description</label>
           <textarea name="description"
-            class="w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-orange-500"
-                    value="{{ form.name.value|default:"" }}"
-
-          ></textarea>
+            class="w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-orange-500">{{ form.description.value|default:'' }}</textarea>
         </div>
-
-                        {% if form.description.errors %}
+        {% if form.description.errors %}
           <div class="text-red-500 text-sm mt-1">
             {% for error in form.description.errors %}
               <p>{{ error }}</p>
@@ -184,7 +171,6 @@
           </div>
         {% endif %}
       </div>
-
 
       <!-- Uploaded Images Stack -->
       <div id="imageStack" class="flex space-x-4 mt-6 overflow-x-auto"></div>
@@ -194,17 +180,14 @@
       <div class="w-full mt-6">
         <div class="border-dashed border-2 border-gray-300 p-4 rounded flex justify-center items-center cursor-pointer hover:border-orange-500">
           <label for="uploadImages" class="cursor-pointer">
-            <svg class="w-6 h-6 text-gray-500 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-              stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M3 16l-1 5h19l-1-5m-4-4V3H8v9m5 7l1.4-1.6L21 20M8 3H7V5M17 3h-1v2M7 20h10M4 3l1 2 2 3M20 5l-1 2-2 3" />
+            <svg class="w-6 h-6 text-gray-500 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 16l-1 5h19l-1-5m-4-4V3H8v9m5 7l1.4-1.6L21 20M8 3H7V5M17 3h-1v2M7 20h10M4 3l1 2 2 3M20 5l-1 2-2 3" />
             </svg>
-            <input type="file" name="images" id="uploadImages"  class="hidden" multiple accept="image/*">
+            <input type="file" name="images" id="uploadImages" class="hidden" multiple accept="image/*">
             <p class="text-sm mt-2 text-gray-500">Upload Images</p>
           </label>
         </div>
-
-                            {% if form.media.errors %}
+        {% if form.media.errors %}
           <div class="text-red-500 text-sm mt-1">
             {% for error in form.media.errors %}
               <p>{{ error }}</p>
@@ -224,37 +207,4 @@
   </div>
 </div>
 {% include "vendor/add_product/script.html" %}
-{% endblock content %}
-
-{% block script %}
-<script>
-document.getElementById('categorySelect').addEventListener('change', function() {
-    const categoryId = this.value; // Get the selected category ID
-    const subcategorySelect = document.getElementById('subcategorySelect');
-
-    // Clear existing subcategory options
-    subcategorySelect.innerHTML = '<option value="" disabled selected>Select Subcategory</option>';
-
-    // Make an AJAX request to fetch subcategories
-    fetch(`/add_product/subcategory/${categoryId}/`) // Adjust the URL to match your view
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.json();
-        })
-        .then(data => {
-            // Populate the subcategory dropdown
-            data.subcategories.forEach(subcategory => {
-                const option = document.createElement('option');
-                option.value = subcategory.id;
-                option.textContent = subcategory.name;
-                subcategorySelect.appendChild(option);
-            });
-        })
-        .catch(error => {
-            console.error('Error fetching subcategories:', error);
-        });
-});
-</script>
-{% endblock script %}
+{% endblock %}
