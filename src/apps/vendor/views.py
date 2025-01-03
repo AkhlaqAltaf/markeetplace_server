@@ -190,31 +190,45 @@ class AddProductView(CreateView):
 
 
 class AddBulkProductsView(View):
+
     def get(self, request):
+        # Retrieve categories and country origins for the dropdowns in the template
         categories = Category.objects.all()
         origins = CountryOrigin.objects.all()
         return render(request, 'vendor/add_product/add_bulk_products.html', context={"categories": categories, 'origins': origins})
 
     def post(self, request):
         try:
-            data = json.loads(request.body)  # Parse the JSON data sent from the frontend
-            products = data.get("products", [])  # Extract the list of products
+            # Parse the JSON data sent from the frontend
+            data = json.loads(request.body)
+            products = data.get("products", [])
 
             for product_data in products:
-                print(products)
+                # Ensure that the required fields are passed in the product_data
+                category = Category.objects.get(id=product_data.get('category'))
+                sub_category = SubCategory.objects.get(id=product_data.get('sub_category'))
+                country_of_origin = CountryOrigin.objects.get(id=product_data.get('country_of_origin'))
+
+                # Adjust product data for form creation
+                product_data['category'] = category
+                product_data['sub_category'] = sub_category
+                product_data['country_of_origin'] = country_of_origin
+
                 # Populate the form with product data
                 form = ProductForm(product_data)
-                print(form.errors.items())
+
                 if form.is_valid():
+                    # Save the product data to the database
                     product = form.save(commit=False)
                     product.vendor = request.user.vendor
                     product.save()
 
                     # Handle images (if provided)
                     images_data = product_data.get("images", [])
-                    for image in images_data:
-                        file = self.convert_base64_image(image)
+                    for image_base64 in images_data:
+                        file = self.convert_base64_image(image_base64)
                         if file:
+                            # Save the image file associated with the product
                             Media.objects.create(product=product, file=file)
                 else:
                     return JsonResponse({"error": f"Invalid product data: {form.errors}"}, status=400)
@@ -226,8 +240,10 @@ class AddBulkProductsView(View):
 
     def convert_base64_image(self, base64_data):
         try:
+            # If the image data is base64 encoded
             if base64_data.startswith("data:image"):
                 base64_data = base64_data.split(",")[1]
+
             # Decode the base64 string into binary data
             file_data = base64.b64decode(base64_data)
             file_name = datetime.now().strftime("%Y%m%d%H%M%S")
@@ -236,6 +252,7 @@ class AddBulkProductsView(View):
         except Exception as e:
             print(f"Error converting base64 image: {str(e)}")
             return None
+
 
 
 

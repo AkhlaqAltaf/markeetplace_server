@@ -75,6 +75,7 @@ class Product(models.Model):
     country_of_origin = models.ManyToManyField(CountryOrigin, related_name='products')
     content = RichTextField(blank=True,null=True)
     added_date = models.DateTimeField(auto_now_add=True)
+    product_image = models.ImageField(upload_to='product_images/', blank=True, null=True)
 
     def __str__(self):
         return self.name

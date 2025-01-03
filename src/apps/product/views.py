@@ -14,7 +14,7 @@ from ..vendor.models import Vendor
 from django import forms
 
 from .models import Category, CountryOrigin, Product, Media, SubCategory, Tag, WishListProduct, Order, OrderItem
-from .forms import ProductForm, SubCategoryForm
+from .forms import CategoryCreateForm, ProductForm, SubCategoryForm
 from django.db.models import Q
 
 # List View for Products
@@ -541,3 +541,31 @@ def forgot_email_view(request):
         form = ForgotEmailForm()
 
     return render(request, 'accounts/forgetEmail.html', {'form': form})
+
+
+class CategoryCreateView(View):
+    def post(self, request, *args, **kwargs):
+        form = CategoryCreateForm(request.POST, request.FILES)
+        
+        if form.is_valid():
+            category = form.save()  # Save the new category to the database
+            return JsonResponse({'status': 'success', 'message': 'Category created successfully!', 'category_id': category.id})
+        else:
+            # Return errors if the form is invalid
+            return JsonResponse({'status': 'error', 'message': 'Invalid form data', 'errors': form.errors})
+
+class SubCategoryCreateView(View):
+    def post(self, request, *args, **kwargs):
+        form = SubCategoryCreateForm(request.POST, request.FILES)
+        
+        if form.is_valid():
+            # The category must be a valid category object, get it from the form's category field
+            category = form.cleaned_data['category']
+            
+            # Create and save the subcategory
+            subcategory = form.save()
+            
+            return JsonResponse({'status': 'success', 'message': 'Subcategory created successfully!', 'subcategory_id': subcategory.id})
+        else:
+            # Return errors if the form is invalid
+            return JsonResponse({'status': 'error', 'message': 'Invalid form data', 'errors': form.errors})

@@ -114,7 +114,7 @@ def Forgot_Email_View(request):
                     # Save the code in the session
                     request.session['verification_code'] = verification_code
                     request.session['email'] = email
-                    request.session['attempts_left'] = attempts_left  # Store remaining attempts
+                    # request.session['attempts_left'] = attempts_left  # Store remaining attempts
 
                     # Send the email
                     subject = "Your Verification Code"
@@ -136,7 +136,7 @@ def Forgot_Email_View(request):
 
             # Retrieve the verification code from the session
             stored_code = request.session.get('verification_code')
-            attempts_left = request.session.get('attempts_left', 3)
+            # attempts_left = request.session.get('attempts_left', 3)
 
             if entered_code and str(entered_code) == str(stored_code):
                 # Correct code, allow password reset
@@ -146,14 +146,14 @@ def Forgot_Email_View(request):
                 new_password_form = True  # Show the new password form
             else:
                 # Incorrect code
-                attempts_left -= 1
-                request.session['attempts_left'] = attempts_left  # Update attempts left
+                # attempts_left -= 1
+                # request.session['attempts_left'] = attempts_left  # Update attempts left
 
                 if attempts_left > 0:
-                    message = f"Invalid verification code. You have {attempts_left} attempts left."
+                    message = f"Invalid verification code."
                     message_type = "error"
                 else:
-                    message = "You have exhausted your attempts. Please try again later."
+                    # message = "You have exhausted your attempts. Please try again later."
                     message_type = "error"
                     # Optionally, you can lock the process or disable the button here
                     verification_code_sent = False  # Lock out the user
@@ -181,7 +181,7 @@ def Forgot_Email_View(request):
                     # Clear session data after successful password update
                     del request.session['verification_code']
                     del request.session['email']
-                    del request.session['attempts_left']
+                    # del request.session['attempts_left']
 
                 except CustomUser.DoesNotExist:
                     # Handle case where user does not exist
@@ -202,6 +202,6 @@ def Forgot_Email_View(request):
         'message_type': message_type,
         'verification_code_sent': verification_code_sent,
         'verification_successful': verification_successful,
-        'attempts_left': attempts_left,
+        # 'attempts_left': attempts_left,
         'new_password_form': new_password_form,  # Pass flag for new password form
     })

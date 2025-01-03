@@ -12,13 +12,13 @@ urlpatterns = [
 
                   # Category
     # path('categories/', views.CategoryListView.as_view(), name='category-list'),
-    # path('category/create/', views.CategoryCreateView.as_view(), name='category-create'),
+    path('category/create/', views.CategoryCreateView.as_view(), name='category-create'),
     # path('category/update/<int:pk>/', views.CategoryUpdateView.as_view(), name='category-update'),
     # path('category/delete/<int:pk>/', views.CategoryDeleteView.as_view(), name='category-delete'),
     #
     # # SubCategory
     # path('subcategories/', views.SubCategoryListView.as_view(), name='subcategory-list'),
-    # path('subcategory/create/', views.SubCategoryCreateView.as_view(), name='subcategory-create'),
+    path('subcategory/create/', views.SubCategoryCreateView.as_view(), name='subcategory-create'),
     # path('subcategory/update/<int:pk>/', views.SubCategoryUpdateView.as_view(), name='subcategory-update'),
     # path('subcategory/delete/<int:pk>/', views.SubCategoryDeleteView.as_view(), name='subcategory-delete'),
     #
