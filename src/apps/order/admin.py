@@ -1,4 +1,3 @@
-from django.contrib import admin
 from .models import Order, OrderItem
 from ..core.admin import admin_site
 

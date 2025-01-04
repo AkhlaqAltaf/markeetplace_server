@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     'src.apps.cart.apps.CartConfig',
     'src.apps.order.apps.OrderConfig',
     'src.apps.website.apps.WebsiteConfig',
+    'src.apps.wishlist.apps.WhishlistAppConfig',
     # REST APP
 
     'rest_framework',

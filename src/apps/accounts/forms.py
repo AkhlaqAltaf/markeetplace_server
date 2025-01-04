@@ -1,11 +1,8 @@
 from django import forms
-from django.contrib.auth import authenticate
 from django.contrib.auth.password_validation import validate_password
 from django.utils.translation import gettext_lazy as _
-from django.contrib.auth import password_validation
 
 from src.apps.accounts.models import CustomUser
-from django.contrib.auth import login , logout
 
 class CustomLoginForm(forms.Form):
     email = forms.EmailField(max_length=255, required=True)

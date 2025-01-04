@@ -65,7 +65,7 @@ class UserRegistrationView(View):
     def post(self, request):
         form = UserRegistrationForm(request.POST)
         if form.is_valid():
-            user = form.save()
+            form.save()
             return redirect('accounts:accounts')
         return render(request, 'accounts/accounts.html', {'signup_form': form})
     

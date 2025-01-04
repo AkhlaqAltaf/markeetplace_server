@@ -16,18 +16,8 @@
       />
     </div>
 
-    <!-- Fetch Data Button -->
-    <div class="mt-4">
-      <button
-        id="fetchDataButton"
-        class="w-full py-2 bg-[#0B5D51] text-white font-semibold rounded-lg focus:outline-none focus:ring-2"
-      >
-        Fetch Data from File
-      </button>
-    </div>
-
     <!-- Editable Table -->
-    <div class="overflow-x-auto mt-4">
+    <div class="overflow-x-auto">
       <table
         id="productsTable"
         class="table-auto w-full text-sm text-left border border-gray-300 rounded-lg"
@@ -60,183 +50,164 @@
         Upload to Server
       </button>
     </div>
-
-    <!-- Categories and Subcategories (Initially Hidden) -->
-    <div id="categorySubcategoryInfo" style="display: none;">
-      <p>Categories and Subcategories fetched successfully!</p>
-    </div>
-
   </div>
 </div>
 
-{% block script %}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.1/xlsx.full.min.js"></script>
 
 <script>
   document.addEventListener("DOMContentLoaded", () => {
     const uploadFileInput = document.getElementById("uploadFile");
-    const fetchDataButton = document.getElementById("fetchDataButton");
     const tableBody = document.querySelector("#productsTable tbody");
     const uploadToServerButton = document.getElementById("uploadToServer");
-    const categorySubcategoryInfo = document.getElementById("categorySubcategoryInfo");
 
-    let productsData = [];
-    let categories = {}; // Object to store categories and subcategories
-
-    // Handle Excel File Upload and Fetch Data
-    fetchDataButton.addEventListener("click", () => {
+    // Handle File Fetch and Populate Table
+    uploadFileInput.addEventListener("change", () => {
       const file = uploadFileInput.files[0];
-      if (!file) {
-        alert("Please select a file first!");
-        return;
-      }
+      if (!file) return;
 
       const reader = new FileReader();
-      reader.onload = function (e) {
-        const data = new Uint8Array(e.target.result);
+      reader.onload = (event) => {
+        const data = new Uint8Array(event.target.result);
         const workbook = XLSX.read(data, { type: "array" });
-        const sheetName = workbook.SheetNames[0]; // Assuming the first sheet
-        const worksheet = workbook.Sheets[sheetName];
+        const sheetName = workbook.SheetNames[0];
+        const sheet = workbook.Sheets[sheetName];
+        const rows = XLSX.utils.sheet_to_json(sheet, { header: 1 });
 
-        // Convert sheet to JSON data
-        productsData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+        tableBody.innerHTML = ""; // Clear existing rows
 
-        // Clear existing rows in table
-        tableBody.innerHTML = "";
-
-        // Populate table with the data
-        productsData.forEach((row, index) => {
-          if (index === 0) return; // Skip the header row
-
+        rows.forEach((row, rowIndex) => {
+          if (rowIndex === 0 || row.length !== 10) return; // Skip header or invalid rows
           const tr = document.createElement("tr");
 
-          row.forEach((cell) => {
+          row.forEach((cell, index) => {
             const td = document.createElement("td");
             td.className = "px-4 py-2 border";
-            td.contentEditable = true;
-            td.textContent = (cell ? cell.toString().trim() : ""); // Ensure cell is a string before trimming
+            td.contentEditable = index !== 6 && index !== 7 && index !== 9; // Disable editing for dropdowns
+            td.textContent = cell;
             tr.appendChild(td);
           });
 
-          // Add an extra column for the image input field
+          // Add dropdowns for category, subcategory, and origin
+          const categoryTd = tr.children[6];
+          const subCategoryTd = tr.children[7];
+          const originTd = tr.children[9];
+
+          const categorySelect = document.createElement("select");
+          categorySelect.innerHTML = `
+            <option value="" disabled>Select Category</option>
+            {% for category in categories %}
+              <option value="{{ category.id }}">{{ category.name }}</option>
+            {% endfor %}
+          `;
+          categorySelect.value = categoryTd.textContent.trim();
+          categoryTd.textContent = "";
+          categoryTd.appendChild(categorySelect);
+
+          const subCategorySelect = document.createElement("select");
+          subCategorySelect.innerHTML = `<option value="" disabled>Select Sub-Category</option>`;
+          subCategoryTd.textContent = "";
+          subCategoryTd.appendChild(subCategorySelect);
+
+          const originSelect = document.createElement("select");
+          originSelect.innerHTML = `
+            <option value="" disabled>Select Country</option>
+            {% for origin in origins %}
+              <option value="{{ origin.id }}">{{ origin.name }}</option>
+            {% endfor %}
+          `;
+          originSelect.value = originTd.textContent.trim();
+          originTd.textContent = "";
+          originTd.appendChild(originSelect);
+
+          // Add file input for image column
           const imageTd = document.createElement("td");
           imageTd.className = "px-4 py-2 border";
-          const inputFile = document.createElement("input");
-          inputFile.type = "file";
-          inputFile.accept = "image/*"; // You can restrict to only image files
-          imageTd.appendChild(inputFile);
-
+          const imageInput = document.createElement("input");
+          imageInput.type = "file";
+          imageInput.accept = "image/*";
+          imageInput.className = "w-full";
+          imageTd.appendChild(imageInput);
           tr.appendChild(imageTd);
 
+          // Fetch subcategories when category changes
+          categorySelect.addEventListener("change", () => {
+            fetchSubcategories(categorySelect.value, subCategorySelect);
+          });
+
           tableBody.appendChild(tr);
-
-          // Extract category and subcategory
-          const category = row[6]?.toString().trim(); // Assuming the category is in the 7th column (index 6)
-          const subCategory = row[7]?.toString().trim(); // Assuming the subcategory is in the 8th column (index 7)
-
-          if (category && subCategory) {
-            // If category and subcategory exist, add them to the categories object
-            if (!categories[category]) {
-              categories[category] = [];
-            }
-            categories[category].push(subCategory);
-          }
         });
-
-        // Display the categories and subcategories
-        console.log("Categories and Subcategories:");
-        Object.keys(categories).forEach((category) => {
-          console.log(`${category} -> ${categories[category].join(', ')}`);
-        });
-
-        // Now trigger the categories and subcategories URL using POST
-        fetch("{% url 'product:category-create' %}", {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json",
-    "X-CSRFToken": "{{ csrf_token }}",
-  },
-  body: JSON.stringify({ categories: categories }), // Send the categories and subcategories
-})
-  .then((response) => response.json())
-  .then((categoriesData) => {
-    // Handle categories response
-    console.log("Categories:", categoriesData);
-
-    // Now fetch the subcategories and associate them with the respective categories
-    const categorySubcategories = Object.keys(categories).map((category) => ({
-      category: category,
-      subcategories: categories[category], // Subcategories associated with the category
-    }));
-
-    // Send the associated categories and subcategories to the subcategory URL
-    fetch("{% url 'product:subcategory-create' %}", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-CSRFToken": "{{ csrf_token }}",
-      },
-      body: JSON.stringify({ category_subcategories: categorySubcategories }), // Send both category and its subcategories
-    })
-      .then((response) => response.json())
-      .then((subCategoriesData) => {
-        // Handle subcategories response
-        console.log("Subcategories:", subCategoriesData);
-      })
-      .catch((error) => {
-        console.error("Error fetching subcategories:", error);
-      });
-  })
-  .catch((error) => {
-    console.error("Error fetching categories:", error);
-  });
-
-
       };
 
       reader.readAsArrayBuffer(file);
     });
 
-    // Handle Upload to Server
-    uploadToServerButton.addEventListener("click", () => {
-      const rows = Array.from(tableBody.querySelectorAll("tr"));
-      const data = rows.map((row) => {
-        const cells = Array.from(row.querySelectorAll("td"));
-        return {
-          name: cells[0]?.textContent.trim(),
-          currency: cells[1]?.textContent.trim(),
-          price: parseFloat(cells[2]?.textContent.trim()),
-          discount_price: parseFloat(cells[3]?.textContent.trim()),
-          sku: cells[4]?.textContent.trim(),
-          stock_quantity: parseInt(cells[5]?.textContent.trim(), 10),
-          category: cells[6]?.textContent.trim(),
-          sub_category: cells[7]?.textContent.trim(),
-          description: cells[8]?.textContent.trim(),
-          country_of_origin: cells[9]?.textContent.trim(),
-        };
-      });
+    function fetchSubcategories(categoryId, subcategoryDropdown) {
+      subcategoryDropdown.innerHTML = '<option value="" disabled>Select Sub-Category</option>'; // Clear existing options
+      fetch(`subcategory/${categoryId}/`)
+        .then((response) => {
+          if (!response.ok) throw new Error("Network response was not ok");
+          return response.json();
+        })
+        .then((data) => {
+          data.subcategories.forEach((subcategory) => {
+            const option = document.createElement("option");
+            option.value = subcategory.id;
+            option.textContent = subcategory.name;
+            subcategoryDropdown.appendChild(option);
+          });
+        })
+        .catch((error) => console.error("Error fetching subcategories:", error));
+    }
+  });
 
-      fetch("{% url 'vendor:add_bulk' %}", {
+  // Handle Server
+  document.getElementById('uploadToServer').addEventListener("click", () => {
+    const tableRows = Array.from(document.querySelectorAll("#productsTable tbody tr"));
+    const productsData = tableRows.map(row => {
+        const cells = Array.from(row.children);
+        return {
+            name: cells[0].textContent.trim(),
+            currency: cells[1].textContent.trim(),
+            price: cells[2].textContent.trim(),
+            discount_price: cells[3].textContent.trim(),
+            sku: cells[4].textContent.trim(),
+            stock_quantity: cells[5].textContent.trim(),
+            category: cells[6].querySelector("select").value,
+            sub_category: cells[7].querySelector("select").value,
+            description: cells[8].textContent.trim(),
+            country_origin: cells[9].querySelector("select").value,
+            image: cells[10].querySelector("input[type='file']").files[0],
+        };
+    });
+
+    const formData = new FormData();
+    productsData.forEach((product, index) => {
+        Object.keys(product).forEach(key => {
+            if (key === "image" && product[key]) {
+                formData.append(`products[${index}][${key}]`, product[key]);
+            } else {
+                formData.append(`products[${index}][${key}]`, product[key] || "");
+            }
+        });
+    });
+
+    fetch("add_bulk/", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
-          "X-CSRFToken": "{{ csrf_token }}",
+            "X-CSRFToken": "{{ csrf_token }}",
         },
-        body: JSON.stringify({ products: data }),
-      })
-        .then((response) => {
-          if (response.ok) {
-            alert("Products uploaded successfully!");
-            tableBody.innerHTML = ""; // Clear the table
-          } else {
-            alert("Failed to upload products.");
-          }
+        body: formData,
+    })
+        .then(response => {
+            if (!response.ok) throw new Error("Failed to upload products");
+            return response.json();
         })
-        .catch((error) => console.error("Error uploading products:", error));
-    });
-  });
+        .then(data => {
+            alert("Products uploaded successfully!");
+            console.log(data);
+        })
+        .catch(error => console.error("Error uploading products:", error));
+});
 </script>
-
-{% endblock script %}
-
 {% endblock content %}

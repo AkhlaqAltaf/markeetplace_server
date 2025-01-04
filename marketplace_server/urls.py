@@ -30,7 +30,8 @@ urlpatterns = [
     path('accounts/',include('src.apps.accounts.urls')),
     path('cart/', include('src.apps.cart.urls')),
     path('order/', include('src.apps.order.urls')),
-    # path('',include('src.apps.website.urls',namespace='website')),
+    path('wishlist/', include('src.apps.wishlist.urls')),
+                  # path('',include('src.apps.website.urls',namespace='website')),
     path('admin/', admin.site.urls),
     path('api/',include('src.apis.urls',namespace='api')),
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

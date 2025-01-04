@@ -30,6 +30,11 @@
                         </a>
                         {% else %}
                         <p class="navbar-item">
+                             <a class="navbar-item" href="{% url 'order:user_order_list' %}">
+                           My Orders
+                          </a>
+                            {% else %}
+                                <p class="navbar-item">
                            Wait For Verification
                         </p>
                         {% endif %}
@@ -70,6 +75,7 @@
         <i class="fa fa-bars text-xl"></i>
     </button>
 </nav>
+
 <style>
     .custom-user-icon i {
         color: white;
@@ -88,6 +94,7 @@
     .custom-user-icon:hover {
         color:rgb(0, 0, 0); 
     }
+
     .custom-dropdown {
         background-color: #073741;
         border: 1px solid #1E90FF;
@@ -96,6 +103,7 @@
         padding: 10px;
         min-width: 200px;
     }
+
     .custom-dropdown .navbar-item {
         color: white;
         padding: 10px 15px;
