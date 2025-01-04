@@ -207,9 +207,12 @@ class AddBulkProductsView(View):
 
             for product_data in products:
                 # Ensure that the required fields are passed in the product_data
-                category = Category.objects.get(id=product_data.get('category'))
-                sub_category = SubCategory.objects.get(id=product_data.get('sub_category'))
-                country_of_origin = CountryOrigin.objects.get(id=product_data.get('country_of_origin'))
+                category = Category.objects.filter(id=product_data.get('category')).first()
+                sub_category = SubCategory.objects.filter(id=product_data.get('sub_category')).first()
+                country_of_origin = CountryOrigin.objects.filter(id=product_data.get('country_of_origin')).first()
+
+                if not category or not sub_category or not country_of_origin:
+                    return JsonResponse({"error": "Category, SubCategory or Country of Origin is missing or invalid."}, status=400)
 
                 # Adjust product data for form creation
                 product_data['category'] = category
@@ -244,7 +247,7 @@ class AddBulkProductsView(View):
         try:
             # If the image data is base64 encoded
             if base64_data.startswith("data:image"):
-                base64_data = base64_data.split(",")[1]
+                base64_data = base64_data.split(",")[1]  # Extract only the base64 part
 
             # Decode the base64 string into binary data
             file_data = base64.b64decode(base64_data)
@@ -254,7 +257,6 @@ class AddBulkProductsView(View):
         except Exception as e:
             print(f"Error converting base64 image: {str(e)}")
             return None
-
 
 
 
