@@ -9,6 +9,7 @@ Accounts
 {% endblock head_content %}
 
 {% block content %}
+<div class="flex items-center justify-center min-h-screen bg-gray-100">
 <div class="w-full max-w-lg bg-white shadow-lg rounded-lg p-8">
   <div class="flex border-b mb-4">
     <button id="signInTab" onclick="toggleTab(true)"
@@ -21,9 +22,8 @@ Accounts
   </div>
 
   {#-------------------------------------------------------------------------------SIGNIN---------------------------------------------------------------------------------------------#}
-  <!-- Sign In Form -->
-  <div id="signInForm" class="space-y-6">
-    <form method="post" action="{% url 'accounts:login' %}">
+  <div id="signInForm" class="space-y-6 animate-fadeIn">
+    <form method="post" action="{% url 'accounts:login' %}" class="space-y-4">
       {% csrf_token %}
       {% if signin_form.non_field_errors %}
         <div class="text-red-500 text-sm mt-1">
@@ -32,18 +32,15 @@ Accounts
           {% endfor %}
         </div>
       {% endif %}
-
-
-
-
-
+  
+      <!-- Email Field -->
       <div>
-        <label class="block text-sm font-medium text-gray-700" for="{{ signin_form.email.id_for_label }}">Email</label>
+        <label class="block text-sm font-medium text-gray-700 mb-1" for="{{ signin_form.email.id_for_label }}">Email</label>
         <input
           type="email"
           name="email"
           id="{{ signin_form.email.id_for_label }}"
-          class="w-full border border-gray-300 p-2 rounded"
+          class="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition duration-300"
           placeholder="Enter Your Email"
           value="{{ signin_form.email.value|default:'' }}">
         {% if signin_form.email.errors %}
@@ -54,21 +51,18 @@ Accounts
           </div>
         {% endif %}
       </div>
-
-
-
-
+  
+      <!-- Password Field -->
       <div class="relative">
-        <label class="block text-sm font-medium text-gray-700" for="{{ signin_form.password.id_for_label }}">Password</label>
+        <label class="block text-sm font-medium text-gray-700 mb-1" for="{{ signin_form.password.id_for_label }}">Password</label>
         <input
           type="password"
           name="password"
           id="{{ signin_form.password.id_for_label }}"
-          class="w-full border border-gray-300 p-2 rounded"
+          class="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition duration-300"
           placeholder="Enter password">
-
-        <i class="fa fa-eye absolute top-3 right-3 text-gray-500 cursor-pointer" onclick="togglePassword('{{ signin_form.password.id_for_label }}')"></i>
-
+        <i class="fa fa-eye absolute top-2 right-3 text-gray-500 hover:text-orange-500 cursor-pointer transition duration-300"
+           onclick="togglePassword('{{ signin_form.password.id_for_label }}')"></i>
         {% if signin_form.password.errors %}
           <div class="text-red-500 text-sm mt-1">
             {% for error in signin_form.password.errors %}
@@ -77,19 +71,23 @@ Accounts
           </div>
         {% endif %}
       </div>
-
+  
+      <!-- Forgot Password -->
       <div class="text-right">
-        <a href="#" class="text-sm text-blue-500 hover:underline">Forgot Password?</a>
+        <a href="#" class="text-sm text-blue-500 hover:underline hover:text-blue-700 transition duration-300">Forgot Password?</a>
       </div>
-
-      <button type="submit" class="w-full py-2 bg-[#0B5D51] text-white rounded-lg">Sign In</button>
+  
+      <!-- Submit Button -->
+      <button type="submit"
+        class="w-full py-3 bg-[#0B5D51] text-white rounded-lg hover:bg-[#09433E] transition duration-300 shadow-lg hover:shadow-xl transform hover:scale-105">
+        Sign In
+      </button>
     </form>
   </div>
-
+  
   {#------------------------------------------------------------------------------SIGNUP-------------------------------------------------------------------------------------------------#}
-  <!-- Sign Up Form -->
-  <div id="signUpForm" class="hidden space-y-6">
-    <form method="post" action="{% url 'accounts:signup' %}">
+  <div id="signUpForm" class="hidden space-y-6 animate-fadeIn">
+    <form method="post" action="{% url 'accounts:signup' %}" class="space-y-4">
       {% csrf_token %}
       {% if signup_form.non_field_errors %}
         <div class="text-red-500 text-sm mt-1">
@@ -98,17 +96,17 @@ Accounts
           {% endfor %}
         </div>
       {% endif %}
-
+  
       <!-- Name Field -->
       <div>
-        <label class="block text-sm font-medium text-gray-700" for="{{ signup_form.name.id_for_label }}">Name</label>
+        <label class="block text-sm font-medium text-gray-700 mb-1" for="{{ signup_form.name.id_for_label }}">Name</label>
         <input
           type="text"
           name="name"
           id="{{ signup_form.name.id_for_label }}"
-          class="w-full border border-gray-300 p-2 rounded"
+          class="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition duration-300"
           placeholder="Enter your name"
-          value="{{ signup_form.name.value| default:'' }}">
+          value="{{ signup_form.name.value|default:'' }}">
         {% if signup_form.name.errors %}
           <div class="text-red-500 text-sm mt-1">
             {% for error in signup_form.name.errors %}
@@ -117,15 +115,15 @@ Accounts
           </div>
         {% endif %}
       </div>
-
+  
       <!-- Phone Number Field -->
       <div>
-        <label class="block text-sm font-medium text-gray-700" for="{{ signup_form.phone.id_for_label }}">Phone Number</label>
+        <label class="block text-sm font-medium text-gray-700 mb-1" for="{{ signup_form.phone.id_for_label }}">Phone Number</label>
         <input
           type="text"
           name="phone"
           id="{{ signup_form.phone.id_for_label }}"
-          class="w-full border border-gray-300 p-2 rounded"
+          class="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition duration-300"
           placeholder="Enter phone number"
           value="{{ signup_form.phone.value|default:'' }}">
         {% if signup_form.phone.errors %}
@@ -136,15 +134,15 @@ Accounts
           </div>
         {% endif %}
       </div>
-
+  
       <!-- Email Field -->
       <div>
-        <label class="block text-sm font-medium text-gray-700" for="{{ signup_form.email.id_for_label }}">Email</label>
+        <label class="block text-sm font-medium text-gray-700 mb-1" for="{{ signup_form.email.id_for_label }}">Email</label>
         <input
           type="email"
           name="email"
           id="{{ signup_form.email.id_for_label }}"
-          class="w-full border border-gray-300 p-2 rounded"
+          class="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition duration-300"
           placeholder="Enter email address"
           value="{{ signup_form.email.value|default:'' }}">
         {% if signup_form.email.errors %}
@@ -155,18 +153,17 @@ Accounts
           </div>
         {% endif %}
       </div>
-
+  
       <!-- Password Field -->
       <div class="relative">
-        <label class="block text-sm font-medium text-gray-700" for="{{ signup_form.password.id_for_label }}">Password</label>
+        <label class="block text-sm font-medium text-gray-700 mb-1" for="{{ signup_form.password.id_for_label }}">Password</label>
         <input
           type="password"
           name="password"
           id="{{ signup_form.password.id_for_label }}"
-          class="w-full border border-gray-300 p-2 rounded"
+          class="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition duration-300"
           placeholder="Enter password">
-        <i class="fa fa-eye absolute top-3 right-3 text-gray-500 cursor-pointer" onclick="togglePassword('{{ signup_form.password.id_for_label }}')"></i>
-
+        <i class="fa fa-eye absolute top-2 right-3 text-gray-500 hover:text-orange-500 cursor-pointer transition duration-300" onclick="togglePassword('{{ signup_form.password.id_for_label }}')"></i>
         {% if signup_form.password.errors %}
           <div class="text-red-500 text-sm mt-1">
             {% for error in signup_form.password.errors %}
@@ -175,18 +172,17 @@ Accounts
           </div>
         {% endif %}
       </div>
-
+  
       <!-- Confirm Password Field -->
       <div class="relative">
-        <label class="block text-sm font-medium text-gray-700" for="{{ signup_form.confirm_password.id_for_label }}">Confirm Password</label>
+        <label class="block text-sm font-medium text-gray-700 mb-1" for="{{ signup_form.confirm_password.id_for_label }}">Confirm Password</label>
         <input
           type="password"
           name="confirm_password"
           id="{{ signup_form.confirm_password.id_for_label }}"
-          class="w-full border border-gray-300 p-2 rounded"
+          class="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition duration-300"
           placeholder="Confirm password">
-        <i class="fa fa-eye absolute top-3 right-3 text-gray-500 cursor-pointer" onclick="togglePassword('{{ signup_form.confirm_password.id_for_label }}')"></i>
-
+        <i class="fa fa-eye absolute top-2 right-3 text-gray-500 hover:text-orange-500 cursor-pointer transition duration-300" onclick="togglePassword('{{ signup_form.confirm_password.id_for_label }}')"></i>
         {% if signup_form.confirm_password.errors %}
           <div class="text-red-500 text-sm mt-1">
             {% for error in signup_form.confirm_password.errors %}
@@ -195,18 +191,18 @@ Accounts
           </div>
         {% endif %}
       </div>
-
+  
       <!-- Terms & Conditions -->
       <div class="flex items-center">
         <input
           type="checkbox"
           name="terms"
           id="terms"
-          class="mr-2"
+          class="mr-2 focus:ring-2 focus:ring-orange-500"
           {% if signup_form.terms.value %} checked {% endif %}>
         <label for="terms" class="text-sm">
-          I agree to the <a href="#" class="text-blue-500 hover:underline">Terms</a> and
-          <a href="#" class="text-blue-500 hover:underline">Privacy Policy</a>.
+          I agree to the <a href="#" class="text-blue-500 hover:underline hover:text-blue-700 transition duration-300">Terms</a> and
+          <a href="#" class="text-blue-500 hover:underline hover:text-blue-700 transition duration-300">Privacy Policy</a>.
         </label>
         {% if signup_form.terms.errors %}
           <div class="text-red-500 text-sm mt-1">
@@ -216,12 +212,16 @@ Accounts
           </div>
         {% endif %}
       </div>
-
+  
       <!-- Sign Up Button -->
-      <button type="submit" class="w-full py-2 bg-[#0B5D51] text-white rounded-lg">Sign Up</button>
+      <button type="submit"
+        class="w-full py-3 bg-[#0B5D51] text-white rounded-lg hover:bg-[#09433E] transition duration-300 shadow-lg hover:shadow-xl transform hover:scale-105">
+        Sign Up
+      </button>
     </form>
   </div>
+  
 </div>
-
+</div>
 {% include "accounts/scripts.html" %}
 {% endblock content %}
