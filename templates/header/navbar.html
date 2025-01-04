@@ -13,7 +13,7 @@
 
         <div class="flex items-center justify-center gap-4 text-white">
             <a href="{% url 'cart:cart' %}"> <i class="fa fa-shopping-cart"></i>{% if cart %}({{cart|length}}){% endif %}</a>
-            <a href="{% url 'product:wish-list' %}"><i class="fa fa-heart"></i> </a>
+            <a href="{% url 'wishlist:wish-list' %}"><i class="fa fa-heart"></i> </a>
 
 
             {% if request.user.vendor %}
@@ -29,6 +29,9 @@
                         <a class="navbar-item" href="{% url 'vendor:vendor' %}">
                            Vendor Side
                         </a>
+                             <a class="navbar-item" href="{% url 'order:user_order_list' %}">
+                           My Orders
+                          </a>
                             {% else %}
                                 <p class="navbar-item">
                            Wait For Verification

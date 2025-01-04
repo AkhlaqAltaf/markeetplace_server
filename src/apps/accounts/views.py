@@ -1,7 +1,6 @@
 from django.shortcuts import redirect, render
 from django.views import View
 
-from src.apps.whisper.main import Mailing
 from src.apps.accounts.forms import CustomLoginForm, UserRegistrationForm
 from django.contrib.auth import login , logout
 from django.contrib.auth import get_user_model
@@ -59,7 +58,7 @@ class UserRegistrationView(View):
     def post(self, request):
         form = UserRegistrationForm(request.POST)
         if form.is_valid():
-            user = form.save()
+            form.save()
             return redirect('accounts:accounts')
         return render(request, 'accounts/accounts.html', {'signup_form': form})
     

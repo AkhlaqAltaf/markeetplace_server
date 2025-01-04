@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.views.generic import TemplateView
 
-from src.apps.product.models import Category, Product, Media, TopPageProduct
+from src.apps.product.models import Category, Product, TopPageProduct
 
 
 # Create your views here.

@@ -2,11 +2,16 @@ import stripe #pip install stripe
 
 from django. conf import settings
 from django.contrib import messages
-from django.shortcuts import redirect, render
+from django.http import JsonResponse
+from django.shortcuts import redirect, render, get_object_or_404
+from django.views import View
+
 from .cart import Cart
 from .forms import CheckoutForm
 
 from src.apps.order.utilities import checkout, notify_vendor, notify_customer
+from ..product.models import Product
+
 
 # Create your views here.
 def cart_detail(request):
@@ -69,3 +74,21 @@ def cart_detail(request):
 
 def success(request):
     return render(request, 'cart/success.html')
+
+
+
+
+
+
+
+
+
+class AddToCartView(View):
+    def get(self, request,id):
+        pass
+    def post(self, request, id,quantity):
+        product = get_object_or_404(Product, id=id)
+        print(product)
+        cart = Cart(request)
+        cart.add(product_id=product.id, quantity=quantity, update_quantity=False)
+        return  JsonResponse({'success': True})

@@ -1,4 +1,4 @@
-from product.models import Category
+from src.apps.product.models import Category
 
 
 def menu_categories(request):

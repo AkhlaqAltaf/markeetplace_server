@@ -15,7 +15,7 @@ document.querySelectorAll('.addToCartButton').forEach(function(button) {
         const quantity = button.getAttribute('data-quantity');  // Get quantity from the button
 
         // Construct the URL for the AddToCartView
-        const url = `/product/addToCart/${productId}/${quantity}/`;
+        const url = `/cart/addToCart/${productId}/${quantity}/`;
 
         // Send the POST request using fetch
         fetch(url, {

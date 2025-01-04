@@ -34,7 +34,7 @@
                         <td class="p-4">{{ order.created_at|date:"Y-m-d H:i" }}</td>
                         <td class="p-4">
                             {% if order.status == 'pending' %}
-                            <form method="post" action="{% url 'product:cancel_order' order.id %}" class="inline">
+                            <form method="post" action="{% url 'order:cancel_order' order.id %}" class="inline">
                                 {% csrf_token %}
                                 <button type="submit" class="text-red-500 hover:text-red-700">Cancel Order</button>
                             </form>

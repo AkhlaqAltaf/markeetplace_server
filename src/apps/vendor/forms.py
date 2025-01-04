@@ -1,9 +1,6 @@
-from django.forms import ModelForm, models
 
-from src.apps.product.models import Product
 
 from django import forms
-from django.contrib.auth.forms import UserCreationForm
 from .models import Vendor
 
 

@@ -15,6 +15,8 @@ from .mixins import CheckVendorMixin
 import base64
 from django.core.files.base import ContentFile
 
+from ..order.models import Order
+
 
 # Create your views here.
 
@@ -428,7 +430,7 @@ def add_product(request):
 
 
 from django.http import JsonResponse, HttpResponseBadRequest
-from src.apps.product.models import Order, Product
+from src.apps.product.models import  Product
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views import View
 
