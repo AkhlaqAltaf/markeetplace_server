@@ -1,47 +1,27 @@
-# Python bytecode files
+# Ignore Python cache files
+__pycache__/
 *.pyc
 *.pyo
 *.pyd
-__pycache__/
 
-# Django stuff:
-*.log
-*.pot
-*.pyc
-*.pyo
+# Ignore database files
 *.db
 *.sqlite3
-*.tar.gz
-db.sqlite3
-*migrations
 
-# Environments
+# Ignore environment files
 .env
 .venv
 venv/
 ENV/
 env/
-venv.bak/
 
-# VSCode settings
+# Ignore IDE-specific files
 .vscode/
-
-# PyCharm settings
 .idea/
 
-# macOS files
+# Other
 .DS_Store
-
-# Windows thumbnail cache
 Thumbs.db
-
-# Backup files
+*.log
 *.bak
 *.swp
-
-# Test coverage
-coverage.xml
-*.cover
-*.hypothesis/
-nosetests.xml
-test_*.xml
