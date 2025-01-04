@@ -12,15 +12,9 @@
         </form>
 
         <div class="flex items-center justify-center gap-4 text-white">
-<<<<<<< HEAD
-            <a href="{% url 'cart:cart' %}"> <i class="fa fa-shopping-cart"></i>{% if cart %}({{cart|length}}){% endif %}</a>
-            <a href="{% url 'wishlist:wish-list' %}"><i class="fa fa-heart"></i> </a>
-
-=======
             <a href="{% url 'cart:cart' %}"> <i class="fa fa-shopping-cart text-2xl transition-transform transform hover:scale-225 hover:text-green-700 hover:shadow-lg"></i>{% if cart %}({{cart|length}}){% endif %}</a>
-            <a href="{% url 'product:wish-list' %}">
+            <a href="{% url 'wishlist:wish-list' %}">
                 <i class="fa fa-heart text-2xl transition-transform transform hover:scale-225 hover:text-red-700 hover:shadow-lg"></i> </a>
->>>>>>> af0a362f3933c2a41397653d0628db925b82318d
 
             {% if request.user.vendor %}
                 <div class="navbar-item has-dropdown is-hoverable">
@@ -34,16 +28,13 @@
                         <a class="navbar-item" href="{% url 'vendor:vendor' %}">
                            Vendor Side
                         </a>
-<<<<<<< HEAD
                              <a class="navbar-item" href="{% url 'order:user_order_list' %}">
                            My Orders
                           </a>
-                            {% else %}
-                                <p class="navbar-item">
-=======
-                        {% else %}
+
+                         {% else %}
                         <p class="navbar-item">
->>>>>>> af0a362f3933c2a41397653d0628db925b82318d
+
                            Wait For Verification
                         </p>
                         {% endif %}

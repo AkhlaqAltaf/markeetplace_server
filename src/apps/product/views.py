@@ -1,35 +1,14 @@
-<<<<<<< HEAD
+
 from django.core.serializers import serialize
-=======
-from symtable import Class
-
-from django.contrib import messages
 from django.db.models import Min, Max
-from django.views import View
-from django.http import JsonResponse
-from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
-from django.urls import reverse_lazy
-from django.shortcuts import get_object_or_404, redirect, render
-from django.http import JsonResponse, HttpResponseBadRequest
-
-from ..cart import cart
-from ..cart.cart import Cart
-from ..vendor.models import Vendor
-
-from .models import Category, CountryOrigin, Product, Media, SubCategory, Tag, WishListProduct, Order, OrderItem
-from .forms import ProductForm, SubCategoryForm
->>>>>>> af0a362f3933c2a41397653d0628db925b82318d
 from django.db.models import Q
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
-from django.views import View
-from django.views.generic import DetailView
-
 from django.shortcuts import render
 from django.views import View
+from django.views.generic import DetailView
 from .forms import SubCategoryForm
 from .models import Category, Product, SubCategory
-
 class ProductDetailView(DetailView):
     model = Product
     template_name = "products/product_detail/product_detail.html"
