@@ -1,0 +1,21 @@
+{% extends 'vendor/main/base.html' %}
+{% load crispy_forms_filters %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="card shadow">
+        <div class="card-header text-center">
+            <h3>Create an Order Offer</h3>
+        </div>
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                {{ form|crispy }}
+                <button type="submit" class="btn btn-primary w-100 mt-3">Save Offer</button>
+            </form>
+            <a href="{% url 'vendor:select_offer_type' %}" class="btn btn-secondary w-100 mt-3">Back</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

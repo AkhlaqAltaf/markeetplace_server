@@ -13,7 +13,7 @@
       <div class="h-5 w-px bg-white hidden sm:block"></div>
 
       <!-- Language Dropdown -->
-      <div class="relative">
+      {% comment %} <div class="relative">
         <button class="flex items-center gap-2" id="language">
           <span id="language">ENG</span>
           <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -31,21 +31,94 @@
             <p>Arabic</p>
           </div>
         </div>
-      </div>
+      </div> {% endcomment %}
 
-      <!-- Currency Dropdown -->
-      <div class="relative" >
-        <button class="flex items-center gap-2" id="currency">
-          <span id="currency">SR</span>
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-          </svg>
+      <div class="relative navbar-item">
+        <button
+          {% comment %} class="flex items-center gap-2 navbar-link is-capitalized custom-user-icon" {% endcomment %}
+          class="flex items-center gap-2 is-capitalized custom-user-icon"
+          id="language-btn"
+          onclick="toggleDropdown()"
+        >
+          <span class="language-text">ENG</span>
+          <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="w-4 h-4 dropdown-icon"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="white"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M19 9l-7 7-7-7"
+          />
+        </svg>
         </button>
-        <div id="currency-dropdown" class="hidden absolute bg-white text-black rounded mt-2 shadow-lg z-10 p-2">
-          <div class="p-2 cursor-pointer hover:bg-gray-200" onclick="selectCurrency('SR')">Saudi Riyal (SR)</div>
-          <hr>
-          <div class="p-2 cursor-pointer hover:bg-gray-200" onclick="selectCurrency('AED')">UAE Dirham (AED)</div>
+        <div
+          id="language-dropdown"
+          class="hidden absolute bg-white text-black rounded mt-2 shadow-lg z-10 p-7 left-[-34px] navbar-dropdown custom-dropdown"
+        >
+          <div
+            class="flex items-center gap-2 p-2 cursor-pointer navbar-item"
+            onclick="selectLanguage('ENG')"
+          >
+            <img
+              src="{% static 'assets/usimage.png' %}"
+              alt="US Flag"
+              class="w-5 h-5 rounded-full border"
+            />
+            <p>English</p>
+          </div>
+          <hr class="navbar-divider" />
+          <div
+            class="flex items-center gap-2 p-2 cursor-pointer navbar-item"
+            onclick="selectLanguage('ARB')"
+          >
+            <img
+              src="{% static 'assets/saudiflag.png' %}"
+              alt="Saudi Flag"
+              class="w-5 h-5 rounded-full border"
+            />
+            <p>Arabic</p>
+          </div>
         </div>
       </div>
+      
+      <script>
+        function toggleDropdown() {
+          const dropdown = document.getElementById("language-dropdown");
+          dropdown.classList.toggle("hidden");
+        }
+      </script>
+      
+      <style>
+        
+        .navbar-item:hover {
+          background-color: unset;
+        }
+      
+        
+        #language-dropdown.hidden {
+          display: none;
+        }
+      
+        
+        #language-dropdown {
+          display: block;
+        }
+        #language-btn .language-text:hover {
+          color: white;
+        }
+        .dropdown-icon:hover {
+          stroke: white; /* Keep it white */
+        }
+      </style>
+      
+
+
+
+   
     </div>
   </div>

@@ -92,10 +92,10 @@
                            class="block px-4 py-2 hover:bg-white/20 transition-colors">
                             Create Bulk
                         </a>
-                        <a href="{% url 'vendor:list_models'%}"
-                           class="block px-4 py-2 hover:bg-white/20 transition-colors">
-                            3D Model
-                        </a>
+{#                        <a href="{% url 'vendor:list_models'%}"#}
+{#                           class="block px-4 py-2 hover:bg-white/20 transition-colors">#}
+{#                            3D Model#}
+{#                        </a>#}
                     </div>
                 </div>
 
@@ -114,18 +114,44 @@
                          class="hidden ml-4 mt-1 space-y-1 bg-white/10 backdrop-blur-sm 
                                 text-white rounded-lg py-2 transition-all duration-300 
                                 ease-in-out transform origin-top">
-                        <a href="{% url 'vendor:orders' %}"
+                        <a href="{% url 'order:orders' %}"
                            class="block px-4 py-2 hover:bg-white/20 transition-colors">
                             List
                         </a>
-                        <a href="{% url 'vendor:order-details' %}"
+
+
+                    </div>
+                </div>
+
+
+
+{#                OFFERS #}
+
+                                <div class="relative dropdown-container">
+                    <div class="dropdown-toggle w-full flex items-center justify-between
+                                px-4 py-3 cursor-pointer hover:bg-[#073741]/50 rounded-lg
+                                transition-colors group" data-target="offersDropdown">
+                        <div class="flex items-center">
+                            <i class="fas fa-dollar w-5 h-5 mr-4"></i>
+                            <span>Offers</span>
+                        </div>
+                        <i class="fas fa-chevron-right transition-transform dropdown-arrow"></i>
+                    </div>
+                    <div id="offersDropdown"
+                         class="hidden ml-4 mt-1 space-y-1 bg-white/10 backdrop-blur-sm
+                                text-white rounded-lg py-2 transition-all duration-300
+                                ease-in-out transform origin-top">
+                        <a href="{% url 'vendor:create_product_offer' %}"
                            class="block px-4 py-2 hover:bg-white/20 transition-colors">
-                            Details
+                            Product Offer
                         </a>
-                        <a href="{% url 'vendor:order-status' %}" 
+                             <a href="{% url 'vendor:create_order_offer' %}"
                            class="block px-4 py-2 hover:bg-white/20 transition-colors">
-                            Order Status
+                            Order Offer
                         </a>
+
+
+
                     </div>
                 </div>
 
@@ -155,12 +181,6 @@
                     </div>
                 </div>
 
-                <!-- Calendar -->
-                <a href="{% url 'vendor:calender'%}" 
-                   class="w-full flex items-center px-4 py-3 hover:bg-[#073741]/50 rounded-lg transition-colors group">
-                    <i class="fas fa-calendar-alt w-5 h-5 mr-4 group-hover:scale-110 transition-transform"></i>
-                    <span>Calendar</span>
-                </a>
             </nav>
         </div>
     </div>

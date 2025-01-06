@@ -3,12 +3,12 @@
 
 from .models import Category, Product
 
-from .models import Category,  Product, ProductVariant, Media,SubCategory,TopPageProduct, Tag, ShippingInfo, Review,CountryOrigin
+from .models import Category,  Product, ProductVariant, Media,SubCategory,TopPageProduct, Tag, ShippingInfo, Review , OrderOffer , ProductOffer
 from ..core.admin import admin_site
-
+admin_site.register(OrderOffer)
+admin_site.register(ProductOffer)
 admin_site.register(Category)
 admin_site.register(SubCategory)
-admin_site.register(CountryOrigin)
 admin_site.register(Product)
 admin_site.register(ProductVariant)
 admin_site.register(Media)

@@ -1,53 +1,123 @@
-{% extends 'core/base.html' %}
+{% extends 'vendor/main/base.html' %}
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Orders</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-50 min-h-screen text-gray-800">
-    {% block content %}
-    <div class="p-10">
-        <h1 class="text-3xl text-black font-bold mb-4">My Orders</h1>
+{% block content %}
+<div class="p-4 sm:p-10">
+  <!-- Header -->
+  <div class="flex flex-col sm:flex-row justify-between items-center mb-4">
+    <h1 class="text-2xl sm:text-3xl text-black font-bold">Orders</h1>
+  </div>
 
-        <!-- Orders Table -->
-        <div>
-            <table class="min-w-full bg-white rounded shadow">
-                <thead>
-                    <tr class="bg-gray-100 text-left text-sm">
-                        <th class="p-4">Order ID</th>
-                        <th class="p-4">Total</th>
-                        <th class="p-4">Status</th>
-                        <th class="p-4">Date</th>
-                        <th class="p-4">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for order in orders %}
-                    <tr>
-                        <td class="p-4">{{ order.id }}</td>
-                        <td class="p-4">${{ order.get_total_cost }}</td>
-                        <td class="p-4">{{ order.get_status_display }}</td>
-                        <td class="p-4">{{ order.created_at|date:"Y-m-d H:i" }}</td>
-                        <td class="p-4">
-                            {% if order.status == 'pending' %}
-                            <form method="post" action="{% url 'order:cancel_order' order.id %}" class="inline">
-                                {% csrf_token %}
-                                <button type="submit" class="text-red-500 hover:text-red-700">Cancel Order</button>
-                            </form>
-                            {% else %}
-                            <span class="text-gray-500">Cannot cancel</span>
-                            {% endif %}
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
+  <!-- Filters -->
+  <div class="flex flex-wrap space-x-4 mb-4 text-sm sm:text-base">
+    <button id="filterAll" class="filter-btn text-teal-700 border-b-4 border-teal-700 pb-1 mb-2 sm:mb-0" onclick="filterOrders('ALL')">All</button>
+    <button id="filterPending" class="filter-btn text-gray-500 hover:text-teal-700 mb-2 sm:mb-0" onclick="filterOrders('pending')">Pending</button>
+    <button id="filterReadyToShip" class="filter-btn text-gray-500 hover:text-teal-700 mb-2 sm:mb-0" onclick="filterOrders('ready_to_ship')">Ready to Ship</button>
+    <button id="filterCanceled" class="filter-btn text-gray-500 hover:text-teal-700 mb-2 sm:mb-0" onclick="filterOrders('canceled')">Canceled</button>
+  </div>
+
+  <!-- Search -->
+  <div class="flex items-center justify-between bg-white p-4 rounded mb-4 gap-2 shadow">
+    <div class="relative w-full bg-white">
+      <input
+        id="searchInput"
+        type="text"
+        class="w-full border border-gray-300 p-2 rounded text-black"
+        placeholder="Search by Order ID, Status, or Date"
+        oninput="handleSearchChange()"
+      />
     </div>
-    {% endblock content %}
-</body>
-</html>
+  </div>
+
+  <!-- Orders Table -->
+  <div class="overflow-x-auto">
+    <table class="min-w-full bg-white rounded shadow">
+      <thead>
+        <tr class="bg-gray-100 text-left text-sm">
+          <th class="p-4">Order ID</th>
+          <th class="p-4">Total</th>
+          <th class="p-4">Status</th>
+          <th class="p-4">Date</th>
+          <th class="p-4">Actions</th>
+        </tr>
+      </thead>
+      <tbody id="ordersTable">
+        {% for order in orders %}
+        <tr
+          data-status="{{ order.status }}"
+          data-id="{{ order.id }}"
+          data-date="{{ order.created_at|date:'Y-m-d H:i' }}"
+        >
+          <td class="p-4">{{ order.id }}</td>
+          <td class="p-4">${{ order.get_total_cost }}</td>
+          <td class="p-4">{{ order.status }}</td>
+          <td class="p-4">{{ order.created_at|date:"Y-m-d H:i" }}</td>
+          <td class="p-4">
+            <form method="post" action="{% url 'order:update_order_status' order.id %}" class="inline">
+              {% csrf_token %}
+              <select name="status" onchange="this.form.submit()" class="border p-1 rounded">
+                <option value="pending" {% if order.status == 'pending' %}selected{% endif %}>Pending</option>
+                <option value="ready_to_ship" {% if order.status == 'ready_to_ship' %}selected{% endif %}>Ready to Ship</option>
+                <option value="canceled" {% if order.status == 'canceled' %}selected{% endif %}>Canceled</option>
+              </select>
+            </form>
+            <a href="{% url 'order:order-detail' order.id %}" class="text-blue-600 hover:underline ml-4">View</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+  const ordersTable = document.getElementById("ordersTable");
+  const searchInput = document.getElementById("searchInput");
+  const filterButtons = document.querySelectorAll(".filter-btn");
+
+  let currentFilter = "ALL";
+
+  function filterOrders(status) {
+    currentFilter = status;
+
+    // Update button styles
+    filterButtons.forEach((button) => {
+      button.classList.remove("text-teal-700", "border-b-4", "border-teal-700");
+      button.classList.add("text-gray-500");
+    });
+
+    document
+      .getElementById(`filter${status.charAt(0).toUpperCase() + status.slice(1)}`)
+      .classList.add("text-teal-700", "border-b-4", "border-teal-700");
+
+    // Filter orders
+    const rows = Array.from(ordersTable.querySelectorAll("tr"));
+    rows.forEach((row) => {
+      const rowStatus = row.getAttribute("data-status");
+      const matchesFilter = status === "ALL" || rowStatus === status;
+      row.style.display = matchesFilter ? "" : "none";
+    });
+  }
+
+  function handleSearchChange() {
+    const searchValue = searchInput.value.toLowerCase();
+
+    // Filter rows based on search value
+    const rows = Array.from(ordersTable.querySelectorAll("tr"));
+    rows.forEach((row) => {
+      const orderId = row.getAttribute("data-id").toLowerCase();
+      const orderDate = row.getAttribute("data-date").toLowerCase();
+      const orderStatus = row.getAttribute("data-status").toLowerCase();
+
+      const matchesSearch =
+        orderId.includes(searchValue) ||
+        orderDate.includes(searchValue) ||
+        orderStatus.includes(searchValue);
+
+      row.style.display = matchesSearch ? "" : "none";
+    });
+  }
+
+  // Initial load
+  filterOrders("ALL");
+</script>
+{% endblock content %}

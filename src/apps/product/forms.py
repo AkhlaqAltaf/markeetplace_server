@@ -1,6 +1,6 @@
 from django import forms
 
-from src.apps.product.models import Category, CountryOrigin, Product, Media, SubCategory
+from src.apps.product.models import Category, Product, Media, SubCategory
 from ckeditor.widgets import CKEditorWidget
 
 
@@ -28,27 +28,22 @@ class MediaForm(forms.ModelForm):
 class ProductForm(forms.ModelForm):
     class Meta:
         model = Product
-        fields = ['name', 'currency', 'price', 'discount_price', 'sku', 'stock_quantity', 'category', 'sub_category', 'description', 'country_of_origin','product_image']
-
-    # Additional field validations
-    def clean_category(self):
-        category = self.cleaned_data.get('category')
-        if not Category.objects.filter(id=category.id).exists():
-            raise forms.ValidationError("Invalid category.")
-        return category
-
-    def clean_sub_category(self):
-        sub_category = self.cleaned_data.get('sub_category')
-        category = self.cleaned_data.get('category')
-        if sub_category and not SubCategory.objects.filter(id=sub_category.id, category=category).exists():
-            raise forms.ValidationError("Invalid sub-category.")
-        return sub_category
-
-    def clean_country_of_origin(self):
-        country = self.cleaned_data.get('country_of_origin')
-        if not CountryOrigin.objects.filter(id=country.id).exists():
-            raise forms.ValidationError("Invalid country of origin.")
-        return country
+        fields = [
+            'name', 'description', 'category', 'sub_category',
+            'price',  'stock_quantity', 'sku',
+             'brand'
+        ]
+        widgets = {
+            'description': forms.Textarea(attrs={'rows': 3}),
+            'content': CKEditorWidget(attrs={'rows': 5}),  # Use CKEditorWidget for RichTextField
+            'tags': forms.SelectMultiple(attrs={'class': 'form-control'}),
+            'category': forms.Select(attrs={'class': 'form-control'}),
+            'sub_category': forms.Select(attrs={'class': 'form-control'}),
+        }
+        help_texts = {
+            'tags': 'Select multiple tags if applicable.',
+            'country_of_origin': 'Select all applicable countries.',
+        }
 
 
 # Media Form (handling multiple files without ClearableFileInput)
