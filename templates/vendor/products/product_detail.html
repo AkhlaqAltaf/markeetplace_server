@@ -1,0 +1,141 @@
+{% extends 'vendor/main/base.html' %}
+
+{% block content %}
+<div class="bg-gray-50 font-sans">
+    <div class="font-sans">
+        <div class="p-4 lg:max-w-5xl max-w-lg mx-auto">
+            <div class="grid items-start grid-cols-1 lg:grid-cols-2 gap-6 max-lg:gap-12">
+
+                <!-- Product Images -->
+                <div class="w-full lg:sticky top-0 sm:flex gap-2">
+                    <!-- Thumbnail Images Section -->
+                    <div class="sm:space-y-3 w-16 max-sm:w-12 max-sm:flex max-sm:mb-4 max-sm:gap-4">
+                        {% for media in product.media.all %}
+                            {% if media.media_type != '3d' %}
+                                <img
+                                    src="{{ media.file.url }}"
+                                    alt="Product1"
+                                    class="w-full cursor-pointer rounded-md outline"
+                                    onclick="changeImage(this.src)"
+                                />
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+
+                    <!-- Main Image Section -->
+                    <div class="relative overflow-hidden group w-4/5 rounded-md">
+                        <img
+                            id="mainImage"
+                            src="{{ product.media.first.file.url }}"
+                            alt="Product"
+                            class="w-full h-auto object-cover transform group-hover:scale-150 transition duration-300 ease-in-out"
+                        />
+                    </div>
+                </div>
+
+                <!-- Product Details -->
+                <div>
+                    <h2 id="productName" class="text-2xl font-bold text-gray-800">{{ product.name }}</h2>
+                    <div class="flex flex-wrap gap-4 mt-4">
+                        <p id="productPrice" class="text-gray-800 text-xl font-bold mb-3">${{ product.price }}</p>
+                        <div>
+                            <p class="text-danger">Available in</p>
+                            <div id="productOrigins">
+                                {% for origin in product.country_of_origin.all %}
+                                    <p class="text-blue-100 text-xl font-serif">{{ origin.name }}</p>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    <p id="productStock">Stock: {{ product.stock_quantity }}</p>
+                    <p id="productDescription">{{ product.description }}</p>
+                    <button id="editButton" class="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md">Edit</button>
+                    <div id="editControls" class="hidden space-x-2 mt-4">
+                        <button id="saveButton" class="px-4 py-2 bg-green-600 text-white rounded-md">Save</button>
+                        <button id="cancelButton" class="px-4 py-2 bg-red-600 text-white rounded-md">Cancel</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3D Model Viewer Section -->
+            <div class="mt-8">
+                <a class="items-center justify-center rounded-md px-3 py-2 text-center text-sm font-medium text-white hover:text-white focus:outline-none focus:ring-4 focus:ring-blue-300" href="{% url 'product:product-detail3d' product.id %}">
+                    <h3 class="text-xl font-bold text-gray-800">3D View</h3>
+                </a>
+            </div>
+
+
+
+            <!-- About the Item Section -->
+            <div class="mt-8">
+                <h3 class="text-xl font-bold text-gray-800">About the item</h3>
+                <div id="productContent">{{ product.content|safe }}</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const editButton = document.getElementById('editButton');
+    const saveButton = document.getElementById('saveButton');
+    const cancelButton = document.getElementById('cancelButton');
+    const editControls = document.getElementById('editControls');
+    let isEditing = false;
+
+    const fields = ['productName', 'productPrice', 'productStock', 'productDescription'];
+    const originalValues = {};
+
+    // Convert fields to editable
+    editButton.addEventListener('click', () => {
+        if (!isEditing) {
+            isEditing = true;
+            editControls.classList.remove('hidden');
+            editButton.classList.add('hidden');
+            fields.forEach((field) => {
+                const element = document.getElementById(field);
+                originalValues[field] = element.innerText;
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.className = 'w-full p-2 border rounded-md';
+                input.value = element.innerText.trim();
+                element.innerHTML = '';
+                element.appendChild(input);
+            });
+        }
+    });
+
+    // Save changes
+    saveButton.addEventListener('click', () => {
+        const data = {};
+        fields.forEach((field) => {
+            const element = document.getElementById(field);
+            const input = element.querySelector('input');
+            data[field] = input.value.trim();
+            element.innerHTML = input.value.trim();
+        });
+        fetch("{% url 'vendor:edit_product' product.id%}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify(data)
+        }).then(() => {
+            editControls.classList.add('hidden');
+            editButton.classList.remove('hidden');
+            isEditing = false;
+        });
+    });
+
+    // Cancel editing
+    cancelButton.addEventListener('click', () => {
+        fields.forEach((field) => {
+            const element = document.getElementById(field);
+            element.innerHTML = originalValues[field];
+        });
+        editControls.classList.add('hidden');
+        editButton.classList.remove('hidden');
+        isEditing = false;
+    });
+</script>
+{% endblock %}

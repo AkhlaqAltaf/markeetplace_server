@@ -1,13 +1,19 @@
 import json
+import uuid
+
 from django.contrib import messages
 from django.contrib.auth import login
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404
+from django.utils.decorators import method_decorator
 # Converting Title into Slug
 from django.utils.text import slugify
 from django.views import View
-from django.views.generic import CreateView
+from django.views.decorators.csrf import csrf_exempt
+from django.views.generic import CreateView, UpdateView, DetailView
 from datetime import datetime
+
+from django.core.serializers import serialize
+
 from src.apps.product.forms import ProductForm
 from src.apps.product.models import Category, CountryOrigin, SubCategory, Tag, Media, Product
 from src.apps.vendor.forms import VendorForm
@@ -246,15 +252,27 @@ class GetSubCategory(View):
 
 
 
+def addProductTest(request):
+    return render(request,template_name="vendor/add_product/addproduct.html")
+def Checkout(request):
+    return render(request,template_name="vendor/add_product/vendorcheckout.html")
+
+
 
 def Register(request):
     return render(request, 'vendor/registration/registration2.html')
 
 
 
+
 def storeAnalytics(request):
     return render(request, 'vendor/Analytics.html')
-
+def OrderList(request):
+    return render(request, 'vendor/order/orderlist.html')
+def OrderDetails(request):
+    return render(request, 'vendor/order/orderdetail.html')
+def OrderStatus(request):
+    return render(request, 'vendor/order/Status.html')
 def InvoiceList(request):
     return render(request, 'vendor/invoice/invoicelist.html')
 def InvoiceDetails(request):
@@ -286,6 +304,17 @@ def CustomerDetails(request):
 
 
 
+class RemoveProductView(View):
+    def post(self, request, product_id):
+        # Get the product or return a 404 if it doesn't exist
+        product = get_object_or_404(Product, id=product_id, vendor=request.user.vendor)
+        # Delete the product
+        product.delete()
+        # Add a success message
+        messages.success(request, 'Product removed successfully.')
+
+        # Redirect to the product list page
+        return redirect('vendor:vendor_product_list')
 
 
 class VendorProductListView(View):
@@ -302,19 +331,85 @@ class VendorProductListView(View):
 
 
 
+class EditProductView(UpdateView):
+    model = Product
+    form_class = ProductForm
+    pk_url_kwarg = 'pk'
+
+    def post(self, request, *args, **kwargs):
+        product = get_object_or_404(Product, pk=kwargs.get(self.pk_url_kwarg))
+        form = self.get_form()
+
+        if form.is_valid():
+            # Save the product details
+            self.object = form.save()
+            print(f"FORM SAVED{ self.object}")
+            # Handle image updates
+            images_data = request.POST.getlist('images')
+            if images_data:
+                images_data = json.loads(images_data[0])  # Decode JSON string into a list
+            else:
+                images_data = []
+
+            # Clear existing media files for the product
+            Media.objects.filter(product=product).delete()
+
+            # Save new images
+            for image in images_data:
+                file = self.convert_base64_image(image)
+                if file:
+                    Media.objects.create(product=product, file=file)
+
+            return JsonResponse({'success': True, 'message': 'Product updated successfully'})
+        else:
+            return JsonResponse({'success': False, 'errors': form.errors})
+
+    def convert_base64_image(self, base64_data):
+        """
+        Converts a base64 image string into a Django ContentFile.
+        """
+        data = next(iter(base64_data.values()))
+        if data.startswith("data:image"):
+            data = data.split(",")[1]
+        try:
+            file_data = base64.b64decode(data)
+            content_file = ContentFile(file_data, name=f"{uuid.uuid4()}.jpg")
+            return content_file
+        except Exception as e:
+            print(f"Error decoding base64 image: {e}")
+            return None
 
 
 
 
 
+class ProductDetailView(DetailView):
+    model = Product
+    template_name = "vendor/products/product_detail.html"
+    context_object_name = "product"
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        products = Product.objects.all()
+        products_json = serialize('json', products)
 
-
-
-
-
-
-
-
+        product = self.get_object()
+        reviews = product.reviews.all()
+        total_reviews = reviews.count()
+        rating_distribution = {rating: 0 for rating in range(1, 6)}  # Initialize for ratings 1 to 5
+        for review in reviews:
+            print("REVIEW : ",review.rating)
+            rating_distribution[review.rating] += 1
+        rating_percentages = {
+            rating: (count / total_reviews) * 100 if total_reviews > 0 else 0
+            for rating, count in rating_distribution.items()
+        }
+        print(rating_percentages)
+        # Add data to context
+        context['rating_percentages'] = rating_percentages
+        context['total_reviews'] = total_reviews
+        # Add the JSON data to the context
+        context['products'] = products_json
+        return context
 
 
 
@@ -325,34 +420,10 @@ class VendorProductListView(View):
 # CREATING 3d MODEL
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 import requests
 import base64
 from django.shortcuts import render, redirect
-from django.http import HttpResponse, HttpResponseBadRequest, JsonResponse
+from django.http import HttpResponse, JsonResponse
 from .models import ThreeDModel
 
 
@@ -391,25 +462,6 @@ def create_model(request):
 
         return redirect('vendor:list_models')
     return render(request, 'vendor/3d/create_model.html')
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 from django.utils import timezone
 
 def download_model(request, pk):

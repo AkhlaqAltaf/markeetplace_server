@@ -6,7 +6,7 @@ from django.contrib.auth import views as auth_views
 from django.conf import settings
 from django.conf.urls.static import static
 
-from .views import  VendorProductListView
+from .views import VendorProductListView, RemoveProductView
 
 app_name = 'vendor'
 
@@ -22,11 +22,14 @@ urlpatterns = [
     path('add_product/subcategory/<str:category>/',views.GetSubCategory.as_view(),name="subcategory"),
     path('add_bulk/subcategory/<str:category>/', views.GetSubCategory.as_view(), name="subcategory"),
     path('add_product/', views.AddProductView.as_view(),name="add"),
+    path('products/edit/<int:pk>/',views.EditProductView.as_view(),name="edit_product"),
 
     path('store-analytics/',views.storeAnalytics,name="store-analytics"),
     path('signup/',views.Register,name="signup"),
     path('create-product/',views.ProductAdd,name="create-product"),
     path('product-list/',views.ProductList,name="product-list"),
+    path('checkout/',views.Checkout,name="checkout"),
+
     path('invoice-list/',views.InvoiceList,name="invoice-list"),
     path('invoice-details/',views.InvoiceDetails,name="invoice-details"),
     path('calender/',views.Calender,name="calender"),
@@ -39,6 +42,9 @@ urlpatterns = [
     path('customers-list/',views.CustomerList,name="customers-list"),
     path('customers-details/',views.CustomerDetails,name="customers-details"),
     path('products/', VendorProductListView.as_view(), name='vendor_product_list'),
+    path('remove/<int:product_id>/', RemoveProductView.as_view(), name='remove_product'),
+    path('product_detail/<int:pk>/', views.ProductDetailView.as_view(), name='product_detail'),
+
     path('models/', views.list_models, name='list_models'),
     path('models/create/', views.create_model, name='create_model'),
     path('models/<pk>/download/', views.download_model, name='download_model'),

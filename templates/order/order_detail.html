@@ -1,176 +1,84 @@
 {% extends 'vendor/main/base.html' %}
 
 {% block content %}
+<div class="max-w-6xl mx-auto p-6 bg-white shadow-lg rounded-lg mt-10">
+  <!-- Header -->
+  <div class="flex items-center justify-between mb-6">
+    <h1 class="text-2xl font-bold text-gray-800">Order Details</h1>
+    <p class="text-sm text-gray-500">Order ID: #{{ order.id }}</p>
+  </div>
 
-    <div class="max-w-6xl mx-auto p-6 bg-white shadow-lg rounded-lg mt-10">
-        <h1 class="text-2xl font-bold text-gray-800 mb-4">Order Details</h1>
-
-      <div class="flex bg-[#FDFAE7] border border-[#F7E99E] h-[100px] rounded-lg px-5 justify-between items-center mb-4">
-        <div>
-          <p class="text-sm font-bold">#96459761</p>
-          <p class="text-xs text-gray-500">
-            4 Products • Order Placed on {{ order.created_at|date:"F j, Y, g:i a" }}
-          </p>
-        </div>
-        <p class="text-2xl font-bold text-blue-600">$1199.00</p>
-      </div>
-        <!-- Products Section -->
-        <div class="mb-6">
-            <h2 class="text-lg font-semibold text-gray-700 mb-4">Products</h2>
-            <div class="overflow-x-auto">
-                <table class="min-w-full bg-white border">
-                    <thead>
-                        <tr class="bg-gray-200">
-                            <th class="py-2 px-4 border">Product</th>
-                            <th class="py-2 px-4 border">Price</th>
-                            <th class="py-2 px-4 border">Quantity</th>
-                            <th class="py-2 px-4 border">Total</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for item in order.orderitem_set.all %}
-                        <tr class="text-gray-700">
-                            <td class="py-2 px-4 border">
-                                <div class="flex items-center">
-                                    {% if item.product.media.first %}
-                                    <img src="{{ item.product.media.first.file.url }}" alt="{{ item.product.name }}" class="w-16 h-16 rounded-lg mr-4">
-                                    {% endif %}
-                                    <div>
-                                        <p class="font-semibold">{{ item.product.name }}</p>
-                                        <p class="text-sm text-gray-500">{{ item.product.sku }}</p>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="py-2 px-4 border">${{ item.product.price }}</td>
-                            <td class="py-2 px-4 border">{{ item.quantity }}</td>
-                            <td class="py-2 px-4 border">${{ item.product.price|floatformat:2}}</td>
-
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-
-  <div class="bg-white p-10 max-w-5xl m-auto mt-10">
-    <!-- Header -->
-
-    <!-- Order Info Box -->
-    <div class="bg-white border rounded-lg shadow-lg p-10">
-
-
-      <!-- Progress Bar -->
-      <div class="border-t pt-4">
-        <p class="text-sm font-bold mb-2">
-          Order expected arrival <span class="text-green-700">23 Jan, 2021</span>
-        </p>
-
-        <!-- Dynamic Progress Circles and Line -->
-        <div class="flex flex-col items-center gap-6 w-full mt-6">
-          <div class="relative w-full flex items-center justify-between">
-            <!-- Full Progress Line -->
-            <div class="absolute w-full transform -translate-y-1/2 h-[8px] top-1/2 gap-0 rounded-[100px_0_0_0] bg-[#FFE7D6">
-              <div id="progressBar" class="h-full bg-[#0B5D51] rounded-full" style="width: 0%"></div>
-            </div>
-
-            <!-- Dynamic Step Circles -->
-            <div class="relative z-10 flex items-center justify-between w-full">
-              <div class="step-circle cursor-pointer" data-index="0">
-                <div class="w-6 h-6 rounded-full bg-white border-2 border-[#0B5D51]"></div>
-              </div>
-              <div class="step-circle cursor-pointer" data-index="1">
-                <div class="w-6 h-6 rounded-full bg-white border-2 border-[#0B5D51]"></div>
-              </div>
-              <div class="step-circle cursor-pointer" data-index="2">
-                <div class="w-6 h-6 rounded-full bg-white border-2 border-[#0B5D51]"></div>
-              </div>
-              <div class="step-circle cursor-pointer" data-index="3">
-                <div class="w-6 h-6 rounded-full bg-white border-2 border-[#0B5D51]"></div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Step Labels -->
-          <div class="flex items-center justify-between w-full mt-4">
-            <div class="flex flex-col items-center ">
-                <i class="fas fa-book w-8 h-8 text-sm md:text-2xl mb-3 text-[#0B5D51] "></i>
-                <span class="text-[10px] md:text-[14px] font-semibold text-[#0B5D51] text-center">Order Placed</span>
-            </div>
-            <div class="flex flex-col items-center">
-              <i class="fas fa-box w-8 h-8 mb-3  text-sm md:text-2xl text-[#0B5D51] "></i>
-              <span class="text-[10px] md:text-[14px] font-semibold text-[#0B5D51]">Packaging</span>
-            </div>
-            <div class="flex flex-col items-center">
-              <i class="fas fa-truck w-8 h-8 mb-3   text-sm md:text-2xl text-[#0B5D51] "></i>
-              <span class="text-[10px] md:text-[14px] font-semibold text-[#0B5D51]">On The Road</span>
-            </div>
-            <div class="flex flex-col items-center">
-              <i class="fas fa-handshake w-8 h-8 mb-3  text-sm md:text-2xl text-[#0B5D51] "></i>
-              <span class="text-[10px] md:text-[14px] font-semibold text-[#0B5D51]">Delivered</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Action Buttons -->
-        <div class="flex justify-end mt-6 space-x-4">
-          <button class="text-black flex gap-2 items-center">
-            <span>Edit</span>
-            <i class="fa-solid fa-pencil text-sm "></i>
-        </button>
-          <button class="bg-[#0B5D51] text-white py-2 px-4 rounded-md" id="updateStatusBtn">
-            Update Status
-          </button>
-        </div>
-      </div>
+  <!-- Order Summary -->
+  <div class="flex items-center justify-between bg-[#FDFAE7] border border-[#F7E99E] p-4 rounded-lg mb-6">
+    <div>
+      <p class="text-sm font-bold">Order Date:</p>
+      <p class="text-xs text-gray-500">{{ order.created_at|date:"F j, Y, g:i a" }}</p>
+    </div>
+    <div>
+      <p class="text-sm font-bold">Total:</p>
+      <p class="text-lg font-semibold text-blue-600">${{ order.get_total_cost }}</p>
     </div>
   </div>
 
-  <script>
-    const steps = document.querySelectorAll('.step-circle');
-    const progressBar = document.getElementById('progressBar');
-    const updateStatusBtn = document.getElementById('updateStatusBtn');
+  <!-- Products Section -->
+  <h2 class="text-lg font-semibold text-gray-700 mb-4">Products</h2>
+  <table class="w-full bg-white border rounded-lg shadow">
+    <thead class="bg-gray-100">
+      <tr>
+        <th class="p-4 text-left">Product</th>
+        <th class="p-4 text-left">Price</th>
+        <th class="p-4 text-left">Quantity</th>
+        <th class="p-4 text-left">Total</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in order.orderitem_set.all %}
+      <tr class="border-t">
+        <td class="p-4 flex items-center">
+          {% if item.product.media.first %}
+          <img src="{{ item.product.media.first.file.url }}" alt="{{ item.product.name }}" class="w-16 h-16 rounded-lg mr-4">
+          {% endif %}
+          <div>
+            <p class="font-semibold">{{ item.product.name }}</p>
+            <p class="text-sm text-gray-500">{{ item.product.sku }}</p>
+          </div>
+        </td>
+        <td class="p-4">${{ item.product.price }}</td>
+        <td class="p-4">{{ item.quantity }}</td>
+        <td class="p-4">${{ item.product.price|floatformat:2 }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
 
-    let currentStep = 0;
-
-    steps.forEach(step => {
-      step.addEventListener('click', () => {
-        currentStep = parseInt(step.getAttribute('data-index'));
-        updateProgress();
-      });
-    });
-
-    function updateProgress() {
-      // Update Progress Bar
-      const progressWidth = (currentStep / (steps.length - 1)) * 100;
-      progressBar.style.width = progressWidth + '%';
-
-      // Update Circle Colors
-      steps.forEach((step, index) => {
-        if (index <= currentStep) {
-          step.innerHTML = `<div class="w-6 h-6 rounded-full bg-[#0B5D51]"></div>`;
-        } else {
-          step.innerHTML = `<div class="w-6 h-6 rounded-full bg-white border-2 border-[#0B5D51]"></div>`;
-        }
-      });
-
-      // Update Step Labels
-      const stepLabels = document.querySelectorAll('.step-label');
-      stepLabels.forEach((label, index) => {
-        label.classList.toggle('text-[#0B5D51]', index <= currentStep);
-        label.classList.toggle('text-[#93c6bd]', index > currentStep);
-      });
-    }
-
-    updateStatusBtn.addEventListener('click', () => {
-      if (currentStep < steps.length - 1) {
-        currentStep++;
-        updateProgress();
-      }
-    });
-  </script>
+  <!-- Order Status -->
+  <div class="mt-6">
+    <h2 class="text-lg font-semibold text-gray-700 mb-4">Order Status</h2>
+    <div class="flex items-center justify-between mb-4">
+      <div class="flex items-center gap-4">
+        <span class="text-sm font-semibold">Current Status:</span>
+        <span class="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm">{{ order.get_status_display }}</span>
+      </div>
+      <form method="post" action="{% url 'order:update_order_status' order.id %}" class="flex items-center">
+        {% csrf_token %}
+        <label for="status" class="text-sm font-semibold mr-2">Update Status:</label>
+        <select name="status" id="status" class="border-gray-300 rounded p-2 text-sm" onchange="this.form.submit()">
+          <option value="pending" {% if order.status == 'pending' %}selected{% endif %}>Pending</option>
+          <option value="ready_to_ship" {% if order.status == 'ready_to_ship' %}selected{% endif %}>Ready To Ship</option>
+        </select>
+      </form>
     </div>
+  </div>
 
-
-
+  <!-- Progress Bar -->
+  <div class="mt-6">
+    <div class="flex items-center justify-between mb-4">
+      <span class="text-sm text-gray-500">Pending</span>
+      <span class="text-sm text-gray-500">Ready to Ship</span>
+    </div>
+    <div class="relative bg-gray-200 h-2 rounded-full">
+      <div class="absolute top-0 left-0 h-2 bg-teal-500 rounded-full" style="width: {% if order.status == 'pending' %}50%{% else %}100%{% endif %};"></div>
+    </div>
+  </div>
+</div>
 {% endblock %}
