@@ -1,6 +1,7 @@
 import json
 from django.contrib import messages
 from django.contrib.auth import login
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404
 # Converting Title into Slug
 from django.utils.text import slugify
@@ -8,7 +9,7 @@ from django.views import View
 from django.views.generic import CreateView
 from datetime import datetime
 from src.apps.product.forms import ProductForm
-from src.apps.product.models import Category, CountryOrigin, SubCategory, Tag, Media
+from src.apps.product.models import Category, CountryOrigin, SubCategory, Tag, Media, Product
 from src.apps.vendor.forms import VendorForm
 from src.apps.vendor.models import Vendor
 from .mixins import CheckVendorMixin
@@ -89,7 +90,6 @@ class VendorAdminView(CheckVendorMixin, View):
 
 class EditVendorView(CheckVendorMixin, View):
     template_name = 'vendor/edit_vendor.html'
-
     def get(self, request, *args, **kwargs):
         vendor = request.user.vendor
         return render(request, self.template_name, {'vendor': vendor})
@@ -105,8 +105,8 @@ class EditVendorView(CheckVendorMixin, View):
             vendor.name = name
             vendor.save()
             return redirect('vendor:vendor-admin')
-
         return render(request, self.template_name, {'vendor': vendor})
+
 
 
 class VendorsView(View):
@@ -115,6 +115,7 @@ class VendorsView(View):
     def get(self, request, *args, **kwargs):
         vendors = Vendor.objects.all()
         return render(request, self.template_name, {'vendors': vendors})
+
 
 
 class VendorDetailView(View):
@@ -126,24 +127,6 @@ class VendorDetailView(View):
     
     
     
-    
-class UpdateOrderStatusView(View):
-    def post(self, request, order_id):
-        try:
-            order = Order.objects.get(id=order_id)
-        except Order.DoesNotExist:
-            return HttpResponseBadRequest("Order does not exist.")
-
-        new_status = request.POST.get('status')
-        if new_status not in dict(Order.STATUS_CHOICES):
-            return HttpResponseBadRequest("Invalid status.")
-
-        order.status = new_status
-        order.save()
-
-        return JsonResponse({'success': True, 'new_status': order.status})
-
-
 
 class AddProductView(CreateView):
     
@@ -247,107 +230,6 @@ class AddBulkProductsView(View):
 
 
 
-class CreateProduct(View):
-    # Template for GET request
-    def get(self, request, *args, **kwargs):
-        categories = Category.objects.all()
-        origins = CountryOrigin.objects.all()
-        return render(request, "vendor/add_product/addproduct.html.html", context={"categories": categories, 'origins': origins})
-
-    # Handling POST request to create a product
-    def post(self, request, *args, **kwargs):
-        data = request.POST
-        images = request.FILES.getlist('images')
-
-        category_name = data.get("category")
-        category_obj = Category.objects.filter(name=category_name).first()
-        sub_category_obj = SubCategory.objects.filter(name=data.get("sub_category"), category=category_obj).first()
-
-        # Validation Errors Dictionary
-        errors = {}
-
-        # Required fields
-        required_fields = ['name', 'price', 'stock_quantity', 'category', 'sub_category', 'description']
-        for field in required_fields:
-            if not data.get(field):
-                errors[field] = f"{field.replace('_', ' ').capitalize()} is required."
-
-        # Validate price
-        price = data.get('price')
-        if price:
-            try:
-                price = float(price)
-                if price <= 0:
-                    errors['price'] = "Price must be greater than 0."
-            except ValueError:
-                errors['price'] = "Price must be a valid number."
-
-        sku = data.get('sku')
-        if Product.objects.filter(sku=sku).exists():
-            errors['sku'] = "This SKU is already in use. Please choose a unique SKU."
-
-        # Validate stock_quantity
-        stock_quantity = data.get('stock_quantity')
-        if stock_quantity:
-            try:
-                stock_quantity = int(stock_quantity)
-                if stock_quantity < 0:
-                    errors['stock_quantity'] = "Stock quantity must be 0 or more."
-            except ValueError:
-                errors['stock_quantity'] = "Stock quantity must be an integer."
-
-        # Validate category
-        if not Category.objects.filter(name=category_name).exists():
-            errors['category'] = "Invalid category selected."
-
-        # Validate sub_category
-        sub_category_name = data.get('sub_category')
-        if not SubCategory.objects.filter(name=sub_category_name, category=category_obj).exists():
-            errors['sub_category'] = "Invalid subcategory selected for the chosen category."
-
-        # If there are validation errors, return them
-        if errors:
-            return JsonResponse({'success': False, 'errors': errors}, status=400)
-
-        # Proceed with product creation if no errors
-        vendor = Vendor.objects.all().first()
-        product = Product.objects.create(
-            name=data.get("name"),
-            description=data.get("description"),
-            category=category_obj,
-            sub_category=sub_category_obj,
-            price=price,
-            discount_price=data.get("discount_price"),
-            stock_quantity=stock_quantity,
-            sku=data.get("sku"),
-            currency=data.get("currency"),
-            content=data.get("content"),
-            vendor=vendor
-        )
-
-        # Handling the uploaded images
-        for file in images:
-            media = Media.objects.create(product=product, file=file)
-
-        # Handling tags
-        if data.get("tags"):
-            tag_string = data.get("tags")
-            tag_objs = []
-            tag_names = tag_string.split(",")
-            for tag_name in tag_names:
-                tag_obj, created = Tag.objects.get_or_create(name=tag_name)
-                tag_objs.append(tag_obj)
-            product.tags.set(tag_objs)
-
-        # Handling the country of origin
-        if data.get("country_of_origin"):
-            origin_name = data.get("country_of_origin")
-            origin_obj = CountryOrigin.objects.filter(name=origin_name).first()
-            if origin_obj:
-                product.country_of_origin.set([origin_obj])
-
-        # Return success message
-        return JsonResponse({'success': True, 'message': 'Product created successfully!'})
 
 
 
@@ -359,12 +241,9 @@ class GetSubCategory(View):
         sub_categories = SubCategory.objects.filter(category=category_obj)
         # Simplify the response to include only id and name
         data = [{"id": sub.pk, "name": sub.name} for sub in sub_categories]
-
         return JsonResponse({"subcategories": data})
-def addProductTest(request):
-    return render(request,template_name="vendor/add_product/addproduct.html")
-def Checkout(request):
-    return render(request,template_name="vendor/add_product/vendorcheckout.html")
+
+
 
 
 
@@ -373,15 +252,9 @@ def Register(request):
 
 
 
-
 def storeAnalytics(request):
     return render(request, 'vendor/Analytics.html')
-def OrderList(request):
-    return render(request, 'vendor/order/orderlist.html')
-def OrderDetails(request):
-    return render(request, 'vendor/order/orderdetail.html')
-def OrderStatus(request):
-    return render(request, 'vendor/order/Status.html')
+
 def InvoiceList(request):
     return render(request, 'vendor/invoice/invoicelist.html')
 def InvoiceDetails(request):
@@ -410,104 +283,40 @@ def CustomerDetails(request):
     return render(request, 'vendor/customers/customerdetail.html')
 
 
-from django.contrib.auth.decorators import login_required
-
-@login_required
-def add_product(request):
-    if request.method == 'POST':
-        form = ProductForm(request.POST, request.FILES)
-
-        if form.is_valid():
-            product = form.save(commit=False) # Because we have not given vendor yet
-            product.vendor = request.user.vendor
-            product.slug = slugify(product.title)
-            product.save() #finally save
-
-            return redirect('vendor:vendor-admin')
-
-    else:
-        form = ProductForm
-
-    return render(request, 'vendor/add_product.html', {'form': form})
 
 
-from django.http import JsonResponse, HttpResponseBadRequest
-from src.apps.product.models import  Product
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views import View
 
-class RemoveProductView(View):
-    def post(self, request, product_id):
-        # Get the product or return a 404 if it doesn't exist
-        product = get_object_or_404(Product, id=product_id, vendor=request.user.vendor)
-        # Delete the product
-        product.delete()
-        # Add a success message
-        messages.success(request, 'Product removed successfully.')
 
-        # Redirect to the product list page
-        return redirect('vendor:vendor_product_list')
+
 class VendorProductListView(View):
     def get(self, request):
         # Get products associated with the current vendor
         products = Product.objects.filter(vendor=request.user.vendor)
         print("PRODUCTS",products)
         return render(request, 'vendor/products/productlist.html', {'products': products})
-# class EditProductView(View):
-#     def get(self, request, product_id):
-#         product = get_object_or_404(Product, id=product_id)
-#         form = ProductForm(instance=product)
-#         return render(request, 'vendor/products/edit_product.html', {'form': form})
-#
-#     def post(self, request, product_id):
-#         product = get_object_or_404(Product, id=product_id)
-#         form = ProductForm(request.POST, instance=product)
-#
-#         if form.is_valid():
-#             form.save()
-#             return redirect('vendor_product_list')
-#         else:
-#             return render(request, 'vendor/products/edit_product.html', {'form': form})
-#
-class OrderListView(LoginRequiredMixin, View):
-    def get(self, request):
-        # Get all products for the vendor
-        vendor_products = Product.objects.filter(vendor=request.user.vendor)  # Assuming the user has a related Vendor
-        # Get all orders that contain the vendor's products
-        orders = Order.objects.filter(products__in=vendor_products).distinct()
-        print("ORDERS ,",orders)
 
-        return render(request, 'vendor/order/orderlist.html', {'orders': orders})
 
-class OrderFilterView(LoginRequiredMixin, View):
-    def get(self, request, status):
-        # Get all products for the vendor
-        vendor_products = Product.objects.filter(vendor=request.user.vendor)  # Assuming the user has a related Vendor
-        # Filter orders based on status
-        if status == 'ALL':
-            orders = Order.objects.filter(products__in=vendor_products).distinct()
-        else:
-            orders = Order.objects.filter(products__in=vendor_products, status=status.lower()).distinct()
-        return render(request, 'vendor/order/orderlist.html', {'orders': orders})
 
-class UpdateOrderStatusView(LoginRequiredMixin, View):
-    def post(self, request, order_id):
-        new_status = request.POST.get('status')
-        try:
-            order = Order.objects.get(id=order_id)
-            # Check if the order contains products from the vendor
-            vendor_products = Product.objects.filter(vendor=request.user.vendor)
-            if not order.products.filter(id__in=vendor_products).exists():
-                messages.error(request, 'Product not found')
-                return HttpResponseBadRequest("You do not have permission to update this order.")
 
-            order.status = new_status
-            order.save()
-            messages.success(request, 'Your order has been updated.')
-            return redirect('vendor:orders')
-        except Order.DoesNotExist:
-            messages.success(request, 'Your order does not exist.')
-            return redirect("vendor:orders")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -516,10 +325,34 @@ class UpdateOrderStatusView(LoginRequiredMixin, View):
 # CREATING 3d MODEL
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 import requests
 import base64
 from django.shortcuts import render, redirect
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseBadRequest, JsonResponse
 from .models import ThreeDModel
 
 
@@ -558,6 +391,25 @@ def create_model(request):
 
         return redirect('vendor:list_models')
     return render(request, 'vendor/3d/create_model.html')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 from django.utils import timezone
 
 def download_model(request, pk):

@@ -1,6 +1,6 @@
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import HttpResponseBadRequest
+from django.http import HttpResponseBadRequest, JsonResponse
 from django.shortcuts import redirect, render
 from django.views import View
 
@@ -12,14 +12,14 @@ from src.apps.product.models import Product
 
 class PlaceOrderView(View):
     def post(self, request):
-        cart = Cart(request)  # Initialize the cart
+        cart = Cart(request)
         user = request.user
         address = request.POST.get('addressInput')
         street = request.POST.get('street')
         city = request.POST.get('city')
         country = request.POST.get('country')
         postal_code = request.POST.get('postalCode')
-        payment_method = request.POST.get('payment_method')  # Assuming you have a way to get this
+        payment_method = request.POST.get('payment_method')
 
         if not all([address, street, city, country, postal_code, payment_method]):
             return HttpResponseBadRequest("All fields are required.")
@@ -34,9 +34,8 @@ class PlaceOrderView(View):
         )
         order.save()
         print("ORDER SAVED...........")
-        # Process each item in the cart
         for product_id, item in cart.cart.items():
-            quantity = item['quantity']  # Get the quantity from the cart
+            quantity = item['quantity']
 
             try:
                 product = Product.objects.get(id=product_id)  # Get the product
@@ -47,15 +46,13 @@ class PlaceOrderView(View):
                 order_item = OrderItem.objects.create(order=order, product=product, quantity=quantity)
                 order_item.save()
                 print("ORDER SAVED.......")
-                # Update the stock quantity
                 product.stock_quantity -= quantity
-                product.save()  # Save the updated product
+                product.save()
 
             except Product.DoesNotExist:
                 return HttpResponseBadRequest(f"Product with ID {product_id} does not exist.")
 
-        # Clear the cart after placing the order
-        cart.clear()  # Use the clear method from the Cart class
+        cart.clear()
         messages.success(request, "Your order was successful!")
         return redirect('/')
 
@@ -69,7 +66,6 @@ class OrderDetailView(View):
             messages.error(request, "Order does not exist.")
             return HttpResponseBadRequest("Order does not exist or you do not have permission to view it.")
 
-        # Render a template with order details
         return render(request, 'order/order_detail.html', {'order': order})
 
 
@@ -102,3 +98,43 @@ class CancelOrderView(LoginRequiredMixin, View):
         except Order.DoesNotExist:
             messages.error(request, "Your order does not exist.")
             return redirect('order:user_order_list')
+
+
+class UpdateOrderStatusView(View):
+    def post(self, request, order_id):
+        try:
+            order = Order.objects.get(id=order_id)
+        except Order.DoesNotExist:
+            return HttpResponseBadRequest("Order does not exist.")
+
+        new_status = request.POST.get('status')
+        if new_status not in dict(Order.STATUS_CHOICES):
+            return HttpResponseBadRequest("Invalid status.")
+
+        order.status = new_status
+        order.save()
+
+        return redirect('order:orders')
+
+class OrderListView(LoginRequiredMixin, View):
+    def get(self, request):
+        # Get all products for the vendor
+        vendor_products = Product.objects.filter(vendor=request.user.vendor)  # Assuming the user has a related Vendor
+        # Get all orders that contain the vendor's products
+        orders = Order.objects.filter(products__in=vendor_products).distinct()
+        print("ORDERS ,",orders)
+        return render(request, 'vendor/order/../../../templates/order/orderlist.html', {'orders': orders})
+
+
+class OrderFilterView(LoginRequiredMixin, View):
+    def get(self, request, status):
+        # Get all products for the vendor
+        vendor_products = Product.objects.filter(vendor=request.user.vendor)  # Assuming the user has a related Vendor
+        # Filter orders based on status
+        if status == 'ALL':
+            orders = Order.objects.filter(products__in=vendor_products).distinct()
+        else:
+            orders = Order.objects.filter(products__in=vendor_products, status=status.lower()).distinct()
+        return render(request, 'vendor/order/../../../templates/order/orderlist.html', {'orders': orders})
+
+
