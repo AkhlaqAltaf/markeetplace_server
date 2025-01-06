@@ -1,0 +1,120 @@
+{% load static %}
+
+<nav class="bg-[#073741] p-4 px-4 sm:px-24 flex items-center justify-between">
+    <a href="/">
+        <img src="{% static 'assets/logo-2.png' %}" alt="Logo" class="h-10 sm:h-16">
+    </a>
+
+    <div id="nav-links" class="hidden sm:flex items-center gap-4">
+        <!-- Search Form -->
+        <form action="{% url 'product:search' %}" method="GET" class="relative mb-3">
+            <input type="text" name="q" class="pl-4 pr-10 py-2 border border-gray-300 rounded w-40 sm:w-64 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Search for products" required>
+            <button type="submit" class="absolute top-2 right-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M11 19a8 8 0 110-16 8 8 0 010 16z" />
+                </svg>
+            </button>
+        </form>
+
+        <!-- Cart and Wishlist -->
+        <div class="flex items-center justify-center gap-4 text-white">
+            <a href="{% url 'cart:cart' %}">
+                <i class="fa fa-shopping-cart text-2xl transition-transform transform hover:scale-225 hover:text-green-700 hover:shadow-lg"></i>
+                {% if cart %}({{ cart|length }}){% endif %}
+            </a>
+            <a href="{% url 'wishlist:wish-list' %}">
+                <i class="fa fa-heart text-2xl transition-transform transform hover:scale-225 hover:text-red-700 hover:shadow-lg"></i>
+            </a>
+
+            <!-- Vendor or User Dropdown -->
+            {% if request.user.vendor %}
+                <div class="navbar-item has-dropdown is-hoverable">
+                    <a class="navbar-link is-capitalized custom-user-icon">
+                        <i class="fa fa-user text-2xl mr-3 transition-transform transform hover:scale-225 hover:text-blue-700 hover:shadow-lg"></i>
+                        {{ request.user.vendor.name }}
+                    </a>
+
+                    <div class="navbar-dropdown custom-dropdown">
+                        {% if request.user.vendor.verification_status %}
+                            <a class="navbar-item" href="{% url 'vendor:vendor' %}">Vendor Side</a>
+                        {% else %}
+                            <p class="navbar-item">Wait For Verification</p>
+                        {% endif %}
+                        <hr class="navbar-divider">
+                        <a class="navbar-item" href="{% url 'accounts:logout' %}">Logout</a>
+                    </div>
+                </div>
+
+            {% elif request.user.is_authenticated %}
+                <div class="navbar-item has-dropdown is-hoverable">
+                    <a class="navbar-link is-capitalized custom-user-icon">
+                        <i class="fa fa-user text-2xl mr-3 transition-transform transform hover:scale-225 hover:text-blue-700 hover:shadow-lg"></i>
+                        {{ request.user.name }}
+                    </a>
+
+                    <div class="navbar-dropdown custom-dropdown">
+                        <a class="navbar-item" href="#">Profile</a>
+                        <a class="navbar-item" href="{% url 'product:user_order_list' %}">My Orders</a>
+                        <a class="navbar-item" href="{% url 'vendor:become-vendor' %}">Become Vendor</a>
+                    </div>
+                </div>
+
+            {% else %}
+                <a href="{% url 'accounts:accounts' %}">
+                    <i class="fa fa-user text-2xl transition-transform transform hover:scale-225 hover:text-blue-700 hover:shadow-lg"></i>
+                </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Mobile Menu Button -->
+    <button id="menu-toggle" class="sm:hidden text-white focus:outline-none">
+        <i class="fa fa-bars text-xl"></i>
+    </button>
+</nav>
+
+<style>
+    .custom-user-icon i {
+        color: white;
+        transition: color 0.1s, transform 0.3s;
+    }
+
+    .custom-user-icon i:hover {
+        color: #1E90FF; 
+        transform: scale(1.25);
+    }
+
+    .custom-user-icon {
+        color: white;
+    }
+
+    .custom-user-icon:hover {
+        color: rgb(0, 0, 0); 
+    }
+
+    .custom-dropdown {
+        background-color: #073741;
+        border: 1px solid #1E90FF;
+        border-radius: 8px;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        padding: 10px;
+        min-width: 200px;
+    }
+
+    .custom-dropdown .navbar-item {
+        color: white;
+        padding: 10px 15px;
+        transition: background-color 0.3s, color 0.3s;
+    }
+
+    .custom-dropdown .navbar-item:hover {
+        background-color: #1E90FF;
+        color: white;
+        border-radius: 5px;
+    }
+
+    .custom-dropdown .navbar-divider {
+        border-top: 1px solid #1E90FF;
+        margin: 10px 0;
+    }
+</style>
