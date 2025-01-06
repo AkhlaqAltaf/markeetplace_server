@@ -1,75 +1,105 @@
-{% extends 'core/base.html' %}
-
+{% extends 'core/base.html' %} 
 {% block content %}
-<div class="bg-gray-50 font-sans">
-    <div class="font-sans">
-        <div class="p-4 lg:max-w-5xl max-w-lg mx-auto">
-            <div class="grid items-start grid-cols-1 lg:grid-cols-2 gap-6 max-lg:gap-12">
-
-                <div class="w-full lg:sticky top-0 sm:flex gap-2">
-                    <!-- Thumbnail Images Section -->
-                    <div class="sm:space-y-3 w-16 max-sm:w-12 max-sm:flex max-sm:mb-4 max-sm:gap-4">
-                        {% for media in product.media.all %}
-                            {% if media.media_type != '3d' %}
-                                <img
-                                    src="{{ media.file.url }}"
-                                    alt="Product1"
-                                    class="w-full cursor-pointer rounded-md outline"
-                                    onclick="changeImage(this.src)"
-                                />
-                            {% endif %}
-                        {% endfor %}
-
-
-                    </div>
-
-                    <!-- Main Image Section -->
-                    <div class="relative overflow-hidden group w-4/5 rounded-md">
-                        <img
-                            id="mainImage"
-                            src="{{ product.media.first.file.url }}"
-                            alt="Product"
-                            class="w-full h-auto object-cover transform group-hover:scale-150 transition duration-300 ease-in-out"
-                        />
-                    </div>
-                </div>
-
-                <div>
-                    <h2 class="text-2xl font-bold text-gray-800">{{ product.name }}</h2>
-                    <div class="flex flex-wrap gap-4 mt-4">
-                        <p class="text-gray-800 text-xl font-bold mb-3">${{ product.price }}</p>
-                    <div>
-                        <p class="text-danger"> Available in </p>
-                        {% for origin in product.country_of_origin.all %}
-                            <p class="text-blue-100 text-xl font-serif">{{ origin.name }}</p>
-                        {% endfor %}
-                    </div>
-                    </div>
-                <p>Stock : {{ product.stock_quantity }}</p>
-                <p>
-                    {{ product.description }}
-                </p>
-
-
-                </div>
-            </div>
-
-            <!-- 3D Model Viewer Section -->
-            <div class="mt-8">
-                <a class="items-center justify-center rounded-md  px-3 py-2 text-center text-sm font-medium text-white  hover:text-white focus:outline-none focus:ring-4 focus:ring-blue-300" href="{% url 'product:product-detail3d' product.id %}"><h3 class="text-xl font-bold text-gray-800">3D View</h3></a>
-
-            </div>
-
-           <div class="flex justify-center space-x-4">
-    {% include 'commons/addToCartButton.html' %}
-    {% include 'commons/addToWishList.html' %}
-</div>
-            <!-- About the Item Section -->
-            <div class="mt-8">
-                <h3 class="text-xl font-bold text-gray-800">About the item</h3>
-                {{ product.content|safe }}
-            </div>
+<div class="bg-gray-50 font-sans min-h-screen flex items-center justify-center">
+  <div class="p-6 lg:max-w-7xl mx-auto">
+    <div class="grid lg:grid-cols-2 gap-12 items-center">
+      
+      <!-- Left Section: Images -->
+      <div class="lg:sticky top-6">
+        <!-- Main Image -->
+        <div class="relative w-full rounded-lg overflow-hidden shadow-md mb-4">
+          <img
+            id="mainImage"
+            src="{{ product.media.first.file.url }}"
+            alt="Main Product Image"
+            class="w-full h-auto object-cover transition-transform duration-500 hover:scale-110"
+          />
         </div>
+        
+        <!-- Thumbnail Images (Carousel at Bottom) -->
+        <div class="flex gap-4 justify-center">
+          {% for media in product.media.all %}
+          {% if media.media_type != '3d' %}
+          <img
+            src="{{ media.file.url }}"
+            alt="Thumbnail"
+            class="w-16 h-16 lg:w-20 lg:h-20 object-cover rounded-lg shadow-md border border-gray-200 cursor-pointer transition-transform duration-300 hover:scale-105 hover:shadow-lg"
+            onclick="changeImage(this.src)"
+          />
+          {% endif %}
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- Right Section: Details with Light Grey Background -->
+      <div class="flex flex-col justify-center bg-gray-100 p-6 rounded-lg shadow-lg">
+        <h1 class="text-3xl font-bold text-[#0B5D51] mb-4 text-center lg:text-left">{{ product.name }}</h1>
+        
+        <div class="flex items-center gap-6 mb-6 justify-center lg:justify-start">
+          <p class="text-2xl font-semibold text-[#FF6A3D]">${{ product.price }}</p>
+          {% for origin in product.country_of_origin.all %}
+          <span class="bg-[#D9F2EF] text-[#0B5D51] px-3 py-1 rounded-full text-sm font-medium">
+            {{ origin.name }}
+          </span>
+          {% endfor %}
+        </div>
+
+        <p class="text-gray-600 text-sm mb-2 text-center lg:text-left">
+          <span class="font-semibold">Stock:</span> 
+          {% if product.stock_quantity > 0 %}
+          <span class="text-[#0B5D51]">{{ product.stock_quantity }} available</span>
+          {% else %}
+          <span class="text-[#FF6A3D]">Out of stock</span>
+          {% endif %}
+        </p>
+        <p> {{ product.category }} </p>
+        <p> {{ product.sub_category }} </p>
+        <p class="text-gray-700 leading-6 mb-6 text-center lg:text-left">
+          {{ product.description }}
+        </p>
+        
+        <div class="flex items-center gap-4 justify-center lg:justify-start">
+            <div class="flex justify-center space-x-4">
+                {% include 'commons/addToCartButton.html' %} 
+                {% include 'commons/addToWishList.html' %}
+              </div>
+        </div>
+      </div>
     </div>
+    
+    <!-- Additional Section: About the Product -->
+    {% comment %} <div class="mt-12 bg-white p-6 rounded-lg shadow-lg transition-all duration-300 hover:shadow-2xl">
+      <h2 class="text-2xl font-bold text-[#0B5D51] mb-4">About the Item</h2>
+      <p class="text-gray-700 leading-6">{{ product.content|safe }}</p>
+    </div>
+
+    div class="mt-8">
+    <a
+      class="items-center justify-center rounded-md px-3 py-2 text-center text-sm font-medium text-white hover:text-white focus:outline-none focus:ring-4 focus:ring-blue-300"
+      href="{% url 'product:product-detail3d' product.id %}"
+      ><h3 class="text-xl font-bold text-gray-800">3D View</h3></a
+    >
+  </div>
+
+  <div class="flex justify-center space-x-4">
+    {% include 'commons/addToCartButton.html' %} {% include
+    'commons/addToWishList.html' %}
+  </div>
+  <!-- About the Item Section -->
+  <div class="mt-8">
+    <h3 class="text-xl font-bold text-gray-800">About the item</h3>
+    {{ product.content|safe }}
+  </div> {% endcomment %}
+
+  </div>
 </div>
+
+<script>
+  function changeImage(src) {
+    document.getElementById("mainImage").src = src;
+    const mainImage = document.getElementById("mainImage");
+    mainImage.classList.add("scale-110");
+    setTimeout(() => mainImage.classList.remove("scale-110"), 300);
+  }
+</script>
 {% endblock %}

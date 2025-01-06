@@ -26,18 +26,19 @@
                 <i class="fa fa-shopping-cart text-2xl transition-transform transform hover:scale-125 hover:text-green-700 hover:shadow-lg"></i>
                 {% if cart %}({{ cart|length }}){% endif %}
             </a>
-            <a href="{% url 'product:wish-list' %}">
+            <a href="{% url 'wishlist:wish-list' %}">
                 <i class="fa fa-heart text-2xl transition-transform transform hover:scale-125 hover:text-white hover:shadow-lg"></i>
             </a>
 
             {% if request.user.vendor %}
                 <!-- Vendor Dropdown -->
                 <div class="navbar-item has-dropdown is-hoverable">
-                    <a class="navbar-link is-capitalized custom-user-icon">
+                    {% comment %} <a class="navbar-link is-capitalized custom-user-icon"> {% endcomment %}
+                    <a class=" is-capitalized custom-user-icon">
                         <i class="fa fa-user text-2xl mr-3 transition-transform transform hover:scale-125 hover:white hover:shadow-lg"></i>
-                        {{ request.user.vendor.name }}
+                        <span class="language-text">{{ request.user.vendor.name }}</span
                     </a>
-                    <div class="navbar-dropdown custom-dropdown">
+                    <div class="navbar-dropdown custom-dropdown mt-[14px] left-[-34px]">
                         {% if request.user.vendor.verification_status %}
                             <a class="navbar-item" href="{% url 'vendor:vendor' %}">Vendor Side</a>
                         {% else %}
@@ -51,7 +52,7 @@
                 <!-- Authenticated User Dropdown -->
                 <div class="navbar-item has-dropdown is-hoverable">
                     <a class="navbar-link is-capitalized custom-user-icon">
-                        <i class="fa fa-user text-2xl mr-3 transition-transform transform hover:scale-125 hover:text-blue-700 hover:shadow-lg"></i>
+                        <i class="fa fa-user text-2xl mr-3 transition-transform transform hover:scale-125  hover:shadow-lg"></i>
                         {{ request.user.name }}
                     </a>
                     <div class="navbar-dropdown custom-dropdown">
@@ -65,7 +66,7 @@
             {% else %}
                 <!-- Guest User Icon -->
                 <a href="{% url 'accounts:accounts' %}">
-                    <i class="fa fa-user text-2xl transition-transform transform hover:scale-125 hover:text-blue-700 hover:shadow-lg"></i>
+                    <i class="fa fa-user text-2xl transition-transform transform hover:scale-125  hover:shadow-lg"></i>
                 </a>
             {% endif %}
         </div>
@@ -84,7 +85,7 @@
     }
 
     .custom-user-icon i:hover {
-        color: #1E90FF;
+       
         transform: scale(1.25);
     }
 
@@ -120,4 +121,7 @@
         border-top: 1px solidrgb(248, 248, 248);
         margin: 10px 0;
     }
+    .language-text:hover {
+        color: white;
+      }
 </style>
