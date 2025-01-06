@@ -11,4 +11,6 @@ Requests==2.32.3
 stripe==11.3.0
 urllib3==2.3.0
 django-cors-headers
+django-crispy-forms
+crispy-bootstrap5
 

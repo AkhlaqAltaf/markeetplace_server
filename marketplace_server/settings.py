@@ -64,6 +64,8 @@ INSTALLED_APPS = [
     'dj_rest_auth.registration',
     'drf_yasg',
     'corsheaders',
+    'crispy_forms',
+    'crispy_bootstrap5',
 ]
 
 MIDDLEWARE = [
@@ -195,7 +197,8 @@ EMAIL_USE_TLS = True
 
 DEFAULT_EMAIL_FROM = 'Multi Vendor Site <akhlaqaltaf4@gmail.com>'
 
-
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+CRISPY_TEMPLATE_PACK = "bootstrap5"
 
 
 # LOGIN_URL = 'vendor:login'

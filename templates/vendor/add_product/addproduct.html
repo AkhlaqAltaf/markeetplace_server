@@ -34,25 +34,21 @@
           </div>
         {% endif %}
         </div>
-
-        <!-- Price and Discount Price -->
         <div>
-          <label class="block text-sm font-medium mb-1">Currency</label>
-          <select name="currency" class="w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-orange-500">
-            <option disabled selected>Select Currency</option>
-            <option value="PKR">PKR</option>
-            <option value="INR">INR</option>
-            <option value="USD">USD</option>
-          </select>
-
-            {% if form.currency.errors %}
+          <label  class="block text-sm font-medium mb-1">Brand Name</label>
+          <input type="text" name="brand"
+            class="w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-orange-500"
+          value="{{ form.brand.value|default:"" }}"
+          >
+                    {% if form.brand.errors %}
           <div class="text-red-500 text-sm mt-1">
-            {% for error in form.currency.errors %}
+            {% for error in form.brand.errors %}
               <p>{{ error }}</p>
             {% endfor %}
           </div>
         {% endif %}
         </div>
+
 
         <div>
           <label class="block text-sm font-medium mb-1">Price</label>
@@ -70,21 +66,7 @@
         {% endif %}
         </div>
 
-        <div>
-          <label class="block text-sm font-medium mb-1">Discount Price</label>
-          <input type="number" name="discount_price" step="0.1"
-            class="w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-orange-500"
-                    value="{{ form.discount_price.value|default:"" }}"
 
-          >
-                              {% if form.discount_price.errors %}
-          <div class="text-red-500 text-sm mt-1">
-            {% for error in form.discount_price.errors %}
-              <p>{{ error }}</p>
-            {% endfor %}
-          </div>
-        {% endif %}
-        </div>
 
         <div>
           <label class="block text-sm font-medium mb-1">SKU</label>
@@ -102,24 +84,7 @@
         {% endif %}
         </div>
 
-        <!-- Country of Origin and Currency -->
-        <div>
-          <label class="block text-sm font-medium mb-1">Country Of Origin</label>
-          <select name="country_of_origin" class="w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-orange-500">
-            <option value="" disabled selected>Select Country</option>
-            {% for origin in origins %}
-            <option value="{{ origin.id }}">{{ origin.name }}</option>
-            {% endfor %}
-          </select>
 
-                          {% if form.country_of_origin.errors %}
-          <div class="text-red-500 text-sm mt-1">
-            {% for error in form.country_of_origin.errors %}
-              <p>{{ error }}</p>
-            {% endfor %}
-          </div>
-        {% endif %}
-        </div>
 
         <!-- Stock Quantity and SKU -->
         <div>

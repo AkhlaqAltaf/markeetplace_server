@@ -36,19 +36,6 @@ class SubCategory(models.Model):
         return f"{self.category.name} - {self.name}"
 
 
-
-# PRODUCT COUNTRY ORIGIN
-
-class CountryOrigin(models.Model):
-    name = models.CharField(max_length=255, unique=True)
-    def __str__(self):
-        return self.name
-
-
-
-# PRODUCT MODEL
-
-
 class Product(models.Model):
     STATUS_CHOICES = [
         ('active', 'Active'),
@@ -58,20 +45,17 @@ class Product(models.Model):
     name = models.CharField(max_length=255)
     description = models.TextField()
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, related_name='products')
+    brand = models.CharField(max_length=255,null=True, blank=True)
     sub_category = models.ForeignKey(SubCategory, on_delete=models.SET_NULL, null=True, related_name='products')
-    tags = models.ManyToManyField('Tag', blank=True,null=True)  # Tags are optional
     price = models.DecimalField(max_digits=10, decimal_places=2)
-    discount_price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     stock_quantity = models.PositiveIntegerField(default=0)
     sku = models.CharField(max_length=100, unique=True)
-    currency = models.CharField(max_length=10, default='USD')
     vendor = models.ForeignKey(Vendor, on_delete=models.CASCADE, related_name='products')
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='review')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     is_featured = models.BooleanField(default=False)
     sales_count = models.PositiveIntegerField(default=0)
-    country_of_origin = models.ManyToManyField(CountryOrigin, related_name='products')
     content = RichTextField(blank=True,null=True)
     added_date = models.DateTimeField(auto_now_add=True)
 
@@ -174,5 +158,41 @@ class TopPageProduct(models.Model):
         return f"{self.product.name}"
 
 
+
+
+class ProductOffer(models.Model):
+    DISCOUNT_TYPE_CHOICES = [
+        ('percentage', 'Percentage'),
+        ('fixed', 'Fixed Amount'),
+    ]
+
+    vendor = models.ForeignKey(Vendor, on_delete=models.CASCADE, related_name='product_offers')
+    discount_type = models.CharField(max_length=20, choices=DISCOUNT_TYPE_CHOICES)
+    discount_value = models.DecimalField(max_digits=10, decimal_places=2)
+    products = models.ManyToManyField(Product, blank=True, related_name='product_offers')
+    categories = models.ManyToManyField(Category, blank=True, related_name='product_offers')
+    subcategories = models.ManyToManyField(SubCategory, blank=True)
+    brand = models.CharField(max_length=255, blank=True, null=True)
+    start_date = models.DateTimeField()
+    end_date = models.DateTimeField()
+
+    def __str__(self):
+        return f"Offer by {self.vendor.name} - {self.discount_value} {self.discount_type}"
+
+class OrderOffer(models.Model):
+    vendor = models.ForeignKey(Vendor, on_delete=models.CASCADE)
+    discount_type = models.CharField(max_length=20, choices=(('percentage', 'Percentage'), ('fixed', 'Fixed')))
+    discount_value = models.DecimalField(max_digits=10, decimal_places=2)
+    min_products = models.PositiveIntegerField()
+    start_date = models.DateField()
+    end_date = models.DateField()
+    products = models.ManyToManyField(Product, blank=True)
+    categories = models.ManyToManyField(Category, blank=True)
+    subcategories = models.ManyToManyField(SubCategory, blank=True)
+    brands = models.CharField(max_length=255, blank=True, null=True)
+
+
+    def __str__(self):
+        return f"Order Offer by {self.vendor.name}"
 
 

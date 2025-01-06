@@ -3,6 +3,7 @@ import uuid
 
 from django.contrib import messages
 from django.contrib.auth import login
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404
 from django.utils.decorators import method_decorator
 # Converting Title into Slug
@@ -15,8 +16,8 @@ from datetime import datetime
 from django.core.serializers import serialize
 
 from src.apps.product.forms import ProductForm
-from src.apps.product.models import Category, CountryOrigin, SubCategory, Tag, Media, Product
-from src.apps.vendor.forms import VendorForm
+from src.apps.product.models import Category, SubCategory, Tag, Media, Product, ProductOffer, OrderOffer
+from src.apps.vendor.forms import VendorForm, ProductOfferForm, OrderOfferForm
 from src.apps.vendor.models import Vendor
 from .mixins import CheckVendorMixin
 import base64
@@ -139,8 +140,7 @@ class AddProductView(CreateView):
     def get(self,request):     
         form = ProductForm()
         categories = Category.objects.all()
-        origins = CountryOrigin.objects.all()
-        return render(request, 'vendor/add_product/addproduct.html', context={"categories": categories, 'origins': origins,'form': form})
+        return render(request, 'vendor/add_product/addproduct.html', context={"categories": categories,'form': form})
     def post(self,request):
         form = ProductForm(request.POST)
         print(request.POST.get('sub_category'))
@@ -165,8 +165,8 @@ class AddProductView(CreateView):
         else:
             print("AGAIN PASS FORM ..",form.errors)
             categories = Category.objects.all()
-            origins = CountryOrigin.objects.all()
-            return render(request, 'vendor/add_product/addproduct.html', context={"categories": categories, 'origins': origins,'form': form})
+
+            return render(request, 'vendor/add_product/addproduct.html', context={"categories": categories ,'form': form})
 
     def convert_base64_image(self,base64_data):
         data = next(iter(base64_data.values()))
@@ -183,8 +183,7 @@ class AddProductView(CreateView):
 class AddBulkProductsView(View):
     def get(self, request):
         categories = Category.objects.all()
-        origins = CountryOrigin.objects.all()
-        return render(request, 'vendor/add_product/add_bulk_products.html', context={"categories": categories, 'origins': origins})
+        return render(request, 'vendor/add_product/add_bulk_products.html', context={"categories": categories})
 
     def post(self, request):
         try:
@@ -362,6 +361,7 @@ class EditProductView(UpdateView):
 
             return JsonResponse({'success': True, 'message': 'Product updated successfully'})
         else:
+            print(f"NOT SUCCESS {form.errors}")
             return JsonResponse({'success': False, 'errors': form.errors})
 
     def convert_base64_image(self, base64_data):
@@ -387,36 +387,101 @@ class ProductDetailView(DetailView):
     model = Product
     template_name = "vendor/products/product_detail.html"
     context_object_name = "product"
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        product = self.get_object()
+
+        # Fetch all products and serialize them
         products = Product.objects.all()
         products_json = serialize('json', products)
 
-        product = self.get_object()
+        # Fetch product reviews
         reviews = product.reviews.all()
         total_reviews = reviews.count()
         rating_distribution = {rating: 0 for rating in range(1, 6)}  # Initialize for ratings 1 to 5
+
+        # Calculate the rating distribution
         for review in reviews:
-            print("REVIEW : ",review.rating)
             rating_distribution[review.rating] += 1
+
         rating_percentages = {
             rating: (count / total_reviews) * 100 if total_reviews > 0 else 0
             for rating, count in rating_distribution.items()
         }
-        print(rating_percentages)
-        # Add data to context
+
+        # Fetch Product Offers for the product, category, and subcategory
+        product_offers = ProductOffer.objects.filter(products=product)
+        category_offers = ProductOffer.objects.filter(categories=product.category)
+        subcategory_offers = ProductOffer.objects.filter(subcategories=product.subcategory)
+
+        # Fetch Order Offers for the product, category, and subcategory
+        product_order_offers = OrderOffer.objects.filter(products=product)
+        category_order_offers = OrderOffer.objects.filter(categories=product.category)
+        subcategory_order_offers = OrderOffer.objects.filter(subcategories=product.subcategory)
+
+        # Add the offers to context
+        context['product_offers'] = product_offers
+        context['category_offers'] = category_offers
+        context['subcategory_offers'] = subcategory_offers
+        context['product_order_offers'] = product_order_offers
+        context['category_order_offers'] = category_order_offers
+        context['subcategory_order_offers'] = subcategory_order_offers
+
+        # Add the ratings and review data to context
         context['rating_percentages'] = rating_percentages
         context['total_reviews'] = total_reviews
-        # Add the JSON data to the context
+
+        # Add the JSON data of products to the context
         context['products'] = products_json
+
         return context
 
 
+@login_required
+def select_offer_type(request):
+    """
+    View to let the vendor choose which type of offer to create.
+    """
+    return render(request, 'vendor/offers/select_offer_type.html')
+
+@login_required
+def create_product_offer(request):
+    """
+    View to create a ProductOffer.
+    Only shows products related to the logged-in vendor.
+    """
+    vendor = request.user.vendor  # Get the vendor associated with the logged-in user
+    if request.method == 'POST':
+        form = ProductOfferForm(request.POST)
+        if form.is_valid():
+            offer = form.save(commit=False)
+            offer.vendor = vendor  # Associate the offer with the vendor
+            offer.save()
+            return redirect('vendor:create_product_offer')
+    else:
+        # Pass only the vendor's products to the form
+        form = ProductOfferForm(vendor=vendor)
+    return render(request, 'vendor/offers/create_product_offer.html', {'form': form})
 
 
-
-
-
+@login_required
+def create_order_offer(request):
+    """
+    View to create an OrderOffer with vendor-specific filtering.
+    """
+    vendor = request.user.vendor  # Get the vendor associated with the logged-in user
+    if request.method == 'POST':
+        form = OrderOfferForm(request.POST, vendor=vendor)
+        if form.is_valid():
+            offer = form.save(commit=False)
+            offer.vendor = vendor  # Associate the offer with the vendor
+            offer.save()
+            form.save_m2m()  # Save the many-to-many relationship (products)
+            return redirect('vendor:create_order_offer')
+    else:
+        form = OrderOfferForm(vendor=vendor)
+    return render(request, 'vendor/offers/create_order_offer.html', {'form': form})
 # CREATING 3d MODEL
 
 

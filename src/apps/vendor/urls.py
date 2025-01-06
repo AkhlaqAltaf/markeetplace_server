@@ -24,6 +24,10 @@ urlpatterns = [
     path('add_product/', views.AddProductView.as_view(),name="add"),
     path('products/edit/<int:pk>/',views.EditProductView.as_view(),name="edit_product"),
 
+    path('select-offer-type/', views.select_offer_type, name='select_offer_type'),
+    path('create-product-offer/', views.create_product_offer, name='create_product_offer'),
+    path('create-order-offer/', views.create_order_offer, name='create_order_offer'),
+
     path('store-analytics/',views.storeAnalytics,name="store-analytics"),
     path('signup/',views.Register,name="signup"),
     path('create-product/',views.ProductAdd,name="create-product"),
