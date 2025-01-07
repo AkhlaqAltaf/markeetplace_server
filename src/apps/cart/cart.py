@@ -62,7 +62,7 @@ class Cart(object):
         self.session.modified = True
 
     def clear(self):
-        del self.session[settings.CART_SESSION_ID]
+        del self.session[settings.CART_SESSION_ID ]
         self.session.modified = True
 
     def get_total_cost(self):
