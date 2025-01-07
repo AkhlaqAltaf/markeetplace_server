@@ -166,14 +166,10 @@ class ProductOffer(models.Model):
         ('percentage', 'Percentage'),
         ('fixed', 'Fixed Amount'),
     ]
-
     vendor = models.ForeignKey(Vendor, on_delete=models.CASCADE, related_name='product_offers')
     discount_type = models.CharField(max_length=20, choices=DISCOUNT_TYPE_CHOICES)
     discount_value = models.DecimalField(max_digits=10, decimal_places=2)
     products = models.ManyToManyField(Product, blank=True, related_name='product_offers')
-    categories = models.ManyToManyField(Category, blank=True, related_name='product_offers')
-    subcategories = models.ManyToManyField(SubCategory, blank=True)
-    brand = models.CharField(max_length=255, blank=True, null=True)
     start_date = models.DateTimeField()
     end_date = models.DateTimeField()
 
@@ -188,10 +184,6 @@ class OrderOffer(models.Model):
     start_date = models.DateField()
     end_date = models.DateField()
     products = models.ManyToManyField(Product, blank=True)
-    categories = models.ManyToManyField(Category, blank=True)
-    subcategories = models.ManyToManyField(SubCategory, blank=True)
-    brands = models.CharField(max_length=255, blank=True, null=True)
-
 
     def __str__(self):
         return f"Order Offer by {self.vendor.name}"

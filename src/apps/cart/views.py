@@ -67,8 +67,11 @@ def cart_detail(request):
     
     if change_quantity:
         cart.add(change_quantity, quantity, True)
-        return redirect('cart:cart')
         print("CART ACCESS")
+
+        return redirect('cart:cart')
+
+
     return render(request, 'cart/cart.html', {'form': form, 'stripe_pub_key': settings.STRIPE_PUB_KEY})
 
 
