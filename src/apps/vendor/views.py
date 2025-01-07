@@ -1,3 +1,4 @@
+import binascii
 import json
 import uuid
 
@@ -137,33 +138,40 @@ class VendorDetailView(View):
 
 class AddProductView(CreateView):
     
-    def get(self,request):     
+    def get(self, request):
+        # Create an empty form and fetch categories and origins for the dropdowns
         form = ProductForm()
         categories = Category.objects.all()
         return render(request, 'vendor/add_product/addproduct.html', context={"categories": categories,'form': form})
     def post(self,request):
         form = ProductForm(request.POST)
         print(request.POST.get('sub_category'))
+        
         if form.is_valid():
+            # Save the product but don't commit to the database yet
             product = form.save(commit=False)
             product.vendor = request.user.vendor
             product.save()
+            
+            # Process images if provided
             images_data = request.POST.getlist('images')
-# Check if the list is not empty and parse it
+            
             if images_data:
-                images_data = json.loads(images_data[0])  # Parse the first item in the list
+                images_data = json.loads(images_data[0])  # Parse the base64 image data
             else:
-                images_data = []            
+                images_data = []  
+            
             for image in images_data:
                 file = self.convert_base64_image(image)
-                if file:         
-                   media = Media.objects.create(product=product, file=file)
-                   
-            print("VALIDATED FORM")
-            return redirect('vendor:add')  # Or the appropriate page
-
+                if file:  # If the file is valid, save the media
+                    media = Media.objects.create(product=product, file=file)
+            
+            print("Form validated successfully")
+            return redirect('vendor:add')  # Redirect after successful form submission
+        
         else:
-            print("AGAIN PASS FORM ..",form.errors)
+            print("Form submission failed", form.errors)
+            # In case the form is invalid, re-render the form with categories and origins
             categories = Category.objects.all()
 
             return render(request, 'vendor/add_product/addproduct.html', context={"categories": categories ,'form': form})
@@ -171,61 +179,126 @@ class AddProductView(CreateView):
     def convert_base64_image(self,base64_data):
         data = next(iter(base64_data.values()))
         if data.startswith("data:image"):
-            data = data.split(",")[1]  
-        # Decode the base64 string into binary data
-        file_data = base64.b64decode(data)
-        file_name = datetime.now()
-        content_file = ContentFile(file_data,name=f"{file_name}.jpg")
+            data = data.split(",")[1]  # Remove the data:image part
+        file_data = base64.b64decode(data)  # Decode the base64 string into binary data
+        file_name = datetime.now()  # Generate a unique file name using the current timestamp
+        content_file = ContentFile(file_data, name=f"{file_name}.jpg")
         print(content_file)
         return content_file
 
 
+
 class AddBulkProductsView(View):
+
     def get(self, request):
+        """Render the form for adding bulk products."""
         categories = Category.objects.all()
         return render(request, 'vendor/add_product/add_bulk_products.html', context={"categories": categories})
 
     def post(self, request):
+        """Process bulk product submissions."""
         try:
-            data = json.loads(request.body)  # Parse the JSON data sent from the frontend
-            products = data.get("products", [])  # Extract the list of products
+            data = json.loads(request.body)
+            print(data)
+            products = data.get("products", [])
+            success_count, failed_products = self.process_bulk_products(products, request.user.vendor)
 
-            for product_data in products:
-                print(products)
-                # Populate the form with product data
-                form = ProductForm(product_data)
-                print(form.errors.items())
-                if form.is_valid():
-                    product = form.save(commit=False)
-                    product.vendor = request.user.vendor
-                    product.save()
+            return JsonResponse({
+                "message": "Products processed successfully.",
+                "success_count": success_count,
+                "failed_products": failed_products
+            }, status=200)
 
-                    # Handle images (if provided)
-                    images_data = product_data.get("images", [])
-                    for image in images_data:
-                        file = self.convert_base64_image(image)
-                        if file:
-                            Media.objects.create(product=product, file=file)
-                else:
-                    return JsonResponse({"error": f"Invalid product data: {form.errors}"}, status=400)
-
-            return JsonResponse({"message": "Products uploaded successfully!"}, status=200)
-
+        except json.JSONDecodeError:
+            return JsonResponse({"error": "Invalid JSON data."}, status=400)
         except Exception as e:
             return JsonResponse({"error": f"Something went wrong: {str(e)}"}, status=500)
 
-    def convert_base64_image(self, base64_data):
+    def process_bulk_products(self, products, vendor):
+        """Process and save multiple products."""
+        success_count = 0
+        failed_products = []
+
+        for product_data in products:
+            # Validate related data
+            category, sub_category, country_of_origin, validation_error = self.validate_related_data(product_data)
+            if validation_error:
+                failed_products.append({
+                    "product": product_data,
+                    "error": validation_error
+                })
+                continue
+
+            # Prepare form data and save the product
+            product_data.update({
+                'category': category.id,
+                'sub_category': sub_category.id,
+                'country_of_origin': country_of_origin.id
+            })
+            form = ProductForm(product_data)
+
+            if form.is_valid():
+                product = form.save(commit=False)
+                product.vendor = vendor
+                product.save()
+
+                # Process and save product images
+                images_data = product_data.get("images", [])
+                self.process_images(images_data, product)
+
+                success_count += 1
+            else:
+                failed_products.append({
+                    "product": product_data,
+                    "error": form.errors
+                })
+
+        return success_count, failed_products
+
+    def validate_related_data(self, product_data):
+        """Validate and retrieve related data."""
+        category = Category.objects.filter(id=product_data.get('category')).first()
+        sub_category = SubCategory.objects.filter(id=product_data.get('sub_category')).first()
+        country_of_origin = CountryOrigin.objects.filter(id=product_data.get('country_of_origin')).first()
+
+        if not category:
+            return None, None, None, "Invalid category."
+        if not sub_category:
+            return None, None, None, "Invalid sub-category."
+        if not country_of_origin:
+            return None, None, None, "Invalid country of origin."
+
+        return category, sub_category, country_of_origin, None
+
+    @staticmethod
+    def process_images(images_data, product):
+        """Process and save base64-encoded images."""
+        for image_base64 in images_data:
+            file = AddBulkProductsView.convert_base64_image(image_base64)
+            if file:
+                Media.objects.create(product=product, file=file)
+
+    @staticmethod
+    def convert_base64_image(base64_data):
+        """Convert a base64-encoded image to a Django ContentFile."""
         try:
             if base64_data.startswith("data:image"):
                 base64_data = base64_data.split(",")[1]
-            # Decode the base64 string into binary data
-            file_data = base64.b64decode(base64_data)
-            file_name = datetime.now().strftime("%Y%m%d%H%M%S")
-            content_file = ContentFile(file_data, name=f"{file_name}.jpg")
-            return content_file
-        except Exception as e:
-            print(f"Error converting base64 image: {str(e)}")
+
+            # Decode base64 data
+            file_data = base64.b64decode(base64_data, validate=True)
+
+            # Generate unique file name
+            file_name = f"{datetime.now().strftime('%Y%m%d%H%M%S')}_{uuid4().hex}.jpg"
+            return ContentFile(file_data, name=file_name)
+
+        except binascii.Error as e:
+            print(f"Base64 decoding error: {e}")
             return None
+        except Exception as e:
+            print(f"Error converting base64 image: {e}")
+            return None
+
 
 
 

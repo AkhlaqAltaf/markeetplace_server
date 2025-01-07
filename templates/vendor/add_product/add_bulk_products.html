@@ -7,21 +7,18 @@
 
     <!-- File Upload -->
     <div class="mb-4">
-      <label class="block text-sm font-medium mb-2" for="uploadFile">Upload File</label>
+      <label for="uploadFile" class="block text-sm font-medium mb-2">Upload File</label>
       <input
         id="uploadFile"
         type="file"
-        accept=".csv"
+        accept=".xlsx, .xls"
         class="w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-orange-500"
       />
     </div>
 
     <!-- Editable Table -->
     <div class="overflow-x-auto">
-      <table
-        id="productsTable"
-        class="table-auto w-full text-sm text-left border border-gray-300 rounded-lg"
-      >
+      <table id="productsTable" class="table-auto w-full text-sm border border-gray-300 rounded-lg">
         <thead class="bg-gray-100">
           <tr>
             <th class="px-4 py-2 border">Name</th>
@@ -33,8 +30,8 @@
             <th class="px-4 py-2 border">Category</th>
             <th class="px-4 py-2 border">Sub Category</th>
             <th class="px-4 py-2 border">Description</th>
-              <th class="px-4 py-2 border">Country Origin</th>
-
+            <th class="px-4 py-2 border">Country Origin</th>
+            <th class="px-4 py-2 border">Image</th>
           </tr>
         </thead>
         <tbody></tbody>
@@ -53,94 +50,98 @@
   </div>
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.1/xlsx.full.min.js"></script>
+
 <script>
   document.addEventListener("DOMContentLoaded", () => {
     const uploadFileInput = document.getElementById("uploadFile");
     const tableBody = document.querySelector("#productsTable tbody");
     const uploadToServerButton = document.getElementById("uploadToServer");
 
-    // Handle File Upload and Populate Table
-    uploadFileInput.addEventListener("change", (event) => {
-      const file = event.target.files[0];
+    // Handle File Fetch and Populate Table
+    uploadFileInput.addEventListener("change", () => {
+      const file = uploadFileInput.files[0];
       if (!file) return;
 
       const reader = new FileReader();
-      reader.onload = function (e) {
-        const rows = e.target.result.split("\n").map((row) => row.split(","));
+      reader.onload = (event) => {
+        const data = new Uint8Array(event.target.result);
+        const workbook = XLSX.read(data, { type: "array" });
+        const sheetName = workbook.SheetNames[0];
+        const sheet = workbook.Sheets[sheetName];
+        const rows = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+
         tableBody.innerHTML = ""; // Clear existing rows
 
-        rows.forEach((row) => {
-          if (row.length === 10) {
-            const tr = document.createElement("tr");
+        rows.forEach((row, rowIndex) => {
+          if (rowIndex === 0 || row.length !== 10) return; // Skip header or invalid rows
+          const tr = document.createElement("tr");
 
-            row.forEach((cell, index) => {
-              const td = document.createElement("td");
-              td.className = "px-4 py-2 border";
-              td.contentEditable = index !== 6 && index !== 7 && index !==9; // Disable editing for category/sub-category dropdown
-              td.textContent = cell;
-              tr.appendChild(td);
-            });
+          row.forEach((cell, index) => {
+            const td = document.createElement("td");
+            td.className = "px-4 py-2 border";
+            td.contentEditable = index !== 6 && index !== 7 && index !== 9; // Disable editing for dropdowns
+            td.textContent = cell;
+            tr.appendChild(td);
+          });
 
-            // Add dropdowns for category and subcategory
-            const categoryTd = tr.children[6];
-            const subCategoryTd = tr.children[7];
+          // Add dropdowns for category, subcategory, and origin
+          const categoryTd = tr.children[6];
+          const subCategoryTd = tr.children[7];
+          const originTd = tr.children[9];
 
-            const categorySelect = document.createElement("select");
-            categorySelect.innerHTML = `
-              <option value="" disabled>Select Category</option>
-              {% for category in categories %}
-                <option value="{{ category.id }}">{{ category.name }}</option>
-              {% endfor %}
-            `;
-            categorySelect.value = categoryTd.textContent.trim();
-            categoryTd.textContent = "";
-            categoryTd.appendChild(categorySelect);
+          const categorySelect = document.createElement("select");
+          categorySelect.innerHTML = ` 
+            <option value="" disabled>Select Category</option>
+            {% for category in categories %}
+              <option value="{{ category.id }}">{{ category.name }}</option>
+            {% endfor %}
+          `;
+          categorySelect.value = categoryTd.textContent.trim();
+          categoryTd.textContent = "";
+          categoryTd.appendChild(categorySelect);
 
+          const subCategorySelect = document.createElement("select");
+          subCategorySelect.innerHTML = `<option value="" disabled>Select Sub-Category</option>`;
+          subCategoryTd.textContent = "";
+          subCategoryTd.appendChild(subCategorySelect);
 
+          const originSelect = document.createElement("select");
+          originSelect.innerHTML = `
+            <option value="" disabled>Select Country</option>
+            {% for origin in origins %}
+              <option value="{{ origin.id }}">{{ origin.name }}</option>
+            {% endfor %}
+          `;
+          originSelect.value = originTd.textContent.trim();
+          originTd.textContent = "";
+          originTd.appendChild(originSelect);
 
-            const subCategorySelect = document.createElement("select");
-            subCategorySelect.innerHTML = `<option value="" disabled>Select Sub-Category</option>`;
-            subCategoryTd.textContent = "";
-            subCategoryTd.appendChild(subCategorySelect);
+          // Add file input for image column
+          const imageTd = document.createElement("td");
+          imageTd.className = "px-4 py-2 border";
+          const imageInput = document.createElement("input");
+          imageInput.type = "file";
+          imageInput.accept = "image/*";
+          imageInput.className = "w-full";
+          imageTd.appendChild(imageInput);
+          tr.appendChild(imageTd);
 
+          // Fetch subcategories when category changes
+          categorySelect.addEventListener("change", () => {
+            fetchSubcategories(categorySelect.value, subCategorySelect);
+          });
 
-
-           const originId = tr.children[9];
-             const originSelect = document.createElement("select");
-           originSelect.innerHTML = `
-             <option value="" disabled>Select Country</option>
-             {% for origin in origins %}
-               <option value="{{ origin.id }}">{{ origin.name }}</option>
-             {% endfor %}
-           `;
-           originSelect.value = originId.textContent.trim();
-           originId.textContent = "";
-           originId.appendChild(originSelect);
-
-
-
-
-            // Auto-fetch subcategories for matched categories
-            if (categorySelect.value) {
-              fetchSubcategories(categorySelect.value, subCategorySelect);
-            }
-
-            // Event listener for category change
-            categorySelect.addEventListener("change", () => {
-              fetchSubcategories(categorySelect.value, subCategorySelect);
-            });
-
-            tableBody.appendChild(tr);
-          }
+          tableBody.appendChild(tr);
         });
       };
 
-      reader.readAsText(file);
+      reader.readAsArrayBuffer(file);
     });
 
-    // Fetch and populate subcategories
     function fetchSubcategories(categoryId, subcategoryDropdown) {
-      subcategoryDropdown.innerHTML = '<option value="" disabled>Select Sub-Category</option>'; // Clear existing options
+      subcategoryDropdown.innerHTML =
+        '<option value="" disabled>Select Sub-Category</option>'; // Clear existing options
       fetch(`subcategory/${categoryId}/`)
         .then((response) => {
           if (!response.ok) throw new Error("Network response was not ok");
@@ -154,47 +155,103 @@
             subcategoryDropdown.appendChild(option);
           });
         })
-        .catch((error) => console.error("Error fetching subcategories:", error));
+        .catch((error) =>
+          console.error("Error fetching subcategories:", error)
+        );
     }
 
-    // Handle Upload to Server
-    uploadToServerButton.addEventListener("click", () => {
-      const rows = Array.from(tableBody.querySelectorAll("tr"));
-      const data = rows.map((row) => {
-        const cells = Array.from(row.querySelectorAll("td"));
-        return {
-          name: cells[0]?.textContent.trim(),
-          currency: cells[1]?.textContent.trim(),
-          price: parseFloat(cells[2]?.textContent.trim()),
-          discount_price: parseFloat(cells[3]?.textContent.trim()),
-          sku: cells[4]?.textContent.trim(),
-          stock_quantity: parseInt(cells[5]?.textContent.trim(), 10),
-          category: cells[6]?.querySelector("select").value,
-          sub_category: cells[7]?.querySelector("select").value,
-          description: cells[8]?.textContent.trim(),
-            country_of_origin: cells[9]?.textContent.trim(),
+    document.getElementById("uploadToServer").addEventListener("click", () => {
+  const tableRows = Array.from(
+    document.querySelectorAll("#productsTable tbody tr")
+  );
+  const productsData = [];
+  
+  let filesProcessed = 0; // Keep track of processed files
 
-        };
+  tableRows.forEach((row, index) => {
+    const cells = Array.from(row.children);
+    const imageInput = cells[10].querySelector("input[type='file']"); // Image input field
+    const imageFile = imageInput.files[0]; // Selected image file (if any)
+
+    let imageBase64 = null;
+    const productData = {
+      name: cells[0].textContent.trim(),
+      currency: cells[1].textContent.trim(),
+      price: cells[2].textContent.trim(),
+      discount_price: cells[3].textContent.trim(),
+      sku: cells[4].textContent.trim(),
+      stock_quantity: cells[5].textContent.trim(),
+      category: cells[6].querySelector("select").value,
+      sub_category: cells[7].querySelector("select").value,
+      description: cells[8].textContent.trim(),
+      country_origin: cells[9].querySelector("select").value,
+      image: null, // Initialize image field as null
+    };
+
+    // Process the image if selected
+    if (imageFile) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        imageBase64 = reader.result.split(",")[1]; // Extract the Base64 string
+        productData.image = imageBase64; // Assign the Base64 string to the productData
+
+        productsData.push(productData); // Push product data into the array
+        filesProcessed++; // Increment processed file count
+        
+        // Once all files are processed, send the data
+        if (filesProcessed === tableRows.length) {
+          sendProductsData(productsData); // Send the products data to the server
+        }
+      };
+      reader.readAsDataURL(imageFile); // Start reading the image as Base64
+    } else {
+      // If no image, immediately push the product data
+      productsData.push(productData);
+      filesProcessed++; // Increment the processed file count
+
+      // Once all rows are processed, send the data
+      if (filesProcessed === tableRows.length) {
+        sendProductsData(productsData);
+      }
+    }
+  });
+
+  // Function to send products data to the server
+  function sendProductsData(productsData) {
+    const formData = new FormData();
+
+    // Append all products data to formData
+    productsData.forEach((product, index) => {
+      Object.keys(product).forEach((key) => {
+        if (product[key] !== null) { // Only append if the value is not null
+          formData.append(`products[${index}][${key}]`, product[key]);
+        }
       });
-
-      fetch("{% url 'vendor:add_bulk' %}", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "X-CSRFToken": "{{ csrf_token }}",
-        },
-        body: JSON.stringify({ products: data }),
-      })
-        .then((response) => {
-          if (response.ok) {
-            alert("Products uploaded successfully!");
-            tableBody.innerHTML = ""; // Clear the table
-          } else {
-            alert("Failed to upload products.");
-          }
-        })
-        .catch((error) => console.error("Error uploading products:", error));
     });
+
+    // Check if formData is populated correctly
+    console.log('FormData:', formData);
+
+    // Send the data to the server
+    fetch("{% url 'vendor:add_bulk' %}", {
+      method: "POST",
+      headers: {
+        "X-CSRFToken": "{{ csrf_token }}",
+      },
+      body: formData,
+    })
+      .then((response) => {
+        if (!response.ok) throw new Error("Failed to upload products");
+        return response.json();
+      })
+      .then((data) => {
+        alert("Products uploaded successfully!");
+        console.log(data);
+      })
+      .catch((error) => console.error("Error uploading products:", error));
+  }
+});
+
   });
 </script>
-{% endblock content %}
+{% endblock %}

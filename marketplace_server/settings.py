@@ -189,13 +189,14 @@ AUTH_USER_MODEL = 'accounts.CustomUser'
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
-EMAIL_HOST_USER = env('host_mail')
-EMAIL_HOST_PASSWORD = env('host_mail_password')
+EMAIL_USE_TLS = True  # Ensure TLS is enabled
+EMAIL_HOST_USER = env('host_mail')  # Should match your Gmail address
+EMAIL_HOST_PASSWORD = env('host_mail_password')  # App Password here
 UNSPLASH_API_KEY = env('UNSPLASH_API_KEY')
 API_KEY = env('API_KEY')
 EMAIL_USE_TLS = True
 
-DEFAULT_EMAIL_FROM = 'Multi Vendor Site <akhlaqaltaf4@gmail.com>'
+DEFAULT_EMAIL_FROM = 'Multi Vendor Site <shahzarrar79@gmail.com>'
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"

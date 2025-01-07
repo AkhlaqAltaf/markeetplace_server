@@ -1,3 +1,22 @@
+from django.core.serializers import serialize
+from symtable import Class
+
+from django.contrib import messages
+from django.db.models import Min, Max
+from django.views import View
+from django.http import HttpResponse, JsonResponse
+from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
+from django.urls import reverse_lazy
+from django.shortcuts import get_object_or_404, redirect, render
+from django.http import JsonResponse, HttpResponseBadRequest
+from ..cart import cart
+from ..cart.cart import Cart
+from ..vendor.models import Vendor
+from django import forms
+
+# from .models import Category, CountryOrigin, Product, Media, SubCategory, Tag, WishListProduct, Order, OrderItem
+from .forms import CategoryCreateForm, ProductForm, SubCategoryCreateForm, SubCategoryForm
+from .forms import ProductForm, SubCategoryForm
 
 from django.core.serializers import serialize
 from django.db.models import Min, Max
@@ -56,14 +75,15 @@ def create_subcategory(request):
         
 class GetSubCategory(View):
     def get(self, request, category):
+        print(f"Received category: {category}")  # Debug
         category_obj = Category.objects.filter(name=category).first()
+        print(category_obj)
         if not category_obj:
             return JsonResponse({"error": "Category not found"}, status=404)
 
         sub_categories = SubCategory.objects.filter(category=category_obj)
-        # Simplify the response to include only id and name
+        print(f"Subcategories: {sub_categories}")  # Debug
         data = [{"id": sub.pk, "name": sub.name} for sub in sub_categories]
-
         return JsonResponse({"subcategories": data})
 
 
@@ -104,12 +124,6 @@ class ProductDetail3DView(DetailView):
         # Add the JSON data to the context
         context['products'] = products_json
         return context
-
-
-
-
-
-
 
 
 class AllProductsView(View):
@@ -206,3 +220,46 @@ class ProductSearchView(View):
         query = request.GET.get('q', '')
         products = Product.objects.filter(name__icontains=query)  # Adjust the field as necessary
         return render(request, 'products/all_products.html', {'products': products, 'query': query})
+
+class ForgotEmailForm(forms.Form):
+    email = forms.EmailField()
+
+def forgot_email_view(request):
+    if request.method == 'POST':
+        form = ForgotEmailForm(request.POST)
+        if form.is_valid():
+            email = form.cleaned_data['email']
+            # Perform the email processing logic here (e.g., send a reset email).
+            return HttpResponse(f"A reset email has been sent to {email}!")
+    else:
+        form = ForgotEmailForm()
+
+    return render(request, 'accounts/forgetEmail.html', {'form': form})
+
+
+class CategoryCreateView(View):
+    def post(self, request, *args, **kwargs):
+        form = CategoryCreateForm(request.POST, request.FILES)
+        
+        if form.is_valid():
+            category = form.save()  # Save the new category to the database
+            return JsonResponse({'status': 'success', 'message': 'Category created successfully!', 'category_id': category.id})
+        else:
+            # Return errors if the form is invalid
+            return JsonResponse({'status': 'error', 'message': 'Invalid form data', 'errors': form.errors})
+
+class SubCategoryCreateView(View):
+    def post(self, request, *args, **kwargs):
+        form = SubCategoryCreateForm(request.POST, request.FILES)
+        
+        if form.is_valid():
+            # The category must be a valid category object, get it from the form's category field
+            category = form.cleaned_data['category']
+            
+            # Create and save the subcategory
+            subcategory = form.save()
+            
+            return JsonResponse({'status': 'success', 'message': 'Subcategory created successfully!', 'subcategory_id': subcategory.id})
+        else:
+            # Return errors if the form is invalid
+            return JsonResponse({'status': 'error', 'message': 'Invalid form data', 'errors': form.errors})
