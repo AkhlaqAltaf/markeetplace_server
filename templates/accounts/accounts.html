@@ -101,8 +101,7 @@ Accounts
         {% csrf_token %}
         
         {% if signup_form.non_field_errors %}
-{% comment %}
-<div class="w-full max-w-lg bg-white shadow-lg rounded-lg p-8">
+ <div class="w-full max-w-lg bg-white shadow-lg rounded-lg p-8">
   <div class="flex border-b mb-4">
     <button id="signInTab" onclick="toggleTab(true)"
       class="w-1/2 py-2 text-lg font-bold border-b-2 border-orange-500 text-gray-800">
@@ -200,7 +199,6 @@ Accounts
           placeholder="Enter your name"
           value="{{ signup_form.name.value|default:'' }}">
         {% if signup_form.name.errors %}
-======= {% endcomment %}
   <div class="w-full max-w-lg bg-white shadow-lg rounded-lg p-8">
     <!-- Tab Buttons -->
     <div class="flex border-b mb-4">
@@ -339,7 +337,6 @@ Accounts
             {% endfor %}
           </div>
         {% endif %}
-{% comment %} <<<<<<< Updated upstream
       </div>
   
       <!-- Phone Number Field -->
@@ -445,7 +442,6 @@ Accounts
         Sign Up
       </button>
     </form>
-======= {% endcomment %}
 
         <!-- Name Field -->
         <div>
@@ -602,7 +598,6 @@ Accounts
   }
 </script>
 {% endblock script %}
-
 {% include "accounts/scripts.html" %}
 {% endblock content %}
 
