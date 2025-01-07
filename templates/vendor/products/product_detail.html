@@ -8,7 +8,6 @@
 
                 <!-- Product Images -->
                 <div class="w-full lg:sticky top-0 sm:flex gap-2">
-                    <!-- Thumbnail Images Section -->
                     <div class="sm:space-y-3 w-16 max-sm:w-12 max-sm:flex max-sm:mb-4 max-sm:gap-4">
                         {% for media in product.media.all %}
                             {% if media.media_type != '3d' %}
@@ -22,7 +21,6 @@
                         {% endfor %}
                     </div>
 
-                    <!-- Main Image Section -->
                     <div class="relative overflow-hidden group w-4/5 rounded-md">
                         <img
                             id="mainImage"
@@ -37,7 +35,17 @@
                 <div>
                     <h2 id="productName" class="text-2xl font-bold text-gray-800">{{ product.name }}</h2>
                     <div class="flex flex-wrap gap-4 mt-4">
-                        <p id="productPrice" class="text-gray-800 text-xl font-bold mb-3">${{ product.price }}</p>
+                        <p id="productPrice" class="text-gray-800 text-xl font-bold mb-3">
+                            {% if product_offers %}
+                                {% for offer in product_offers %}
+                                    <span class="text-sm text-gray-600 line-through">${{ product.price }}</span>
+                                    <span class="text-xl text-green-600">${{ offer.discounted_price }}</span>
+                                {% endfor %}
+                            {% else %}
+                                ${{ product.price }}
+                            {% endif %}
+                        </p>
+
                         <div>
                             <p class="text-danger">Available in</p>
                             <div id="productOrigins">
@@ -49,6 +57,22 @@
                     </div>
                     <p id="productStock">Stock: {{ product.stock_quantity }}</p>
                     <p id="productDescription">{{ product.description }}</p>
+
+                    <!-- Offer Section for Order Offers -->
+                    {% if category_order_offers %}
+                        <div class="mt-6 p-4 bg-yellow-50 border-l-4 border-yellow-500">
+                            <h3 class="font-bold text-xl text-gray-800">Special Order Offers</h3>
+                            {% for offer in category_order_offers %}
+                                <p class="text-sm text-gray-600">{{ offer.description }}</p>
+                                <p class="text-lg font-bold text-gray-800">
+                                    Order {{ offer.min_quantity }} or more for ${{
+                                        offer.discounted_price }} and save!
+                                </p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+
+                    <!-- Button Section -->
                     <button id="editButton" class="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md">Edit</button>
                     <div id="editControls" class="hidden space-x-2 mt-4">
                         <button id="saveButton" class="px-4 py-2 bg-green-600 text-white rounded-md">Save</button>
@@ -64,8 +88,6 @@
                 </a>
             </div>
 
-
-
             <!-- About the Item Section -->
             <div class="mt-8">
                 <h3 class="text-xl font-bold text-gray-800">About the item</h3>
@@ -76,6 +98,7 @@
 </div>
 
 <script>
+    // JavaScript to handle editing functionality
     const editButton = document.getElementById('editButton');
     const saveButton = document.getElementById('saveButton');
     const cancelButton = document.getElementById('cancelButton');
@@ -85,7 +108,6 @@
     const fields = ['productName', 'productPrice', 'productStock', 'productDescription'];
     const originalValues = {};
 
-    // Convert fields to editable
     editButton.addEventListener('click', () => {
         if (!isEditing) {
             isEditing = true;
@@ -104,7 +126,6 @@
         }
     });
 
-    // Save changes
     saveButton.addEventListener('click', () => {
         const data = {};
         fields.forEach((field) => {
@@ -127,7 +148,6 @@
         });
     });
 
-    // Cancel editing
     cancelButton.addEventListener('click', () => {
         fields.forEach((field) => {
             const element = document.getElementById(field);
@@ -138,4 +158,5 @@
         isEditing = false;
     });
 </script>
+
 {% endblock %}

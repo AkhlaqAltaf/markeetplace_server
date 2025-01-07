@@ -8,34 +8,37 @@ from django.shortcuts import render
 from django.views import View
 from django.views.generic import DetailView
 from .forms import SubCategoryForm
-from .models import Category, Product, SubCategory
+from .models import Category, Product, SubCategory, ProductOffer, OrderOffer
+
+
 class ProductDetailView(DetailView):
     model = Product
     template_name = "products/product_detail/product_detail.html"
     context_object_name = "product"
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        products = Product.objects.all()
-        products_json = serialize('json', products)
-
         product = self.get_object()
-        reviews = product.reviews.all()
-        total_reviews = reviews.count()
-        rating_distribution = {rating: 0 for rating in range(1, 6)}  # Initialize for ratings 1 to 5
-        for review in reviews:
-            print("REVIEW : ",review.rating)
-            rating_distribution[review.rating] += 1
-        rating_percentages = {
-            rating: (count / total_reviews) * 100 if total_reviews > 0 else 0
-            for rating, count in rating_distribution.items()
-        }
-        print(rating_percentages)
-        # Add data to context
-        context['rating_percentages'] = rating_percentages
-        context['total_reviews'] = total_reviews
-        # Add the JSON data to the context
-        context['products'] = products_json
+
+        # Fetch product offers and related order offers
+        product_offers = ProductOffer.objects.filter(products=product).first()
+
+
+        # Fetch Order Offers for the product, category, and subcategory
+        product_order_offers = OrderOffer.objects.filter(products=product).first()
+
+        # Add the offers to context
+
+        # PRODUCT OFFER
+        context['product_offers'] = product_offers
+
+
+        # ORDER OFFER
+        context['product_order_offers'] = product_order_offers
+        print(product_offers)
+
         return context
+
 
 
 def create_subcategory(request):

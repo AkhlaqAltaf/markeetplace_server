@@ -1,9 +1,10 @@
-{% extends 'core/base.html' %} 
+{% extends 'core/base.html' %}
+
 {% block content %}
 <div class="bg-gray-50 font-sans min-h-screen flex items-center justify-center">
   <div class="p-6 lg:max-w-7xl mx-auto">
     <div class="grid lg:grid-cols-2 gap-12 items-center">
-      
+
       <!-- Left Section: Images -->
       <div class="lg:sticky top-6">
         <!-- Main Image -->
@@ -15,7 +16,7 @@
             class="w-full h-auto object-cover transition-transform duration-500 hover:scale-110"
           />
         </div>
-        
+
         <!-- Thumbnail Images (Carousel at Bottom) -->
         <div class="flex gap-4 justify-center">
           {% for media in product.media.all %}
@@ -34,7 +35,7 @@
       <!-- Right Section: Details with Light Grey Background -->
       <div class="flex flex-col justify-center bg-gray-100 p-6 rounded-lg shadow-lg">
         <h1 class="text-3xl font-bold text-[#0B5D51] mb-4 text-center lg:text-left">{{ product.name }}</h1>
-        
+
         <div class="flex items-center gap-6 mb-6 justify-center lg:justify-start">
           <p class="text-2xl font-semibold text-[#FF6A3D]">${{ product.price }}</p>
           {% for origin in product.country_of_origin.all %}
@@ -45,7 +46,7 @@
         </div>
 
         <p class="text-gray-600 text-sm mb-2 text-center lg:text-left">
-          <span class="font-semibold">Stock:</span> 
+          <span class="font-semibold">Stock:</span>
           {% if product.stock_quantity > 0 %}
           <span class="text-[#0B5D51]">{{ product.stock_quantity }} available</span>
           {% else %}
@@ -57,39 +58,51 @@
         <p class="text-gray-700 leading-6 mb-6 text-center lg:text-left">
           {{ product.description }}
         </p>
-        
+
         <div class="flex items-center gap-4 justify-center lg:justify-start">
-            <div class="flex justify-center space-x-4">
-                {% include 'commons/addToCartButton.html' %} 
-                {% include 'commons/addToWishList.html' %}
-              </div>
+          <div class="flex justify-center space-x-4">
+            {% include 'commons/addToCartButton.html' %}
+            {% include 'commons/addToWishList.html' %}
+          </div>
         </div>
       </div>
     </div>
-    
+
     <!-- Additional Section: About the Product -->
-    {% comment %} <div class="mt-12 bg-white p-6 rounded-lg shadow-lg transition-all duration-300 hover:shadow-2xl">
+    <div class="mt-12 bg-white p-6 rounded-lg shadow-lg transition-all duration-300 hover:shadow-2xl">
       <h2 class="text-2xl font-bold text-[#0B5D51] mb-4">About the Item</h2>
       <p class="text-gray-700 leading-6">{{ product.content|safe }}</p>
     </div>
 
-    div class="mt-8">
-    <a
-      class="items-center justify-center rounded-md px-3 py-2 text-center text-sm font-medium text-white hover:text-white focus:outline-none focus:ring-4 focus:ring-blue-300"
-      href="{% url 'product:product-detail3d' product.id %}"
-      ><h3 class="text-xl font-bold text-gray-800">3D View</h3></a
-    >
-  </div>
+    <!-- 3D View Section -->
+    <div class="mt-8">
+      <a
+        class="items-center justify-center rounded-md px-3 py-2 text-center text-sm font-medium text-white hover:text-white focus:outline-none focus:ring-4 focus:ring-blue-300"
+        href="{% url 'product:product-detail3d' product.id %}">
+        <h3 class="text-xl font-bold text-gray-800">3D View</h3>
+      </a>
+    </div>
 
-  <div class="flex justify-center space-x-4">
-    {% include 'commons/addToCartButton.html' %} {% include
-    'commons/addToWishList.html' %}
-  </div>
-  <!-- About the Item Section -->
-  <div class="mt-8">
-    <h3 class="text-xl font-bold text-gray-800">About the item</h3>
-    {{ product.content|safe }}
-  </div> {% endcomment %}
+    <!-- More Products Section -->
+    <div class="mt-12">
+      <h3 class="text-2xl font-bold text-[#0B5D51] mb-6">More Products You Might Like</h3>
+      <div class="grid lg:grid-cols-4 sm:grid-cols-2 grid-cols-1 gap-6">
+        {% for related_product in related_products %}
+        <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition-all duration-300">
+          <img
+            src="{{ related_product.media.first.file.url }}"
+            alt="{{ related_product.name }}"
+            class="w-full h-48 object-cover rounded-lg mb-4"
+          />
+          <h4 class="text-xl font-semibold text-[#0B5D51]">{{ related_product.name }}</h4>
+          <p class="text-lg font-semibold text-[#FF6A3D]">${{ related_product.price }}</p>
+          <a
+            href="{% url 'product:product-detail' related_product.id %}"
+            class="text-sm text-[#FF6A3D] hover:underline mt-2 block text-center">View Details</a>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
 
   </div>
 </div>

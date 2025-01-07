@@ -22,7 +22,7 @@ class ProductOfferForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         if vendor:
             self.fields['products'].queryset = Product.objects.filter(vendor=vendor)
-            self.fields['subcategories'].queryset = SubCategory.objects.all()
+
 
         self.helper = FormHelper()
         self.helper.form_method = 'post'
@@ -32,19 +32,7 @@ class ProductOfferForm(forms.ModelForm):
                 Column('discount_value', css_class='col-12 col-md-6'),  # Full-width on mobile, half on larger screens
                 css_class='row'
             ),
-            Row(
-                Column('products', css_class='col-12 col-md-6'),  # Full-width on mobile, half on larger screens
-                Column('categories', css_class='col-12 col-md-6'),  # Full-width on mobile, half on larger screens
-                css_class='row'
-            ),
-            Row(
-                Column('subcategories', css_class='col-12'),  # Full-width
-                css_class='row'
-            ),
-            Row(
-                Column('brand', css_class='col-12'),  # Full-width
-                css_class='row'
-            ),
+
             Row(
                 Column('start_date', css_class='col-12 col-md-6'),  # Full-width on mobile, half on larger screens
                 Column('end_date', css_class='col-12 col-md-6'),  # Full-width on mobile, half on larger screens
@@ -55,7 +43,7 @@ class ProductOfferForm(forms.ModelForm):
 
     class Meta:
         model = ProductOffer
-        fields = ['discount_type', 'discount_value', 'products', 'categories', 'subcategories', 'brand', 'start_date', 'end_date']
+        fields = ['discount_type', 'discount_value', 'products','start_date', 'end_date']
         widgets = {
             'start_date': forms.DateInput(attrs={'type': 'date'}),
             'end_date': forms.DateInput(attrs={'type': 'date'}),
@@ -67,7 +55,6 @@ class OrderOfferForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         if vendor:
             self.fields['products'].queryset = Product.objects.filter(vendor=vendor)
-            self.fields['subcategories'].queryset = SubCategory.objects.all()
 
         self.helper = FormHelper()
         self.helper.form_method = 'post'
@@ -91,15 +78,12 @@ class OrderOfferForm(forms.ModelForm):
                 Column(Field('categories', css_class='form-control'), css_class='col-12 col-md-6'),  # Full-width on mobile, half on larger screens
                 css_class='form-row'
             ),
-            Field('subcategories', css_class='form-control'),
-            FormActions(
-                Submit('submit', 'Save Offer', css_class='btn btn-primary w-100')
-            )
+
         )
 
     class Meta:
         model = OrderOffer
-        fields = ['discount_type', 'discount_value', 'min_products', 'start_date', 'end_date', 'products', 'categories', 'subcategories']
+        fields = ['discount_type', 'discount_value', 'min_products', 'start_date', 'end_date', 'products']
         widgets = {
             'start_date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
             'end_date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
