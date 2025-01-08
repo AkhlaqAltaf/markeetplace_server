@@ -2,21 +2,19 @@
 {% load static %}
 
 {% block title %}
-Accounts
-{% endblock title %}
+  Accounts
+{% endblock %}
 
 {% block head_content %}
-<!-- Add any custom styles or scripts if necessary -->
-{% endblock head_content %}
+  <!-- Add any custom styles or scripts if necessary -->
+{% endblock %}
 
 {% block content %}
 <div class="flex items-center justify-center min-h-screen bg-gray-100">
-
   <div class="w-full max-w-lg bg-white shadow-lg rounded-lg p-8">
     <!-- Tab Buttons -->
     <div class="flex border-b mb-4">
-      <button id="signInTab" onclick="toggleTab(true)" class="w-1/2 py-2 text-center text-sm font-semibold border-b-2"
-        data-active-tab="true">
+      <button id="signInTab" onclick="toggleTab(true)" class="w-1/2 py-2 text-center text-sm font-semibold border-b-2" data-active-tab="true">
         Sign In
       </button>
       <button id="signUpTab" onclick="toggleTab(false)" class="w-1/2 py-2 text-center text-sm font-semibold border-b-2">
@@ -89,8 +87,7 @@ Accounts
         </div>
 
         <!-- Submit Button -->
-        <button type="submit"
-          class="w-full py-3 bg-[#0B5D51] text-white rounded-lg hover:bg-[#09433E] transition duration-300 shadow-lg hover:shadow-xl transform hover:scale-105">
+        <button type="submit" class="w-full py-3 bg-[#0B5D51] text-white rounded-lg hover:bg-[#09433E] transition duration-300 shadow-lg hover:shadow-xl transform hover:scale-105">
           Sign In
         </button>
       </form>
@@ -237,15 +234,13 @@ Accounts
         </div>
 
         <!-- Submit Button -->
-        <button type="submit"
-          class="w-full py-3 bg-[#0B5D51] text-white rounded-lg hover:bg-[#09433E] transition duration-300 shadow-lg hover:shadow-xl transform hover:scale-105">
+        <button type="submit" class="w-full py-3 bg-[#0B5D51] text-white rounded-lg hover:bg-[#09433E] transition duration-300 shadow-lg hover:shadow-xl transform hover:scale-105">
           Sign Up
         </button>
       </form>
     </div>
   </div>
-  
 </div>
-</div>
+
 {% include "accounts/scripts.html" %}
-{% endblock content %}
+{% endblock %}
