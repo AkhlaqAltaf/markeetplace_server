@@ -193,6 +193,22 @@ class AllProductsView(View):
 
         # Filter products based on selected categories
         products = Product.objects.all().select_related('category')
+        allProductOffers = ProductOffer.objects.all()
+        discounts = []  # Initialize discounts list
+
+        # Calculate discounts for each product
+        for product in products:
+            product_offer = allProductOffers.filter(products=product).first()
+            if product_offer:
+                if product_offer.discount_type == 'percentage':
+                    discount_value = round(product.price - (product.price * (product_offer.discount_value / 100)), 2)
+                elif product_offer.discount_type == 'fixed':
+                    discount_value = max(product.price - product_offer.discount_value, 0)
+                else:
+                    discount_value = None
+            else:
+                discount_value = None
+            discounts.append(discount_value)
 
         if filter_values:
             products = products.filter(category__name__in=filter_values)
@@ -211,11 +227,11 @@ class AllProductsView(View):
 
         # Pass the filtered data to the full page render
         context = {
-            'products': products,
+            'products_with_discounts': zip(products, discounts),  # Pair products and discounts
             'categories': categories,  # Pass all categories for the filter checkboxes
             'prices_range': prices_range,  # Dynamic price ranges
             'selected_filters': filter_values,  # Keep track of selected categories
-            'selected_price': price_filter  # Keep track of the selected price range
+            'selected_price': price_filter,  # Keep track of the selected price range
         }
         return render(request, "products/all_products.html", context)
 

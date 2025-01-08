@@ -47,41 +47,48 @@
             </div>
         </div>
 
-        <!-- Product Grid Section (Right) -->
-        <div class="w-3/4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {% for product in products %}
-                <div class="group flex flex-col overflow-hidden rounded-lg border border-gray-200 bg-white shadow-md">
-                    <a href="{% url 'product:product-detail' product.id %}" class="relative mx-3 mt-3 h-60 overflow-hidden rounded-xl">
-                        {% with product.media.all|slice:":2" as media_list %}
-                            {% if media_list|length > 0 %}
-                                <img class="peer absolute top-0 right-0 h-full w-full object-cover transition-all duration-300" 
-                                     src="{{ media_list.0.file.url }}" alt="product image">
-                            {% endif %}
-                            {% if media_list|length > 1 %}
-                                <img class="peer absolute top-0 -right-96 h-full w-full object-cover transition-all duration-300 peer-hover:right-0" 
-                                     src="{{ media_list.1.file.url }}" alt="product image">
-                            {% endif %}
-                        {% endwith %}
-                    </a>
+<!-- Product Grid Section (Right) -->
+<div class="w-3/4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    {% for product, discount in products_with_discounts %}
+        <div class="group flex flex-col overflow-hidden rounded-lg border border-gray-200 bg-white shadow-md">
+            <a href="{% url 'product:product-detail' product.id %}" class="relative mx-3 mt-3 h-60 overflow-hidden rounded-xl">
+                {% with product.media.all|slice:":2" as media_list %}
+                    {% if media_list|length > 0 %}
+                        <img class="peer absolute top-0 right-0 h-full w-full object-cover transition-all duration-300" 
+                             src="{{ media_list.0.file.url }}" alt="product image">
+                    {% endif %}
+                    {% if media_list|length > 1 %}
+                        <img class="peer absolute top-0 -right-96 h-full w-full object-cover transition-all duration-300 peer-hover:right-0" 
+                             src="{{ media_list.1.file.url }}" alt="product image">
+                    {% endif %}
+                {% endwith %}
+            </a>
 
-                    <div class="mt-4 px-3 pb-3">
-                        <a href="{% url 'product:product-detail' product.id %}">
-                            <h5 class="text-xl text-gray-800 font-semibold  transition duration-300">
-                                {{ product.name }}
-                            </h5>
-                        </a>
-                        <div class="mt-2 flex items-center justify-between">
-                            <p class="text-lg font-bold text-gray-900">{{ product.price }}</p>
-                            <span class="text-sm text-gray-500 line-through">$699</span>
-                        </div>
-                        <div class="mt-4 flex justify-center space-x-4">
-                            {% include 'commons/addToCartButton.html' %}
-                            {% include 'commons/addToWishList.html' %}
-                        </div>
-                    </div>
+            <div class="mt-4 px-3 pb-3">
+                <a href="{% url 'product:product-detail' product.id %}">
+                    <h5 class="text-xl text-gray-800 font-semibold transition duration-300">
+                        {{ product.name }}
+                    </h5>
+                </a>
+                <div class="mt-2 flex items-center justify-between">
+                    <!-- Display discounted price if available -->
+                    {% if discount %}
+                        <p class="text-lg font-bold text-gray-900">${{ discount }}</p>
+                        <span class="text-sm text-gray-500 line-through">${{ product.price }}</span>
+                    {% else %}
+                        <!-- Show original price if no discount -->
+                        <p class="text-lg font-bold text-gray-900">${{ product.price }}</p>
+                    {% endif %}
                 </div>
-            {% endfor %}
+                <div class="mt-4 flex justify-center space-x-4">
+                    {% include 'commons/addToCartButton.html' %}
+                    {% include 'commons/addToWishList.html' %}
+                </div>
+            </div>
         </div>
+    {% endfor %}
+</div>
+
 
     </div>
     
