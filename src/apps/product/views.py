@@ -76,7 +76,7 @@ class ProductDetailView(DetailView):
         if product_after_discount == product.price:
             product_after_discount = 0
             
-        
+        context['products'] = Product.objects.all()
         context['product_offers'] = product_offers
         context['discount'] = product_after_discount
         context['product_order_offers'] = product_order_offers

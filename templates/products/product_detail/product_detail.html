@@ -64,9 +64,6 @@
         </p>
         <p> {{ product.category }} </p>
         <p> {{ product.sub_category }} </p>
-        <p class="text-gray-700 leading-6 mb-6 text-center lg:text-left">
-          {{ product.description }}
-        </p>
 
         <div class="flex items-center gap-4 justify-center lg:justify-start">
           <div class="flex justify-center space-x-4">
@@ -100,7 +97,9 @@
     <!-- About the Product -->
     <div class="mt-12 bg-white p-6 rounded-lg shadow-lg transition-all duration-300 hover:shadow-2xl">
       <h2 class="text-2xl font-bold text-[#0B5D51] mb-4">About the Item</h2>
-      <p class="text-gray-700 leading-6">{{ product.content|safe }}</p>
+      <p class="text-gray-700 leading-6 mb-6 lg:text-left">
+          {{ product.description }}
+        </p>
     </div>
 
     <!-- 3D View Section -->
@@ -114,22 +113,41 @@
     <!-- Related Products Section -->
     <div class="mt-12">
       <h3 class="text-2xl font-bold text-[#0B5D51] mb-6">More Products You Might Like</h3>
-      <div class="grid lg:grid-cols-4 sm:grid-cols-2 grid-cols-1 gap-6">
-        {% for related_product in related_products %}
-        <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition-all duration-300">
-          <img
-            src="{{ related_product.media.first.file.url }}"
-            alt="{{ related_product.name }}"
-            class="w-full h-48 object-cover rounded-lg mb-4"
-          />
-          <h4 class="text-xl font-semibold text-[#0B5D51]">{{ related_product.name }}</h4>
-          <p class="text-lg font-semibold text-[#FF6A3D]">${{ related_product.price }}</p>
-          <a
-            href="{% url 'product:product-detail' related_product.id %}"
-            class="text-sm text-[#FF6A3D] hover:underline mt-2 block text-center">View Details</a>
+      <!-- Product Grid Section (Right) -->
+        <div class="w-3/4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {% for product in products %}
+                <div class="group flex flex-col overflow-hidden rounded-lg border border-gray-200 bg-white shadow-md">
+                    <a href="{% url 'product:product-detail' product.id %}" class="relative mx-3 mt-3 h-60 overflow-hidden rounded-xl">
+                        {% with product.media.all|slice:":2" as media_list %}
+                            {% if media_list|length > 0 %}
+                                <img class="peer absolute top-0 right-0 h-full w-full object-cover transition-all duration-300" 
+                                     src="{{ media_list.0.file.url }}" alt="product image">
+                            {% endif %}
+                            {% if media_list|length > 1 %}
+                                <img class="peer absolute top-0 -right-96 h-full w-full object-cover transition-all duration-300 peer-hover:right-0" 
+                                     src="{{ media_list.1.file.url }}" alt="product image">
+                            {% endif %}
+                        {% endwith %}
+                    </a>
+
+                    <div class="mt-4 px-3 pb-3">
+                        <a href="{% url 'product:product-detail' product.id %}">
+                            <h5 class="text-xl text-gray-800 font-semibold  transition duration-300">
+                                {{ product.name }}
+                            </h5>
+                        </a>
+                        <div class="mt-2 flex items-center justify-between">
+                            <p class="text-lg font-bold text-gray-900">{{ product.price }}</p>
+                            <span class="text-sm text-gray-500 line-through">$699</span>
+                        </div>
+                        <div class="mt-4 flex justify-center space-x-4">
+                            {% include 'commons/addToCartButton.html' %}
+                            {% include 'commons/addToWishList.html' %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
         </div>
-        {% endfor %}
-      </div>
     </div>
   </div>
 </div>
