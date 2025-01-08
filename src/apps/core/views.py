@@ -12,7 +12,7 @@ class FrontPageView(TemplateView):
     template_name = "home/home.html"
     def get(self,request):
 
-        products = Product.objects.all()[0:6]
+        products = Product.objects.all()[0:25]
 
         categories = Category.objects.all()[0:8]
         top_sale = TopPageProduct.objects.filter(order=1).first()

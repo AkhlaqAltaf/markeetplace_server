@@ -24,7 +24,9 @@
         <div class="flex gap-4">
           {% for category in categories %}
             <a href="{% url 'product:category-product' category.id %}" class="flex flex-col items-center bg-white border border-gray-300 p-3 rounded-full shadow-lg" style="min-width: 205px; height: 236px;">
-              {% comment %} <img src="{{ category.image.url }}" class="mb-2 w-full h-4/5 object-cover rounded-full" style="max-height: 188px;" /> {% endcomment %}
+               {% if category.image %}
+              <img src="{{ category.image.url }}" class="mb-2 w-full h-4/5 object-cover rounded-full" style="max-height: 188px;" />
+              {% endif %}
               <p class="text-lg font-semibold">{{category.name}}</p>
             </a>
           {% endfor %}
