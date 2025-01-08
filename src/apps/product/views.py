@@ -39,24 +39,50 @@ class ProductDetailView(DetailView):
         context = super().get_context_data(**kwargs)
         product = self.get_object()
 
-        # Fetch product offers and related order offers
-        product_offers = ProductOffer.objects.filter(products=product).first()
+        # Initialize variables for product offers and order offers
+        product_offers = None
+        product_order_offers = None
+        product_after_discount = 0
 
+        try:
+            # Fetch product offers and related order offers
+            product_offers = ProductOffer.objects.filter(products=product).first()
+            product_order_offers = OrderOffer.objects.filter(products=product).first()
 
-        # Fetch Order Offers for the product, category, and subcategory
-        product_order_offers = OrderOffer.objects.filter(products=product).first()
+            # PRODUCT OFFER: check for discount type and calculate discounted price
+            if product_offers:
+                if product_offers.discount_type == 'percentage':
+                    product_after_discount = round(product.price - ((product.price / 100) * product_offers.discount_value), 1)
+                else:
+                    product_after_discount = product.price - product_offers.discount_value
+            else:
+                # If no offers found, set product price as is
+                product_after_discount = product.price
+        except ProductOffer.DoesNotExist:
+            # Handle case where ProductOffer doesn't exist
+            product_offers = None
+            product_after_discount = product.price
+            print("Product offer does not exist.")
+        except OrderOffer.DoesNotExist:
+            # Handle case where OrderOffer doesn't exist
+            product_order_offers = None
+            print("Order offer does not exist.")
+        except Exception as e:
+            # Catch any other exceptions and log them
+            print(f"Error occurred: {str(e)}")
+            raise Http404("Something went wrong while fetching offers.")
 
-        # Add the offers to context
-
-        # PRODUCT OFFER
+        # Add the fetched offers and calculated discount to context
+        if product_after_discount == product.price:
+            product_after_discount = 0
+            
+        context['products'] = Product.objects.all()
         context['product_offers'] = product_offers
-
-
-        # ORDER OFFER
+        context['discount'] = product_after_discount
         context['product_order_offers'] = product_order_offers
-        print(product_offers)
 
         return context
+
 
 
 
