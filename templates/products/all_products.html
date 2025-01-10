@@ -3,7 +3,6 @@
 {% block content %}
 <div class="container mx-auto my-8 px-6">
     <div class="flex space-x-6">
-        <!-- Filter Section (Left) -->
         <div class="w-1/4 bg-white p-6 rounded-lg shadow-lg space-y-6">
             <h3 class="text-2xl font-semibold text-gray-800">Filter Products</h3>
             <form method="get" action="{% url 'product:all-product' %}">
@@ -46,6 +45,7 @@
                 </button>
             </div>
         </div>
+        <!-- Filter Section (Left) -->
 
 <!-- Product Grid Section (Right) -->
 <div class="w-3/4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
