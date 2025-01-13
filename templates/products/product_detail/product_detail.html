@@ -2,6 +2,9 @@
 
 {% block content %}
 
+
+
+
 <div class="bg-gray-50 font-sans min-h-screen flex items-center justify-center">
   <div class="p-6 lg:max-w-7xl mx-auto">
     <div class="grid lg:grid-cols-2 gap-12 items-center">
@@ -124,52 +127,69 @@
       </a>
     </div>
 
-    <!-- Related Products Section -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css">
-
     <div class="mt-12">
       <h3 class="text-2xl font-bold text-[#0B5D51] mb-6">More Products You Might Like</h3>
-      <!-- Swiper Container -->
-      <div class="swiper">
-        <div class="swiper-wrapper">
+      <!-- Product Grid Section (Right) -->
+        <div class="w-3/4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        </div>
+    </div>
+
+    <div class="relative">
+      <button class="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 z-10 rounded-full p-2 shadow-lg text-white bg-[#0B5D51]" onclick="scrollCategories(-1)">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M15 18l-6-6 6-6" />
+        </svg>
+      </button>
+
+      <div id="scrollContainer" class="flex overflow-x-scroll custom-scrollbar space-x-4 p-4 ">
+        <div class="flex gap-4">
           {% for product in products %}
-          <!-- Product Card -->
-          <div class="swiper-slide">
-            <div class="group flex flex-col overflow-hidden rounded-lg border border-gray-200 bg-white shadow-md">
-              <a href="{% url 'product:product-detail' product.id %}" class="relative mx-3 mt-3 h-60 overflow-hidden rounded-xl">
-                {% with product.media.all|slice:":2" as media_list %}
-                  {% if media_list|length > 0 %}
-                  <img class="peer absolute top-0 right-0 h-full w-full object-cover transition-all duration-300" 
-                       src="{{ media_list.0.file.url }}" alt="product image">
-                  {% endif %}
-                  {% if media_list|length > 1 %}
-                  <img class="peer absolute top-0 -right-96 h-full w-full object-cover transition-all duration-300 peer-hover:right-0" 
-                       src="{{ media_list.1.file.url }}" alt="product image">
-                  {% endif %}
-                {% endwith %}
-              </a>
-              <div class="mt-4 px-3 pb-3">
-                <a href="{% url 'product:product-detail' product.id %}">
-                  <h5 class="text-xl text-gray-800 font-semibold transition duration-300">
-                    {{ product.name }}
-                  </h5>
-                </a>
-                <div class="mt-2 flex items-center justify-between">
-                  <p class="text-lg font-bold text-gray-900">{{ product.price }}</p>
-                  <span class="text-sm text-gray-500 line-through">$699</span>
-                </div>
-                <div class="mt-4 flex justify-center space-x-4">
-                  {% include 'commons/addToCartButton.html' %}
-                  {% include 'commons/addToWishList.html' %}
-                </div>
-              </div>
-            </div>
+      <div class="group flex w-full max-w-xs flex-col overflow-hidden rounded-lg border border-gray-100 bg-white shadow-sm h-[320px]">
+        <a href="{% url 'product:product-detail' product.id %}" class="relative mx-3 mt-3 flex h-40 overflow-hidden rounded-xl">
+          {% with product.media.all|slice:":2" as media_list %}
+          {% if media_list|length > 0 %}
+          <img class="peer absolute top-0 right-0 h-full w-full object-cover" src="{{ media_list.0.file.url }}" alt="product image" />
+          {% endif %}
+          {% if media_list|length > 1 %}
+          <img class="peer absolute top-0 -right-96 h-full w-full object-cover transition-all delay-100 duration-1000 hover:right-0 peer-hover:right-0" src="{{ media_list.1.file.url }}" alt="product image" />
+          {% endif %}
+          {% endwith %}
+        </a>
+
+        <div class="mt-4 px-3 pb-3">
+          <a href="{% url 'product:product-detail' product.id %}">
+            <h5 class="text-[20px] tracking-tight text-slate-600">{{ product.name }}</h5>
+          </a>
+          <div class="mt-1 mb-3 flex items-center justify-between">
+            <p>
+              <span class="text-[18px] font-bold text-slate-900">{{ product.price }}</span>
+            </p>
           </div>
-          {% endfor %}
+          <div class="flex justify-center space-x-4">
+            {% include 'commons/addToCartButton.html' %}
+            {% include 'commons/addToWishList.html' %}
+          </div>
         </div>
       </div>
+      {% endfor %}
+        </div>
+      </div>
+      
+      
+
+      <button class="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 z-10 text-white rounded-full p-2 shadow-lg bg-[#0B5D51]" onclick="scrollCategories(1)">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M9 18l6-6-6-6" />
+        </svg>
+      </button>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
+
+    <div id="pagination" class="flex justify-center mt-4 space-x-2]"></div>
+
+    <!-- Related Products Section -->
+   
+  </div>
+</div>
 
 <script>
   function changeImage(src) {
@@ -179,19 +199,37 @@
     setTimeout(() => mainImage.classList.remove("scale-110"), 300);
   }
 
-  const swiper = new Swiper('.swiper', {
-    slidesPerView: 1,
-    spaceBetween: 16,
-    breakpoints: {
-      640: { slidesPerView: 2 },
-      1024: { slidesPerView: 3 },
-    },
-    navigation: {
-      nextEl: '.swiper-button-next',
-      prevEl: '.swiper-button-prev',
-    },
-    pagination: { el: '.swiper-pagination', clickable: true },
-    loop: true,
-  });
+
+  const container = document.getElementById('scrollContainer');
+    const cards = document.querySelectorAll('a');
+    const pagination = document.getElementById('pagination');
+    const cardsPerPage = 5;
+    let currentPage = 0;
+
+    function scrollCategories(direction) {
+      const cardWidth = 221;
+      container.scrollBy({
+        left: direction * cardWidth,
+        behavior: 'smooth'
+      });
+    }
+
+    function updatePagination() {
+      const totalPages = Math.ceil(cards.length / cardsPerPage);
+      pagination.innerHTML = '';
+      
+      for (let i = 0; i < totalPages; i++) {
+        const dot = document.createElement('div');
+        dot.className = `h-2 w-2 rounded-full ${i === currentPage ? 'bg-[#0B5D51]' : 'bg-gray-300'}`;
+        pagination.appendChild(dot);
+      }
+    }
+
+    container.addEventListener('scroll', () => {
+      currentPage = Math.round(container.scrollLeft / (221 * cardsPerPage));
+      updatePagination();
+    });
+
+    updatePagination();
 </script>
 {% endblock %}
