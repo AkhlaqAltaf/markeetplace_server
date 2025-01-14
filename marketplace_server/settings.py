@@ -156,10 +156,10 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static_files')]
-STATIC_ROOT = '/home/u571851694/domains/habajumla.com/public_html/static'
+STATIC_ROOT = '/home/u571851694/domains/habajumla.com/public_html/static/'
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media/'
+MEDIA_ROOT = '/home/u571851694/domains/habajumla.com/public_html/media/'
 
 
 # Default primary key field type
