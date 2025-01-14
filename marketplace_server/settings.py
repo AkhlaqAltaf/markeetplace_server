@@ -18,7 +18,7 @@ import environ
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 env = environ.Env(
-    DEBUG=(bool, True)
+    DEBUG=(bool, False)
 )
 
 environ.Env.read_env(BASE_DIR / '.env')
@@ -156,11 +156,10 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static_files')]
-STATIC_ROOT = '/home/u571851694/domains/habajumla.com/public_html/static/'
+STATIC_ROOT = '/marketplace/static/'
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = '/home/u571851694/domains/habajumla.com/public_html/media/'
-
+MEDIA_ROOT = '/marketplace/media/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
