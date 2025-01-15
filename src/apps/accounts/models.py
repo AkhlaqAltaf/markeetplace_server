@@ -42,7 +42,7 @@ class CustomUserManager(BaseUserManager):
         """
         Sends a verification email with a link that contains the token
         """
-        verification_link = f"https://8601-2400-adcc-913-1e00-3854-5cfa-f276-68f4.ngrok-free.app/accounts/verify/{token}/"
+        verification_link = f"https://habajumla.com/accounts/verify/{token}/"
         context = {'user': user, 'verification_link': verification_link}
 
         # You would send the email here (using your mailing logic)
