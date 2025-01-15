@@ -50,6 +50,7 @@ class Product(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=2)
     stock_quantity = models.PositiveIntegerField(default=0)
     sku = models.CharField(max_length=100, unique=True)
+    barcode = models.CharField(max_length=100, unique=True,blank=True,null=True)
     vendor = models.ForeignKey(Vendor, on_delete=models.CASCADE, related_name='products')
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='review')
     created_at = models.DateTimeField(auto_now_add=True)

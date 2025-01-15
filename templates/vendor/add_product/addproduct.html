@@ -65,12 +65,25 @@
 
         <div>
           <label class="block text-sm font-medium mb-1">SKU</label>
-          <input type="number" name="sku"
+          <input type="text" name="sku"
             class="w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-orange-500"
             value="{{ form.sku.value|default:"" }}">
           {% if form.sku.errors %}
             <div class="text-red-500 text-sm mt-1">
               {% for error in form.sku.errors %}
+                <p>{{ error }}</p>
+              {% endfor %}
+            </div>
+          {% endif %}
+        </div>
+        <div>
+          <label class="block text-sm font-medium mb-1">Barcode</label>
+          <input type="text" name="barcode"
+            class="w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-orange-500"
+            value="{{ form.barcode.value|default:"" }}">
+          {% if form.barcode.errors %}
+            <div class="text-red-500 text-sm mt-1">
+              {% for error in form.barcode.errors %}
                 <p>{{ error }}</p>
               {% endfor %}
             </div>

@@ -31,7 +31,7 @@ class ProductForm(forms.ModelForm):
         fields = [
             'name', 'description', 'category', 'sub_category',
             'price',  'stock_quantity', 'sku',
-             'brand'
+             'brand','barcode'
         ]
         widgets = {
             'description': forms.Textarea(attrs={'rows': 3}),

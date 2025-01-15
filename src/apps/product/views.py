@@ -4,7 +4,7 @@ from symtable import Class
 from django.contrib import messages
 from django.db.models import Min, Max
 from django.views import View
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse, JsonResponse, Http404
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
 from django.urls import reverse_lazy
 from django.shortcuts import get_object_or_404, redirect, render

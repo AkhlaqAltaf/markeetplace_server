@@ -1,0 +1,31 @@
+On VPS Hostinger
+
+gunicorn and nginx
+nginx configuration files at
+1.  /etc/nginx/sites-available/marketplace
+to edit sudo nano /path/to/files/
+2. /etc/nginx/sites-available/habajumla.com
+
+To TEST nginx : sudo nginx -t
+to start : sudo systemctl start nginx
+TO TEST PROCESS : ps aux | grep nginx
+TO CHECK ERROR LOG : sudo tail -f /var/log/nginx/error.log
+
+gunicorn service file
+ path : /etc/systemd/system/gunicorn.services
+
+
+
+to start gunicorn
+
+sudo systemctl start gunicorn
+restart
+daemon-reload
+
+gunicorn run to test
+/root/markeetplace_server/venv/bin/gunicorn --workers 3 --bind 127.0.0.1:8000 marketplace_server.wsgi:application
+
+
+to permission
+sudo -u www-data ls /root/markeetplace_server/static/
+sudo chmod 755 /root/markeetplace_server
