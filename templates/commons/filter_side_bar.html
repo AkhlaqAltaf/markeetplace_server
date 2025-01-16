@@ -1,0 +1,50 @@
+        <div id="sidebar" class="fixed top-0 left-0 z-40 w-3/4 max-w-sm h-full bg-[#073741] text-white p-6 rounded-lg shadow-lg transform -translate-x-full space-y-6 transition-transform duration-300 overflow-y-auto">
+            <!-- Close Button (for smaller devices) -->
+            <button id="close-sidebar" class="absolute top-4 right-4 p-1 text-grey rounded-full">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+            <h3 class="text-2xl text-center p-10 font-semibold text-white">Filter Products</h3>
+                <hr class="border-t border-gray-200 my-4">
+            <form method="get" action="{% url 'product:all-product' %}">
+                <!-- Category Filters -->
+                <div class="category-filters space-y-4">
+                    <h4 class="font-medium text-xl text-white">Categories</h4>
+                    {% for category in categories %}
+                        <label class="block">
+                            <input type="checkbox" name="filter" value="{{ category.id }}"
+                           {% if category.id|stringformat:"s" in selected_filters %} checked {% endif %}
+                                   class="mr-2 leading-tight accent-[#0B5D51]"
+                                   style="width: 16px; height: 16px;">
+                            <span class="text-white">{{ category.name }}</span>
+                        </label>
+                    {% endfor %}
+                </div>
+                <hr class="border-t border-gray-200 my-4">
+                <!-- Price Filters -->
+                <div class="price-filters space-y-4">
+                    <h4 class="font-medium text-xl mt-[6px] text-white">Price Range</h4>
+                    {% for key, label in prices_range.items %}
+                    <label class="block">
+                        <input 
+                            type="checkbox"
+                            name="price" 
+                            value="{{ key }}"
+                            {% if selected_price == key %} checked {% endif %}
+                            class="mr-2 leading-tight accent-[#0B5D51] font-[22px]"
+                            style="width: 16px; height: 16px;">
+                        <span class="text-white">{{ label }}</span>
+                    </label>
+                    {% endfor %}
+                </div>
+        
+                <!-- Filter Button -->
+                <div class="flex justify-center">
+                    <button type="submit" class="w-full bg-[#FFFFFF] py-3 mt-[20px] text-[#0B5D51] rounded-lg hover:bg-[#0B5D51] hover:text-white transition duration-300">
+                        Apply Filters
+                    </button>
+                    
+                </div>
+            </form>
+        </div>

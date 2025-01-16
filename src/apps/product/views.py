@@ -153,12 +153,11 @@ class ProductDetail3DView(DetailView):
 
 
 class AllProductsView(View):
-    def get(self, request):
-        # Get filter values from the request (multiple selected filters)
-        filter_values = request.GET.getlist('filter')  # Categories selected via checkboxes
-        price_filter = request.GET.get('price', None)  # Single price range filter
+    def get(self, request,category=None):
 
-        # Get all unique categories for the filter checkboxes
+        filter_values = request.GET.getlist('filter')
+        price_filter = request.GET.get('price', None)
+
         categories = Category.objects.all()
 
         # Get the minimum and maximum product prices
@@ -170,28 +169,27 @@ class AllProductsView(View):
             min_price = round(min_price)
             max_price = round(max_price)
 
-            # Calculate the range and step size dynamically based on the price span
             price_range_span = max_price - min_price
-            num_buckets = 3  # Default to 5 price ranges (this can be adjusted)
+            num_buckets = 3
             
             if price_range_span > 500:
-                num_buckets = 10  # More buckets for large price ranges
+                num_buckets = 10
             elif price_range_span > 200:
-                num_buckets = 7  # Use 7 buckets for medium price ranges
+                num_buckets = 7
 
             price_step = round(price_range_span / num_buckets)
 
-            # Create dynamic price ranges
             prices_range = {}
             for i in range(num_buckets):
                 upper_limit = min_price + (i + 1) * price_step
                 prices_range[f'bucket_{i + 1}'] = f'Under ${upper_limit}'
-            prices_range['high'] = f'Under ${max_price}'  # Final high range
+            prices_range['high'] = f'Under ${max_price}'
 
         else:
             prices_range = {}
 
         # Filter products based on selected categories
+
         products = Product.objects.all().select_related('category')
         allProductOffers = ProductOffer.objects.all()
         discounts = []  # Initialize discounts list
@@ -211,7 +209,7 @@ class AllProductsView(View):
             discounts.append(discount_value)
 
         if filter_values:
-            products = products.filter(category__name__in=filter_values)
+            products = products.filter(category__id__in=filter_values)
 
         # Filter by price range if selected
         if price_filter:
@@ -226,6 +224,7 @@ class AllProductsView(View):
             return render(request, "products/includes/product_grid.html", {'products': products})
 
         # Pass the filtered data to the full page render
+        print(f"FILTER VALUES : {filter_values}")
         context = {
             'products_with_discounts': zip(products, discounts),  # Pair products and discounts
             'categories': categories,  # Pass all categories for the filter checkboxes

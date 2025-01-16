@@ -14,30 +14,21 @@
       </div>
 
       <!-- Column 2 -->
-      <div class="flex flex-col gap-4">
+    <div class="flex flex-col gap-4">
         <h3 class="font-semibold text-lg">Top Categories</h3>
-        <p class="text-sm text-[#929FA5]">Computer & Laptop</p>
-        <p class="text-sm text-[#929FA5]">SmartPhone</p>
-        <p class="text-sm text-[#929FA5]">Headphone</p>
-        <p class="text-sm text-[#929FA5]">Accessories</p>
-        <p class="text-sm text-[#929FA5]">Camera & Photo</p>
-        <p class="text-sm text-[#929FA5]">TV & Home</p>
-        <a href="/shop" class="flex items-center gap-2 px-3 py-2 mt-2 bg-black text-[#EBC80C]">
-          Browse All Products
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-          </svg>
-        </a>
-      </div>
-
+        {% for category in categories %}
+            <a href="{% url 'product:all-product' %}?filter={{ category.id }}{% if selected_filters %}&filter={{ selected_filters|join:'&filter=' }}{% endif %}" class="text-sm text-[#929FA5]">
+                {{ category.name }}
+            </a>
+        {% endfor %}
+    </div>
       <!-- Column 3 -->
       <div class="flex flex-col gap-4">
         <h3 class="font-semibold text-lg">Quick Links</h3>
-        <p class="text-sm text-[#929FA5]">Shop Product</p>
-        <p class="text-sm text-[#929FA5]">Shopping Cart</p>
-        <p class="text-sm text-[#929FA5]">Wishlist</p>
-        <p class="text-sm text-[#929FA5]">Compare</p>
-        <p class="text-sm text-[#929FA5]">Track Order</p>
+          <a href="{% url 'product:all-product' %}"> <p class="text-sm text-[#929FA5]">Shop Product</p></a>
+          <a href="{% url 'cart:cart' %}"> <p class="text-sm text-[#929FA5]">Shopping Cart</p> </a>
+          <a href="{% url 'wishlist:wish-list' %}"><p class="text-sm text-[#929FA5]">Wishlist</p> </a>
+          <a href="{% url 'order:user_order_list' %}"> <p class="text-sm text-[#929FA5]">Track Order</p> </a>
         <p class="text-sm text-[#929FA5]">Customer Help</p>
         <p class="text-sm text-[#929FA5]">About Us</p>
       </div>
