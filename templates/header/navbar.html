@@ -32,25 +32,24 @@
                 </span>
                 {% endif %}
             </a>
-            <a href="{% url 'wishlist:wish-list' %}">
-                <i class="fa fa-heart text-2xl transition-transform transform hover:scale-125 hover:text-white hover:shadow-lg"></i>
+            <a href="{% url 'wishlist:wish-list' %}" class="relative group">
+                <i class="fa fa-heart text-2xl transition-transform transform group-hover:scale-125 group-hover:text-green-700 group-hover:shadow-lg"></i>
             </a>
 
             <!-- Vendor or User Dropdown -->
             {% if request.user.vendor or request.user.is_authenticated %}
             <div class="relative">
                 <button id="user-menu-toggle" class="flex items-center gap-2 focus:outline-none">
-                    <i class="fa fa-user text-2xl transition-transform transform hover:scale-125"></i>
                     {% if request.user.vendor %}
                     <span>{{ request.user.vendor.name }}</span>
                     {% else %}
                     <span>{{ request.user.name }}</span>
                     {% endif %}
-                    <i class="fa fa-caret-down text-lg"></i>
+                    <i id="dropdown-icon" class="fa fa-caret-down text-lg"></i>
                 </button>
 
                 <!-- Dropdown Menu -->
-                <div id="user-menu" class="hidden absolute right-0 bg-[#073741] border border-white rounded shadow-lg mt-2">
+                <div id="user-menu" class="hidden absolute right-0 bg-[#073741] border border-white rounded shadow-lg mt-2 z-50">
                     {% if request.user.vendor %}
                     {% if request.user.vendor.verification_status %}
                     <a class="dropdown-item" href="{% url 'vendor:vendor' %}">Vendor Side</a>
@@ -61,16 +60,16 @@
                     {% endif %}
                     <a class="dropdown-item" href="#">Profile</a>
                     <a class="dropdown-item" href="{% url 'order:user_order_list' %}">My Orders</a>
-                    {% if not request.user.vendor %}
-                    <a class="dropdown-item" href="{% url 'vendor:become-vendor' %}">Become Vendor</a>
-                    {% endif %}
+{#                    {% if not request.user.vendor %}#}
+{#                    <a class="dropdown-item" href="{% url 'vendor:become-vendor' %}">Become Vendor</a>#}
+{#                    {% endif %}#}
                     <hr class="dropdown-divider">
                     <a class="dropdown-item" href="{% url 'accounts:logout' %}">Logout</a>
                 </div>
             </div>
             {% else %}
-            <a href="{% url 'accounts:accounts' %}">
-                <i class="fa fa-user text-2xl transition-transform transform hover:scale-125 hover:shadow-lg"></i>
+            <a href="{% url 'accounts:accounts' %}" class="relative group">
+                <i class="fa fa-user text-2xl transition-transform transform group-hover:scale-125 group-hover:text-green-700 group-hover:shadow-lg"></i>
             </a>
             {% endif %}
         </div>
@@ -98,14 +97,7 @@
         margin: 10px 0;
     }
 
-    .hoverable {
-        transition: color 0.1s, transform 0.3s;
-    }
 
-    .hoverable:hover {
-        color: #fff;
-        transform: scale(1.25);
-    }
 </style>
 
 <script>
@@ -116,13 +108,17 @@
         if (userMenuToggle) {
             userMenuToggle.addEventListener('click', () => {
                 userMenu.classList.toggle('hidden');
+                        icon.classList.toggle('rotate-180');  // Rotates the caret icon
+
             });
         }
+        const icon = document.getElementById('dropdown-icon');
 
         // Close dropdown when clicking outside
         document.addEventListener('click', (e) => {
             if (!userMenu.contains(e.target) && !userMenuToggle.contains(e.target)) {
                 userMenu.classList.add('hidden');
+
             }
         });
     });

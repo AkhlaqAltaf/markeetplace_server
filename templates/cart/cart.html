@@ -371,15 +371,15 @@
 
                     <tbody>
                         {% for item in cart %}
-
                             <tr>
+
                                 <td>
                                     <figure class="image is-64x64">
                                         <img src="{{ item.product.media.first.file.url }}" alt="{{item.product.name}}">
                                     </figure>
                                 </td>
                                 <td>
-                                    <a href="#">{{item.product.name}}</a>
+                                    <a href="{% url 'product:product-detail' item.product.id %}">{{item.product.name}}</a>
                                 </td>
                                 <td>
                                     ${{item.quantity}}
@@ -391,10 +391,17 @@
 
                                 <td>${{ item.total_price }}</td>
                                 <td>
-                                    <a href="?remove_from_cart={{item.id}}" class="delete">Remove</a>
-                                </td>
-                            </tr>
+                                            <div class="flex items-center justify-center gap-4">
 
+                                    <a href="?remove_from_cart={{item.id}}" class="button is-danger is-outlined" >
+                                                            <i class="fa fa-trash-o text-2xl transition-transform transform group-hover:scale-125 group-hover:text-green-700 group-hover:shadow-lg"></i>
+
+                                    </a>
+
+                                            </div>
+                                </td>
+
+                            </tr>
                         {% endfor %}
                     </tbody>
 
@@ -441,13 +448,13 @@
             </h2>
             <div class="payment-options">
                 <div class="payment-option" onclick="selectPayment('cod')">
-                    <i class="fas fa-money-bill-wave"></i>
+                    <i class="fa fa-money"></i>
                     <div class="payment-option-title">Cash on Delivery</div>
                     <div class="payment-option-desc">Pay when you receive</div>
                     <input type="hidden" name="payment_method" value="cod" />
                 </div>
                 <div class="payment-option" onclick="selectPayment('bank')">
-                    <i class="fas fa-university"></i>
+                    <i class="fa fa-university"></i>
                     <div class="payment-option-title">Bank Transfer</div>
                     <div class="payment-option-desc">Get invoice for payment</div>
                     <input type="hidden" name="payment_method" value="bank" />
@@ -463,16 +470,6 @@
     <p>You don't have any products in your cart.</p>
 
     {% endif %}
-
- </div>
-
-{% endblock content %}
-
-
-
-
-{% block scripts %}
-
     <script src="https://js.stripe.com/v3/"></script>
 
     <script>
@@ -645,6 +642,15 @@
       // Initialize the page
       populateOrderSummary();
     </script>
+
+ </div>
+
+{% endblock content %}
+
+
+
+
+{% block scripts %}
 
 
 {% endblock scripts %}
