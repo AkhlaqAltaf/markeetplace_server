@@ -46,32 +46,36 @@ from ..product.views import ForgotEmailForm
 class LoginView(View):
     template_name = 'accounts/accounts.html'
 
-    def get(self,request):
+    def get(self, request):
         form = CustomLoginForm()
-        return render(request, self.template_name,{'signin_form': form})
-
+        return render(request, self.template_name, {'signin_form': form})
 
     def post(self, request):
         form = CustomLoginForm(request.POST)
         if form.is_valid():
             user = form.cleaned_data['user']
             login(request, user)
-            return redirect('core:home')
+
+            next_url = request.GET.get('next', 'core:home')
+            return redirect(next_url)
+
         return render(request, self.template_name, {'signin_form': form})
-
-
 class UserRegistrationView(View):
     template_name = 'accounts/accounts.html'
-    def get(self,request):
+
+    def get(self, request):
         form = UserRegistrationForm()
-        return render(request, self.template_name,{'signin_form': form})
+        return render(request, self.template_name, {'signup_form': form})
+
     def post(self, request):
         form = UserRegistrationForm(request.POST)
         if form.is_valid():
             form.save()
             return redirect('accounts:verify_email', email=form.cleaned_data['email'])
-        return render(request, 'accounts/accounts.html', {'signup_form': form})
-    
+
+        return render(request, self.template_name, {'signup_form': form})
+
+
 
 class LogoutView(View):
     def get(self, request):
@@ -81,11 +85,11 @@ class LogoutView(View):
 
 class AccountsView(View):
     template_name = 'accounts/accounts.html'
-    def get(self,request):
-        sigin_form = CustomLoginForm()
-        signup_form = UserRegistrationForm()
-        return render(request, self.template_name, {'signin_form': sigin_form, 'signup_form': signup_form })
 
+    def get(self, request):
+        signin_form = CustomLoginForm()
+        signup_form = UserRegistrationForm()
+        return render(request, self.template_name, {'signin_form': signin_form, 'signup_form': signup_form})
 
 def Forgot_Email_View(request):
     message = None
@@ -190,16 +194,14 @@ def verify_email(request,email):
             user = CustomUser.objects.get(email=email)
             is_valid, message = CustomUser.objects.validate_otp(user, otp)
             if is_valid:
-                # Mark the user as verified
                 user.is_verified = True
                 user.save()
 
-                # Log the user in
                 login(request, user)
 
-                # Redirect to home page
                 messages.success(request, "Your email has been verified. You are now logged in.")
-                return redirect('core:home')  # Replace 'home' with your actual home page URL name
+                next_url = request.GET.get('next', 'core:home')
+                return redirect(next_url)
             else:
                 messages.error(request, message)
         except CustomUser.DoesNotExist:
@@ -219,7 +221,7 @@ def resend_otp(request):
             user = CustomUser.objects.get(email=email)
             if user.is_verified:
                 messages.info(request, "Email is already verified.")
-                return redirect('login')  # Replace 'login' with your desired redirect URL
+                return redirect('accounts:login:')
 
             otp = CustomUser.objects.generate_otp()
             OTPVerification.objects.update_or_create(

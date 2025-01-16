@@ -233,7 +233,7 @@ class AllProductsView(View):
             'selected_filters': filter_values,  # Keep track of selected categories
             'selected_price': price_filter,  # Keep track of the selected price range
         }
-        return render(request, "products/all_products.html", context)
+        return render(request, "products/all_products/all_products.html", context)
 
 
 
@@ -244,7 +244,7 @@ class CategoryProductsView(View):
         category = get_object_or_404(Category, id=id)
         products = Product.objects.filter(category=category)
         context = {'products': products}
-        return render(request, "products/all_products.html", context)
+        return render(request, "products/all_products/all_products.html", context)
 
 
 
@@ -261,7 +261,7 @@ class ProductSearchView(View):
     def get(self, request):
         query = request.GET.get('q', '')
         products = Product.objects.filter(name__icontains=query)  # Adjust the field as necessary
-        return render(request, 'products/all_products.html', {'products': products, 'query': query})
+        return render(request, 'products/all_products/all_products.html', {'products': products, 'query': query})
 
 class ForgotEmailForm(forms.Form):
     email = forms.EmailField()

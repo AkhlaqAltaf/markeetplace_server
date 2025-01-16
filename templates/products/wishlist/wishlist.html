@@ -464,7 +464,7 @@ document.querySelectorAll('.addToCartButton').forEach(function(button) {
       // Function for continue shopping button
       function continueShopping() {
         // Add your shopping page redirect logic
-        window.location.href = "/shop";
+        window.location.href = "{% url 'product:all-product' %}";
       }
 
       // Call updateWishlist to set the initial count

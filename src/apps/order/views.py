@@ -10,7 +10,10 @@ from src.apps.product.models import Product
 
 # ORDER PLACE VIEW
 
-class PlaceOrderView(View):
+class PlaceOrderView(LoginRequiredMixin,View):
+    login_url = '/accounts/login/'  # URL to redirect to if user is not authenticated
+    redirect_field_name = 'next'  # Field to store the URL the user was trying to access
+
     def post(self, request):
         cart = Cart(request)
         user = request.user

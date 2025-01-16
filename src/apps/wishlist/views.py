@@ -25,10 +25,14 @@ class WishListProductsView(View):
     def get(self,request):
         user = request.user
         wishlists = WishListProduct.objects.filter(user=user)
-        products = [wishlist.products.all() for wishlist in wishlists]
-        print(products[0])
-        context = {'products':products[0]}
+        if wishlists.exists():
 
+            products = [wishlist.products.all() for wishlist in wishlists]
+            context = {'products':products[0]}
+        else:
+            messages.info(request, "You do not have any wishlist yet.")
+
+            context = {}
         return render(request,'products/wishlist/wishlist.html',context)
 
 

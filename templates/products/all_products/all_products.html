@@ -66,40 +66,7 @@
             </div>
             <div class="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-8">
                 {% for product, discount in products_with_discounts %}
-                    <div class="group flex w-full max-w-xs flex-col overflow-hidden rounded-lg border border-gray-100 bg-white shadow-sm h-[320px]">
-                        <a href="{% url 'product:product-detail' product.id %}" class="relative mx-3 mt-3 flex h-40 overflow-hidden rounded-xl">
-                            {% with product.media.all|slice:":2" as media_list %}
-                                {% if media_list|length > 0 %}
-                                    <img class="peer absolute top-0 right-0 h-full w-full object-cover" 
-                                         src="{{ media_list.0.file.url }}" alt="product image">
-                                {% endif %}
-                                {% if media_list|length > 1 %}
-                                    <img class="peer absolute top-0 -right-96 h-full w-full object-cover transition-all delay-100 duration-1000 hover:right-0 peer-hover:right-0" 
-                                         src="{{ media_list.1.file.url }}" alt="product image">
-                                {% endif %}
-                            {% endwith %}
-                        </a>
-
-                        <div class="mt-4 px-3 pb-3">
-                            <a href="{% url 'product:product-detail' product.id %}">
-                                <h5 class="text-xl text-gray-800 font-semibold transition duration-300">
-                                    {{ product.name }}
-                                </h5>
-                            </a>
-                            <div class="mt-2 flex items-center justify-between">
-                                {% if discount %}
-                                    <p class="text-lg font-bold text-gray-900">${{ discount }}</p>
-                                    <span class="text-sm text-gray-500 line-through">${{ product.price }}</span>
-                                {% else %}
-                                    <p class="text-lg font-bold text-gray-900">${{ product.price }}</p>
-                                {% endif %}
-                            </div>
-                            <div class="mt-2 flex justify-center space-x-4">
-                                {% include 'commons/addToCartButton.html' %}
-                                {% include 'commons/addToWishList.html' %}
-                            </div>
-                        </div>
-                    </div>
+                    {% include 'commons/product.html' %}
                 {% endfor %}
             </div>
         </div>
