@@ -6,7 +6,7 @@ from src.apps.product.models import Product
 from src.apps.wishlist.models import WishListProduct
 from django.contrib.auth.mixins import LoginRequiredMixin
 
-class WishListProductsCreateView(View):
+class WishListProductsCreateView(LoginRequiredMixin,View):
     def post(self, request, id):
         user = request.user
         try:
@@ -21,7 +21,7 @@ class WishListProductsCreateView(View):
         return JsonResponse({'success': True})
 
 
-class WishListProductsView(View):
+class WishListProductsView(LoginRequiredMixin,View):
     def get(self,request):
         user = request.user
         wishlists = WishListProduct.objects.filter(user=user)
