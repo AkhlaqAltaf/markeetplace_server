@@ -79,9 +79,11 @@ class OrderDetailView(View):
 class UserOrderListView(LoginRequiredMixin, View):
     def get(self, request):
         orders = Order.objects.filter(user=request.user)
+        for order in orders:
+            order.total_price = sum(item.product.price * item.quantity for item in order.orderitem_set.all())
+            print(order.total_price)
+
         return render(request, 'order/order_list.html', {'orders': orders})
-
-
 
 # CANCEL ORDER VIEW
 
@@ -94,7 +96,7 @@ class CancelOrderView(LoginRequiredMixin, View):
                 order.status = 'cancelled'
                 order.save()
                 messages.success(request, "Your order has been cancelled.")
-                return redirect('product:user_order_list')
+                return redirect('order:user_order_list')
             else:
                 messages.success(request, "Your order has been cancelled.")
                 return redirect('product:user_order_list')

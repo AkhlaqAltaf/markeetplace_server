@@ -1,123 +1,112 @@
 {% extends 'core/base.html' %}
 
 {% block content %}
-<div class="p-4 sm:p-10">
-  <!-- Header -->
-  <div class="flex flex-col sm:flex-row justify-between items-center mb-4">
-    <h1 class="text-2xl sm:text-3xl text-black font-bold">Orders</h1>
-  </div>
+<style>
+    .order-table-header {
+        background-color: #073741;
+        color: white;
+        font-weight: bold;
+        text-transform: uppercase;
+        padding: 12px;
+    }
 
-  <!-- Filters -->
-  <div class="flex flex-wrap space-x-4 mb-4 text-sm sm:text-base">
-    <button id="filterAll" class="filter-btn text-teal-700 border-b-4 border-teal-700 pb-1 mb-2 sm:mb-0" onclick="filterOrders('ALL')">All</button>
-    <button id="filterPending" class="filter-btn text-gray-500 hover:text-teal-700 mb-2 sm:mb-0" onclick="filterOrders('pending')">Pending</button>
-    <button id="filterReadyToShip" class="filter-btn text-gray-500 hover:text-teal-700 mb-2 sm:mb-0" onclick="filterOrders('ready_to_ship')">Ready to Ship</button>
-    <button id="filterCanceled" class="filter-btn text-gray-500 hover:text-teal-700 mb-2 sm:mb-0" onclick="filterOrders('canceled')">Canceled</button>
-  </div>
+    .order-row {
+        border-bottom: 1px solid #e5e5e5;
+        padding: 12px 0;
+    }
 
-  <!-- Search -->
-  <div class="flex items-center justify-between bg-white p-4 rounded mb-4 gap-2 shadow">
-    <div class="relative w-full bg-white">
-      <input
-        id="searchInput"
-        type="text"
-        class="w-full border border-gray-300 p-2 rounded text-black"
-        placeholder="Search by Order ID, Status, or Date"
-        oninput="handleSearchChange()"
-      />
+    .cancel-btn {
+        padding: 8px 16px;
+        background-color: #ff4c4c;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .cancel-btn:disabled {
+        background-color: #e5e5e5;
+        cursor: not-allowed;
+    }
+
+    .cancel-btn:hover:not(:disabled) {
+        background-color: #e03939;
+    }
+
+    .total-price {
+        font-size: 1.25rem;
+        font-weight: bold;
+        color: #073741;
+        margin: 20px 0;
+        text-align: right;
+    }
+</style>
+
+<div class="container mx-auto px-4">
+    <div class="bg-white shadow-lg rounded-xl overflow-hidden">
+        <div id="orderList">
+            {% if orders %}
+                <div class="grid grid-cols-6 bg-[#073741] p-4 text-white font-semibold text-sm uppercase">
+                    <div>Order ID</div>
+                    <div class="col-span-2">Status</div>
+                    <div>Price</div>
+                    <div>Created At</div>
+                    <div>Actions</div>
+                </div>
+
+                {% for order in orders %}
+                    <div class="grid grid-cols-6 p-4 items-center border-b border-gray-200 order-row">
+                        <div class="font-semibold text-gray-800">{{ order.id }}</div>
+                        <div class="font-semibold text-gray-800 col-span-2">{{ order.get_status_display }}</div>
+                        <div class="font-semibold text-gray-800 col-span-2font-semibold">{{ order.total_price }}</div>
+                        <div class="text-gray-600">{{ order.created_at }}</div>
+                        <div>
+                            <button
+                                onclick="cancelOrder({{ order.id }})"
+                                class="cancel-btn"
+                                {% if order.status != 'pending' %}disabled{% endif %}>
+                                Cancel Order
+                            </button>
+                        </div>
+                    </div>
+                {% endfor %}
+
+            {% else %}
+                <div class="text-center py-12 px-4 bg-white shadow-xl rounded-xl">
+                    <i class="fa fa-box-open text-4xl text-gray-400 mb-4"></i>
+                    <p class="text-lg text-gray-600 mb-4">No orders found.</p>
+                    <a href="{% url 'product:all-product' %}" class="add-to-cart bg-[#073741] text-white px-6 py-2 rounded-lg hover:bg-[#065a34]">
+                        Start Shopping
+                    </a>
+                </div>
+            {% endif %}
+        </div>
     </div>
-  </div>
-
-  <!-- Orders Table -->
-  <div class="overflow-x-auto">
-    <table class="min-w-full bg-white rounded shadow">
-      <thead>
-        <tr class="bg-gray-100 text-left text-sm">
-          <th class="p-4">Order ID</th>
-          <th class="p-4">Total</th>
-          <th class="p-4">Status</th>
-          <th class="p-4">Date</th>
-          <th class="p-4">Actions</th>
-        </tr>
-      </thead>
-      <tbody id="ordersTable">
-        {% for order in orders %}
-        <tr
-          data-status="{{ order.status }}"
-          data-id="{{ order.id }}"
-          data-date="{{ order.created_at|date:'Y-m-d H:i' }}"
-        >
-          <td class="p-4">{{ order.id }}</td>
-          <td class="p-4">${{ order.get_total_cost }}</td>
-          <td class="p-4">{{ order.status }}</td>
-          <td class="p-4">{{ order.created_at|date:"Y-m-d H:i" }}</td>
-          <td class="p-4">
-            <form method="post" action="{% url 'order:update_order_status' order.id %}" class="inline">
-              {% csrf_token %}
-              <select name="status" onchange="this.form.submit()" class="border p-1 rounded">
-                <option value="pending" {% if order.status == 'pending' %}selected{% endif %}>Pending</option>
-                <option value="ready_to_ship" {% if order.status == 'ready_to_ship' %}selected{% endif %}>Ready to Ship</option>
-                <option value="canceled" {% if order.status == 'canceled' %}selected{% endif %}>Canceled</option>
-              </select>
-            </form>
-            <a href="{% url 'order:order-detail' order.id %}" class="text-blue-600 hover:underline ml-4">View</a>
-          </td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
 </div>
 
 <script>
-  const ordersTable = document.getElementById("ordersTable");
-  const searchInput = document.getElementById("searchInput");
-  const filterButtons = document.querySelectorAll(".filter-btn");
+    function cancelOrder(orderId) {
+        const url = `/order/cancel-order/${orderId}/`;
 
-  let currentFilter = "ALL";
-
-  function filterOrders(status) {
-    currentFilter = status;
-
-    // Update button styles
-    filterButtons.forEach((button) => {
-      button.classList.remove("text-teal-700", "border-b-4", "border-teal-700");
-      button.classList.add("text-gray-500");
-    });
-
-    document
-      .getElementById(`filter${status.charAt(0).toUpperCase() + status.slice(1)}`)
-      .classList.add("text-teal-700", "border-b-4", "border-teal-700");
-
-    // Filter orders
-    const rows = Array.from(ordersTable.querySelectorAll("tr"));
-    rows.forEach((row) => {
-      const rowStatus = row.getAttribute("data-status");
-      const matchesFilter = status === "ALL" || rowStatus === status;
-      row.style.display = matchesFilter ? "" : "none";
-    });
-  }
-
-  function handleSearchChange() {
-    const searchValue = searchInput.value.toLowerCase();
-
-    // Filter rows based on search value
-    const rows = Array.from(ordersTable.querySelectorAll("tr"));
-    rows.forEach((row) => {
-      const orderId = row.getAttribute("data-id").toLowerCase();
-      const orderDate = row.getAttribute("data-date").toLowerCase();
-      const orderStatus = row.getAttribute("data-status").toLowerCase();
-
-      const matchesSearch =
-        orderId.includes(searchValue) ||
-        orderDate.includes(searchValue) ||
-        orderStatus.includes(searchValue);
-
-      row.style.display = matchesSearch ? "" : "none";
-    });
-  }
-
-  // Initial load
-  filterOrders("ALL");
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}',
+            },
+        })
+            .then(response => {
+                if (response.ok) {
+                    window.location.reload();
+                } else {
+                    alert('Failed to cancel the order.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while cancelling the order.');
+            });
+    }
 </script>
-{% endblock content %}
+{% endblock %}

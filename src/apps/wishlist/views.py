@@ -45,4 +45,4 @@ class RemoveFromWishlistView(LoginRequiredMixin, View):
         # Remove the product from the wishlist
         wishlist.products.remove(product)
         messages.success(request, "Your action was successful!")
-        return redirect('product:wishlist')
+        return redirect('wishlist:wish-list')
