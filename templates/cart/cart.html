@@ -304,25 +304,43 @@
         animation: loading 1.5s infinite;
       }
 
-      /* Responsive Styles */
-      @media (max-width: 768px) {
-        .main-container {
-          grid-template-columns: 1fr;
-        }
+      /* Responsive Adjustments */
+  @media (max-width: 768px) {
+    .main-container {
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
 
-        .checkout-container,
-        .order-summary {
-          padding: 20px;
-        }
+    .table-container {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
 
-        .payment-options {
-          grid-template-columns: 1fr;
-        }
+    table {
+      width: 100%;
+      border-spacing: 0;
+      font-size: 0.9rem;
+    }
 
-        .address-details {
-          grid-template-columns: 1fr;
-        }
-      }
+    th, td {
+      padding: 12px 8px;
+      text-align: left;
+    }
+
+    .checkout-container,
+    .order-summary {
+      padding: 16px;
+    }
+
+    .payment-options {
+      grid-template-columns: 1fr;
+    }
+
+    .proceed-btn {
+      font-size: 0.9rem;
+      padding: 12px;
+    }
+  }
     </style>
 
 <style>
@@ -356,66 +374,48 @@
 
            <div class="main-container">
 
-            <div class="table">
-                <table class="table is-fullwidth is-striped">
-                    <thead class="bg-[#073741]">
-                        <tr class="bg-[#073741] p-4 text-white font-semibold text-sm uppercase">
-
-                            <th></th>
-                            <th>Product</th>
-                            <th>Quantity</th>
-                            <th>Price</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-                        {% for item in cart %}
-                            <tr>
-
-                                <td>
-                                    <figure class="image is-64x64">
-                                        <img src="{{ item.product.media.first.file.url }}" alt="{{item.product.name}}">
-                                    </figure>
-                                </td>
-                                <td>
-                                    <a href="{% url 'product:product-detail' item.product.id %}">{{item.product.name}}</a>
-                                </td>
-                                <td>
-                                    ${{item.quantity}}
-
-                                    <a href="?change_quantity={{ item.id }}&quantity=-1">-</a>
-                                    <a href="?change_quantity={{ item.id }}&quantity=1">+</a>
-
-                                </td>
-
-                                <td>${{ item.total_price }}</td>
-                                <td>
-                                            <div class="flex items-center justify-center gap-4">
-
-                                    <a href="?remove_from_cart={{item.id}}" class="button is-danger is-outlined" >
-                                                            <i class="fa fa-trash-o text-2xl transition-transform transform group-hover:scale-125 group-hover:text-green-700 group-hover:shadow-lg"></i>
-
-                                    </a>
-
-                                            </div>
-                                </td>
-
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-
-                    <tfoot>
-                        <tr>
-                            <td></td>
-                            <td><strong>Total Cost</strong> </td>
-                            <td><strong>{{ cart|length }}</strong> </td>
-                            <td colspan="2">${{cart.get_total_cost}}</td>
-                        </tr>
-                    </tfoot>
-                </table>
-            </div>
-
+             <div class="table-container">
+    <table class="table is-fullwidth is-striped">
+      <thead>
+        <tr>
+          <th></th>
+          <th>Product</th>
+          <th>Quantity</th>
+          <th>Price</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in cart %}
+          <tr>
+            <td>
+              <img src="{{ item.product.media.first.file.url }}" alt="{{item.product.name}}" class="image is-64x64">
+            </td>
+            <td>
+              <a href="{% url 'product:product-detail' item.product.id %}">{{ item.product.name }}</a>
+            </td>
+            <td>
+              {{ item.quantity }}
+              <a href="?change_quantity={{ item.id }}&quantity=-1">-</a>
+              <a href="?change_quantity={{ item.id }}&quantity=1">+</a>
+            </td>
+            <td>${{ item.total_price }}</td>
+            <td>
+              <a href="?remove_from_cart={{item.id}}" class="button is-danger is-outlined">
+                <i class="fa fa-trash-o"></i>
+              </a>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+      <tfoot>
+        <tr>
+          <td colspan="3"><strong>Total Cost:</strong></td>
+          <td colspan="2">${{ cart.total_cost }}</td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
 
 
 <form method="post" action="{% url 'order:place_order' %}" id="payment-form">

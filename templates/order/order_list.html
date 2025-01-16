@@ -44,10 +44,10 @@
 </style>
 
 <div class="container mx-auto px-4">
-    <div class="bg-white mt-4  shadow-lg rounded-xl overflow-hidden">
+    <div class="bg-white mt-4 shadow-lg rounded-xl overflow-hidden">
         <div id="orderList">
             {% if orders %}
-                <div class="grid grid-cols-6 bg-[#073741] p-4 text-white font-semibold text-sm uppercase">
+                <div class="hidden sm:grid sm:grid-cols-6 bg-[#073741] p-4 text-white font-semibold text-sm uppercase">
                     <div>Order ID</div>
                     <div class="col-span-2">Status</div>
                     <div>Price</div>
@@ -56,10 +56,25 @@
                 </div>
 
                 {% for order in orders %}
-                    <div class="grid grid-cols-6 p-4 items-center border-b border-gray-200 order-row">
+                    <!-- Responsive Row for Smaller Screens -->
+                    <div class="sm:hidden p-4 border-b border-gray-200">
+                        <div class="text-sm text-gray-800 font-semibold">Order ID: {{ order.id }}</div>
+                        <div class="text-sm text-gray-800">Status: {{ order.get_status_display }}</div>
+                        <div class="text-sm text-gray-800">Price: {{ order.total_price }}</div>
+                        <div class="text-sm text-gray-600">Created At: {{ order.created_at }}</div>
+                        <button
+                            onclick="cancelOrder({{ order.id }})"
+                            class="cancel-btn mt-2 w-full sm:w-auto"
+                            {% if order.status != 'pending' %}disabled{% endif %}>
+                            Cancel Order
+                        </button>
+                    </div>
+
+                    <!-- Row for Larger Screens -->
+                    <div class="hidden sm:grid sm:grid-cols-6 p-4 items-center border-b border-gray-200 order-row">
                         <div class="font-semibold text-gray-800">{{ order.id }}</div>
                         <div class="font-semibold text-gray-800 col-span-2">{{ order.get_status_display }}</div>
-                        <div class="font-semibold text-gray-800 col-span-2font-semibold">{{ order.total_price }}</div>
+                        <div class="font-semibold text-gray-800">{{ order.total_price }}</div>
                         <div class="text-gray-600">{{ order.created_at }}</div>
                         <div>
                             <button
@@ -71,7 +86,6 @@
                         </div>
                     </div>
                 {% endfor %}
-
             {% else %}
                 <div class="text-center py-12 px-4 bg-white shadow-xl rounded-xl">
                     <i class="fa fa-box-open text-4xl text-gray-400 mb-4"></i>
