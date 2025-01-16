@@ -8,11 +8,11 @@
     <div id="nav-links" class="hidden sm:flex items-center gap-4">
         <!-- Search Form -->
         <form action="{% url 'product:search' %}" method="GET" class="relative mb-3">
-            <input 
-                type="text" 
-                name="q" 
-                class="pl-4 pr-10 py-2 border border-gray-300 rounded w-40 sm:w-64 focus:outline-none focus:ring-2 focus:ring-blue-500" 
-                placeholder="Search for products" 
+            <input
+                type="text"
+                name="q"
+                class="pl-4 pr-10 py-2 border border-gray-300 rounded w-40 sm:w-64 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Search for products"
                 required>
             <button type="submit" class="absolute top-2 right-2">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -23,53 +23,55 @@
 
         <!-- Links and Icons -->
         <div class="flex items-center justify-center gap-4 text-white">
-            <a href="{% url 'cart:cart' %}">
-                <i class="fa fa-shopping-cart text-2xl transition-transform transform hover:scale-125 hover:text-green-700 hover:shadow-lg"></i>
-                {% if cart %}({{ cart|length }}){% endif %}
+            <a href="{% url 'cart:cart' %}" class="relative group">
+                <i class="fa fa-shopping-cart text-2xl transition-transform transform group-hover:scale-125 group-hover:text-green-700 group-hover:shadow-lg"></i>
+                {% if cart %}
+                <span
+                    class="absolute -top-2 -right-3 bg-green-700 text-white rounded-full px-2 text-sm group-hover:bg-green-900 transition">
+                    {{ cart|length }}
+                </span>
+                {% endif %}
             </a>
             <a href="{% url 'wishlist:wish-list' %}">
                 <i class="fa fa-heart text-2xl transition-transform transform hover:scale-125 hover:text-white hover:shadow-lg"></i>
             </a>
 
             <!-- Vendor or User Dropdown -->
-            {% if request.user.vendor %}
-                <!-- Vendor Dropdown -->
-                <div class="navbar-item has-dropdown is-hoverable">
-                    {% comment %} <a class="navbar-link is-capitalized custom-user-icon"> {% endcomment %}
-                    <a class=" is-capitalized custom-user-icon">
-                        <i class="fa fa-user text-2xl mr-3 transition-transform transform hover:scale-125 hover:white hover:shadow-lg"></i>
-                        <span class="language-text">{{ request.user.vendor.name }}</span
-                    </a>
-                    <div class="navbar-dropdown custom-dropdown mt-[14px] left-[-34px]">
-                        {% if request.user.vendor.verification_status %}
-                            <a class="navbar-item" href="{% url 'vendor:vendor' %}">Vendor Side</a>
-                        {% else %}
-                            <p class="navbar-item">Wait For Verification</p>
-                        {% endif %}
-                        <hr class="navbar-divider">
-                        <a class="navbar-item" href="{% url 'accounts:logout' %}">Logout</a>
-                    </div>
+            {% if request.user.vendor or request.user.is_authenticated %}
+            <div class="relative">
+                <button id="user-menu-toggle" class="flex items-center gap-2 focus:outline-none">
+                    <i class="fa fa-user text-2xl transition-transform transform hover:scale-125"></i>
+                    {% if request.user.vendor %}
+                    <span>{{ request.user.vendor.name }}</span>
+                    {% else %}
+                    <span>{{ request.user.name }}</span>
+                    {% endif %}
+                    <i class="fa fa-caret-down text-lg"></i>
+                </button>
+
+                <!-- Dropdown Menu -->
+                <div id="user-menu" class="hidden absolute right-0 bg-[#073741] border border-white rounded shadow-lg mt-2">
+                    {% if request.user.vendor %}
+                    {% if request.user.vendor.verification_status %}
+                    <a class="dropdown-item" href="{% url 'vendor:vendor' %}">Vendor Side</a>
+                    {% else %}
+                    <p class="dropdown-item">Wait For Verification</p>
+                    {% endif %}
+                    <hr class="dropdown-divider">
+                    {% endif %}
+                    <a class="dropdown-item" href="#">Profile</a>
+                    <a class="dropdown-item" href="{% url 'order:user_order_list' %}">My Orders</a>
+                    {% if not request.user.vendor %}
+                    <a class="dropdown-item" href="{% url 'vendor:become-vendor' %}">Become Vendor</a>
+                    {% endif %}
+                    <hr class="dropdown-divider">
+                    <a class="dropdown-item" href="{% url 'accounts:logout' %}">Logout</a>
                 </div>
-            {% elif request.user.is_authenticated %}
-                <!-- Authenticated User Dropdown -->
-                <div class="navbar-item has-dropdown is-hoverable">
-                    <a class="navbar-link is-capitalized custom-user-icon">
-                        <i class="fa fa-user text-2xl mr-3 transition-transform transform hover:scale-125 hover:text-white hover:shadow-lg"></i>
-                        {{ request.user.name }}
-                    </a>
-                    <div class="navbar-dropdown custom-dropdown">
-                        <a class="navbar-item" href="#">Profile</a>
-                        <a class="navbar-item" href="{% url 'order:user_order_list' %}">My Orders</a>
-                        <a class="navbar-item" href="{% url 'vendor:become-vendor' %}">Become Vendor</a>
-                        <hr class="navbar-divider">
-                        <a class="navbar-item" href="{% url 'accounts:logout' %}">Logout</a>
-                    </div>
-                </div>
+            </div>
             {% else %}
-                <!-- Guest User Icon -->
-                <a href="{% url 'accounts:accounts' %}">
-                    <i class="fa fa-user text-2xl transition-transform transform hover:scale-125  hover:shadow-lg"></i>
-                </a>
+            <a href="{% url 'accounts:accounts' %}">
+                <i class="fa fa-user text-2xl transition-transform transform hover:scale-125 hover:shadow-lg"></i>
+            </a>
             {% endif %}
         </div>
     </div>
@@ -81,53 +83,47 @@
 </nav>
 
 <style>
-    .custom-user-icon i {
-        color: white;
-        transition: color 0.1s, transform 0.3s;
-    }
-
-    .custom-user-icon i:hover {
-       
-        transform: scale(1.25);
-    }
-
-    .custom-user-icon {
-        color: white;
-    }
-
-    .custom-user-icon:hover {
-        color: black;
-    }
-
-    .custom-dropdown {
-        background-color: #073741;
-        border: 1px solidrgb(255, 255, 255);
-        border-radius: 8px;
-        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-        padding: 10px;
-        min-width: 200px;
-    }
-
-    .custom-dropdown .navbar-item {
+    .dropdown-item {
         color: white;
         padding: 10px 15px;
         transition: background-color 0.3s, color 0.3s;
     }
-<<<<<<< HEAD
 
-=======
->>>>>>> 66921353ad07e5562a98ee06303855b54bd09ccf
-    .custom-dropdown .navbar-item:hover {
-        background-color: #1E90FF;
-        color: white;
-        border-radius: 5px;
+    .dropdown-item:hover {
+        background-color: #004d4d;
     }
 
-    .custom-dropdown .navbar-divider {
-        border-top: 1px solidrgb(248, 248, 248);
+    .dropdown-divider {
+        border-top: 1px solid #fff;
         margin: 10px 0;
     }
-    .language-text:hover {
-        color: white;
-      }
+
+    .hoverable {
+        transition: color 0.1s, transform 0.3s;
+    }
+
+    .hoverable:hover {
+        color: #fff;
+        transform: scale(1.25);
+    }
 </style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const userMenuToggle = document.getElementById('user-menu-toggle');
+        const userMenu = document.getElementById('user-menu');
+
+        if (userMenuToggle) {
+            userMenuToggle.addEventListener('click', () => {
+                userMenu.classList.toggle('hidden');
+            });
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!userMenu.contains(e.target) && !userMenuToggle.contains(e.target)) {
+                userMenu.classList.add('hidden');
+            }
+        });
+    });
+</script>

@@ -1,0 +1,60 @@
+<!-- templates/accounts/verify_email.html -->
+{% extends 'core/base.html' %}
+
+{% load static %}
+
+{% block content %}
+
+<div class="flex items-center justify-center min-h-screen bg-gray-100">
+  <div class="w-full max-w-lg bg-white shadow-lg rounded-lg p-8">
+          <div id="signInForm" class="space-y-6">
+
+        <h1>Email Verification</h1>
+        <form method="POST">
+            {% csrf_token %}
+            <div class="form-group">
+                     <label class="block text-sm font-medium text-gray-700 mb-1" for="email">
+            Email
+          </label>
+          <input
+            type="email"
+            name="email"
+            id="email"
+            class="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition duration-300"
+            placeholder="Enter Your Email"
+            value="{{ email }}"
+
+          >            </div>
+
+
+            <div class="form-group">
+                  <label class="block text-sm font-medium text-gray-700 mb-1" for="opt">
+            OTP
+          </label>
+          <input
+            type="text"
+            name="otp"
+            id="otp"
+            class="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition duration-300"
+            placeholder="Enter Your OTP"
+          >
+            </div>
+                  <button type="submit" class="w-full py-3 bg-[#0B5D51] text-white rounded-lg hover:bg-[#09433E] transition duration-300 shadow-lg hover:shadow-xl transform hover:scale-105">
+Verify Email</button>
+        </form>
+        <form method="POST" action="{% url 'accounts:resend_otp' %}">
+            {% csrf_token %}
+            <input type="hidden" name="email" value="{{ email }}">
+            <button type="submit" class="btn btn-secondary">Resend OTP</button>
+        </form>
+    </div>
+    {% if messages %}
+        <ul>
+            {% for message in messages %}
+                <li class="{{ message.tags }}">{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+</div>
+</div>
+{% endblock %}

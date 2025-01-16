@@ -51,14 +51,19 @@
 <body>
 <!--    <div class="container">-->
 <!--        <div class="header">-->
-<!--            <img src="{% static 'images/logo.jpg' %}" alt="Logo">-->
+<!--            <img src="{% static 'assets/logo-2.png' %}" alt="Logo">-->
 <!--        </div>-->
         <div class="content">
             <h1>Email Verification</h1>
             <body>
-                <h1>Hello {{ user.email }}</h1>
-                <p>Thank you for registering! To verify your email address, please click the link below:</p>
-                <a href="{{ verification_link }}">Click here to verify your email</a>
+                <h1>Hello {{ user.name }}</h1>
+            <p>Your verification code is:<span> {{ otp }} </span></p>
+{#                LINK#}
+            <p>Please click on the link below to verify your email address.</p>
+                <a href="http://127.0.0.1:8000/accounts/verify-email/{{ user.email }}">Verify Email</a>
+                <p>Thank you for using our service.</p>
+                <p>Regards,</p>
+                <p>Haba-Wa-Jumla</p>
             </body>
         </div>
         <div class="footer">

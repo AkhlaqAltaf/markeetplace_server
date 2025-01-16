@@ -71,3 +71,6 @@ class UserRegistrationForm(forms.ModelForm):
         user = CustomUser.objects.create_user(email=email, password=password, name=name, phone=phone)
 
         return user
+
+class ForgotEmailForm(forms.Form):
+    email = forms.EmailField()
