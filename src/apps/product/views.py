@@ -47,7 +47,7 @@ class ProductDetailView(DetailView):
         try:
             # Fetch product offers and related order offers
             product_offers = ProductOffer.objects.filter(products=product).first()
-            product_order_offers = OrderOffer.objects.filter(products=product).first()
+            product_order_offers = OrderOffer.objects.filter(products=product)
 
             # PRODUCT OFFER: check for discount type and calculate discounted price
             if product_offers:
