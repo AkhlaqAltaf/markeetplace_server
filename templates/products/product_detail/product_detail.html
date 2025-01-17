@@ -35,6 +35,38 @@
       <!-- Right Section: Details -->
       <div class="flex flex-col justify-center p-2 rounded-lg">
         <h1 class="text-3xl font-bold text-[#0B5D51] mb-4 lg:text-left">{{ product.name }}</h1>
+
+
+        <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-1">
+          {% for product_order_offer in product_order_offers %}
+          {% if product_order_offer %}
+          <div class="bg-gradient-to-r from-[#0B5D51] to-[#073741] text-center p-1 rounded-lg text-white cursor-pointer transition-all duration-300 hover:shadow-lg">
+            <ul class="space-y-1 mt-2">
+              <li>
+                <span class="text-yellow-300 text-md">{{ product_order_offer.min_products }}</span>
+                <strong class="font-semibold text-md text-gray-200">Products</strong>
+              </li>
+              <li>
+                {% if product_order_offer.discount_type == 'percentage' %}
+                <span class="text-yellow-300 text-sm">{{ product_order_offer.discount_value }}%</span>
+                {% else %}
+                <span class="text-yellow-300 text-sm">{{ product_order_offer.discount_value }}</span> <span class="text-white-300">SAR</span>
+                {% endif %}
+              </li>
+              <li>
+                <strong class="font-semibold text-md text-gray-200">From: </strong>
+                <span class="text-yellow-300 text-md">{{ product_order_offer.start_date }}</span>
+              </li>
+              <li>
+                <strong class="font-semibold text-md text-gray-200">To: </strong>
+                <span class="text-yellow-300 text-md">{{ product_order_offer.end_date }}</span>
+              </li>
+            </ul>
+          </div>
+          {% endif %}
+          {% endfor %}
+        </div>
+        
         <p>{{ product.sub_category }}</p>
 
         <div class="flex items-center gap-6 mb-3 justify-center lg:justify-start">
@@ -75,41 +107,6 @@
         </div>
 
         <!-- Order Offer Card -->
-        <div class="mt-4">
-          {% for product_order_offer in product_order_offers %}
-          {% if product_order_offer %}
-          <div class="bg-gradient-to-r from-[#0B5D51] to-[#073741] p-4 rounded-lg text-white mb-2 cursor-pointer transition-all duration-300 hover:shadow-lg" onclick="toggleVisibility('offer-{{ forloop.counter }}')">
-            <h3 class="text-lg font-extrabold text-center border-b-2 border-white pb-1">
-              Special Offer {{ forloop.counter }}
-            </h3>
-            <div id="offer-{{ forloop.counter }}" class="hidden transition duration-300">
-              <ul class="space-y-1">
-                <li>
-                  <strong class="font-semibold text-lg text-gray-200">Discount:</strong>
-                  {% if product_order_offer.discount_type == 'percentage' %}
-                  <span class="text-yellow-400 text-xl">{{ product_order_offer.discount_value }}%</span>
-                  {% else %}
-                  <span class="text-yellow-400 text-xl">${{ product_order_offer.discount_value }}</span>
-                  {% endif %}
-                </li>
-                <li>
-                  <strong class="font-semibold text-lg text-gray-300">Minimum Products:</strong>
-                  <span class="text-yellow-400">{{ product_order_offer.min_products }}</span>
-                </li>
-                <li>
-                  <strong class="font-semibold text-lg text-gray-200">Start Date:</strong>
-                  <span class="text-yellow-400">{{ product_order_offer.start_date }}</span>
-                </li>
-                <li>
-                  <strong class="font-semibold text-lg text-gray-200">End Date:</strong>
-                  <span class="text-yellow-400">{{ product_order_offer.end_date }}</span>
-                </li>
-              </ul>
-            </div>
-          </div>
-          {% endif %}
-          {% endfor %}
-        </div>
       </div>
     </div>
 
@@ -162,7 +159,7 @@
 
             <div class="mt-4 px-3 pb-3">
               <a href="{% url 'product:product-detail' product.id %}">
-                <h5 class="text ```html
+                <h5 class="text ```html">
                 <h5 class="text-[20px] tracking-tight text-slate-600">{{ product.name }}</h5>
               </a>
               <div class="mt-1 mb-3 flex items-center justify-between">
