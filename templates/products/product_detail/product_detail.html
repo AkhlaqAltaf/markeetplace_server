@@ -1,10 +1,6 @@
 {% extends 'core/base.html' %}
 
 {% block content %}
-
-
-
-
 <div class="bg-gray-50 font-sans min-h-screen flex items-center justify-center">
   <div class="p-6 lg:max-w-7xl mx-auto">
     <div class="grid lg:grid-cols-2 gap-12 items-center">
@@ -17,7 +13,7 @@
             id="mainImage"
             src="{{ product.media.first.file.url }}"
             alt="Main Product Image"
-            class="w-full h-auto object-cover transition-transform duration-500 hover:scale-110"
+            class="w-full h-64 object-cover transition-transform duration-500 hover:scale-110"
           />
         </div>
 
@@ -35,12 +31,11 @@
           {% endfor %}
         </div>
       </div>
-       <!--Parent of Right Section-->
-       <div class="flex space-x-10">
+
       <!-- Right Section: Details -->
       <div class="flex flex-col justify-center p-2 rounded-lg">
         <h1 class="text-3xl font-bold text-[#0B5D51] mb-4 lg:text-left">{{ product.name }}</h1>
-        <p> {{ product.sub_category }} </p>
+        <p class="text-gray-600 mb-2">{{ product.sub_category }}</p>
 
         <div class="flex items-center gap-6 mb-3 justify-center lg:justify-start">
           <p class="text-2xl font-semibold text-[#FF6A3D]">
@@ -52,7 +47,6 @@
             ${{ product.price }}
             {% endif %}
           </p>
-
         </div>
 
         <p class="text-gray-600 text-sm mb-2 lg:text-left">
@@ -70,55 +64,79 @@
             {% include 'commons/addToWishList.html' %}
           </div>
         </div>
-      </div>
 
-      <!-- Order Offer Card -->
-      {% if product_order_offers %}
-      <div class="bg-gradient-to-r from-[#0B5D51] to-[#073741] p-4 rounded-lg text-white h-25">
-        <h3 class="text-2xl font-extrabold mb-4 text-center border-b-2 border-white pb-2">
-          Special Offer
-        </h3>
-        <ul class="space-y-1">
-          <li>
-            <strong class="font-semibold text-lg text-gray-200">Discount:</strong>
-            {% if product_order_offers.discount_type == 'percentage' %}
-            <span class="text-yellow-400 text-xl">{{ product_order_offers.discount_value }}%</span>
-            {% else %}
-            <span class="text-yellow-400 text-xl">${{ product_order_offers.discount_value }}</span>
-            {% endif %}
-          </li>
-          <li>
-            <strong class="font-semibold text-lg text-gray-300">Minimum Products:</strong>
-            <span class="text-yellow-400">{{ product_order_offers.min_products }}</span>
-          </li>
-          <li>
-            <strong class="font-semibold text-lg text-gray-200">Start Date:</strong>
-            <span class="text-yellow-400">{{ product_order_offers.start_date }}</span>
-          </li>
-          <li>
-            <strong class="font-semibold text-lg text-gray-200">End Date:</strong>
-            <span class="text-yellow-400">{{ product_order_offers.end_date }}</span>
-          </li>
-        </ul>
+        <!-- Rating Section -->
+        <div class="mt-4">
+          <h2 class="text-xl font-bold text-[#0B5D51]">Rating:</h2>
+          <div class="flex items-center">
+            {% for star in range(1, 6) %}
+              <svg class="w-5 h-5 {{ 'text-yellow-500' if rating_percentages[star] > 0 else 'text-gray-300' }}" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M10 15l-5.878 3.09 1.121-6.535L0 6.545l6.545-.955L10 0l2.455 5.59L20 6.545l-5.243 4.005 1.121 6.535z"/>
+              </svg>
+            {% endfor %}
+          </div>
+        </div>
+
+        <!-- Load Details Button -->
+        <button id="loadDetailsBtn" class="mt-4 px-4 py-2 bg-[#0B5D51] text-white rounded-lg" onclick="toggleDetails()">Load Details</button>
+
+        <!-- Specifications and Reviews Section -->
+        <div id="detailsSection" class ="hidden mt-4">
+          <h2 class="text-xl font-bold text-[#0B5D51]">Specifications:</h2>
+          <p class="text-gray-700">{{ product.specifications|safe }}</p>
+
+          <h2 class="text-xl font-bold text-[#0B5D51] mt-6">Reviews:</h2>
+          <div id="reviews" class="hidden">
+            {% for review in reviews %}
+              <div class="border-b border-gray-200 py-2">
+                <p class="font-semibold">{{ review.user }} - <span class="text-yellow-500">{{ review.rating }} ★</span></p>
+                <p class="text-gray-600">{{ review.comment }}</p>
+                <p class="text-gray-500 text-sm">{{ review.created_at }}</p>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
       </div>
-      
-      {% endif %}
-    </div>
     </div>
 
     <!-- About the Product -->
     <div class="mt-12 bg-grey p-6 rounded-lg transition-all duration-300 hover:shadow-md">
       <h2 class="text-2xl font-bold text-[#0B5D51] mb-4">About the Item</h2>
-      <p class="text-gray-700 leading-6 mb-6 lg:text-left">
-          {{ product.description }}
-        </p>
+      <p class="text-gray-700 leading-6 mb-6 lg:text-left">{{ product.content|safe }}</p>
     </div>
 
     <div class="mt-12">
       <h3 class="text-2xl font-bold text-[#0B5D51] mb-6">More Products You Might Like</h3>
-      <!-- Product Grid Section (Right) -->
-        <div class="w-3/4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        </div>
+      <div class="w-3/4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for product in products %}
+          <div class="group flex w-full max-w-xs flex-col overflow-hidden rounded-lg border border-gray-100 bg-white shadow-sm h-[320px]">
+            <a href="{% url 'product:product-detail' product.id %}" class="relative mx-3 mt-3 flex h-40 overflow-hidden rounded-xl">
+              {% with product.media.all|slice:":2" as media_list %}
+                {% if media_list|length > 0 %}
+                  <img class="peer absolute top-0 right-0 h-full w-full object-cover" src="{{ media_list.0.file.url }}" alt="product image" />
+                {% endif %}
+                {% if media_list|length > 1 %}
+                  <img class="peer absolute top-0 -right-96 h-full w-full object-cover transition-all delay-100 duration-1000 hover:right-0 peer-hover:right-0" src="{{ media_list.1.file.url }}" alt="product image" />
+                {% endif %}
+              {% endwith %}
+            </a>
+            <div class="mt-4 px-3 pb-3">
+              <a href="{% url 'product:product-detail' product.id %}">
+                <h5 class="text-[20px] tracking-tight text-slate-600">{{ product.name }}</h5>
+              </a>
+              <div class="mt-1 mb-3 flex items-center justify-between">
+                <p>
+                  <span class="text-[18px] font-bold text-slate-900">{{ product.price }}</span>
+                </p>
+              </div>
+              <div class="flex justify-center space-x-4">
+                {% include 'commons/addToCartButton.html' %}
+                {% include 'commons/addToWishList.html' %}
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
     </div>
 
     <div class="relative">
@@ -131,38 +149,35 @@
       <div id="scrollContainer" class="flex overflow-x-scroll custom-scrollbar space-x-4 p-4 ">
         <div class="flex gap-4">
           {% for product in products %}
-      <div class="group flex w-full max-w-xs flex-col overflow-hidden rounded-lg border border-gray-100 bg-white shadow-sm h-[320px]">
-        <a href="{% url 'product:product-detail' product.id %}" class="relative mx-3 mt-3 flex h-40 overflow-hidden rounded-xl">
-          {% with product.media.all|slice:":2" as media_list %}
-          {% if media_list|length > 0 %}
-          <img class="peer absolute top-0 right-0 h-full w-full object-cover" src="{{ media_list.0.file.url }}" alt="product image" />
-          {% endif %}
-          {% if media_list|length > 1 %}
-          <img class="peer absolute top-0 -right-96 h-full w-full object-cover transition-all delay-100 duration-1000 hover:right-0 peer-hover:right-0" src="{{ media_list.1.file.url }}" alt="product image" />
-          {% endif %}
-          {% endwith %}
-        </a>
-
-        <div class="mt-4 px-3 pb-3">
-          <a href="{% url 'product:product-detail' product.id %}">
-            <h5 class="text-[20px] tracking-tight text-slate-600">{{ product.name }}</h5>
-          </a>
-          <div class="mt-1 mb-3 flex items-center justify-between">
-            <p>
-              <span class="text-[18px] font-bold text-slate-900">{{ product.price }}</span>
-            </p>
-          </div>
-          <div class="flex justify-center space-x-4">
-            {% include 'commons/addToCartButton.html' %}
-            {% include 'commons/addToWishList.html' %}
-          </div>
+            <div class="group flex w-full max-w-xs flex-col overflow-hidden rounded-lg border border-gray-100 bg-white shadow-sm h-[320px]">
+              <a href="{% url 'product:product-detail' product.id %}" class="relative mx-3 mt-3 flex h-40 overflow-hidden rounded-xl">
+                {% with product.media.all|slice:":2" as media_list %}
+                  {% if media_list|length > 0 %}
+                    <img class="peer absolute top-0 right-0 h-full w-full object-cover" src="{{ media_list.0.file.url }}" alt="product image" />
+                  {% endif %}
+                  {% if media_list|length > 1 %}
+                    <img class="peer absolute top-0 -right-96 h-full w-full object-cover transition-all delay-100 duration-1000 hover:right-0 peer-hover:right-0" src="{{ media_list.1.file.url }}" alt="product image" />
+                  {% endif %}
+                {% endwith %}
+              </a>
+              <div class="mt-4 px-3 pb-3">
+                <a href="{% url 'product:product-detail' product.id %}">
+                  <h5 class="text-[20px] tracking-tight text-slate-600">{{ product.name }}</h5>
+                </a>
+                <div class="mt-1 mb-3 flex items-center justify-between">
+                  <p>
+                    <span class="text-[18px] font-bold text-slate-900">{{ product.price }}</span>
+                  </p>
+                </div>
+                <div class="flex justify-center space-x-4">
+                  {% include 'commons/addToCartButton.html' %}
+                  {% include 'commons/addToWishList.html' %}
+                </div>
+              </div>
+            </div>
+          {% endfor %}
         </div>
       </div>
-      {% endfor %}
-        </div>
-      </div>
-      
-      
 
       <button class="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 z-10 text-white rounded-full p-2 shadow-lg bg-[#0B5D51]" onclick="scrollCategories(1)">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -171,10 +186,7 @@
       </button>
     </div>
 
-    <div id="pagination" class="flex justify-center mt-4 space-x-2]"></div>
-
-    <!-- Related Products Section -->
-   
+    <div id="pagination" class="flex justify-center mt-4 space-x-2"></div>
   </div>
 </div>
 
@@ -186,37 +198,43 @@
     setTimeout(() => mainImage.classList.remove("scale-110"), 300);
   }
 
+  function toggleDetails() {
+    const detailsSection = document.getElementById('detailsSection');
+    const reviewsSection = document.getElementById('reviews');
+    detailsSection.classList.toggle('hidden');
+    reviewsSection.classList.toggle('hidden');
+  }
 
   const container = document.getElementById('scrollContainer');
-    const cards = document.querySelectorAll('a');
-    const pagination = document.getElementById('pagination');
-    const cardsPerPage = 5;
-    let currentPage = 0;
+  const cards = document.querySelectorAll('a');
+  const pagination = document.getElementById('pagination');
+  const cardsPerPage = 5;
+  let currentPage = 0;
 
-    function scrollCategories(direction) {
-      const cardWidth = 221;
-      container.scrollBy({
-        left: direction * cardWidth,
-        behavior: 'smooth'
-      });
-    }
-
-    function updatePagination() {
-      const totalPages = Math.ceil(cards.length / cardsPerPage);
-      pagination.innerHTML = '';
-      
-      for (let i = 0; i < totalPages; i++) {
-        const dot = document.createElement('div');
-        dot.className = `h-2 w-2 rounded-full ${i === currentPage ? 'bg-[#0B5D51]' : 'bg-gray-300'}`;
-        pagination.appendChild(dot);
-      }
-    }
-
-    container.addEventListener('scroll', () => {
-      currentPage = Math.round(container.scrollLeft / (221 * cardsPerPage));
-      updatePagination();
+  function scrollCategories(direction) {
+    const cardWidth = 221;
+    container.scrollBy({
+      left: direction * cardWidth,
+      behavior: 'smooth'
     });
+  }
 
+  function updatePagination() {
+    const totalPages = Math.ceil(cards.length / cardsPerPage);
+    pagination.innerHTML = '';
+
+    for (let i = 0; i < totalPages; i++) {
+      const dot = document.createElement('div');
+      dot.className = `h-2 w-2 rounded-full ${i === currentPage ? 'bg-[#0B5D51]' : 'bg-gray-300'}`;
+      pagination.appendChild(dot);
+    }
+  }
+
+  container.addEventListener('scroll', () => {
+    currentPage = Math.round(container.scrollLeft / (221 * cardsPerPage));
     updatePagination();
+  });
+
+  updatePagination();
 </script>
 {% endblock %}

@@ -75,12 +75,31 @@ class ProductDetailView(DetailView):
         # Add the fetched offers and calculated discount to context
         if product_after_discount == product.price:
             product_after_discount = 0
-            
+
+        # REVIEWS SECTION
+
+        reviews = product.reviews.all()  # Assuming a related name `reviews` for the Product-Review relationship
+        total_reviews = reviews.count()
+
+        # Calculate rating percentages
+        rating_distribution = {rating: 0 for rating in range(1, 6)}  # Initialize for ratings 1 to 5
+
+        for review in reviews:
+            print("REVIEW : ",review.rating)
+            rating_distribution[review.rating] += 1  # Assuming `rating` is an attribute of Review
+
+        rating_percentages = {
+            rating: (count / total_reviews) * 100 if total_reviews > 0 else 0
+            for rating, count in rating_distribution.items()
+        }
+        print(rating_percentages)
+        print(reviews)
+        context['reviews'] = reviews
+        context['rating_percentages'] = rating_percentages
         context['products'] = Product.objects.all()
         context['product_offers'] = product_offers
         context['discount'] = product_after_discount
         context['product_order_offers'] = product_order_offers
-
         return context
 
 

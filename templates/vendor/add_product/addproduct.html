@@ -139,7 +139,7 @@
         </div>
 
         <div>
-          <label class="block text-sm font-medium mb-1">Description</label>
+          <label class="block text-sm font-medium mb-1">Summary</label>
           <textarea name="description"
             class="w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-orange-500"></textarea>
           {% if form.description.errors %}
@@ -151,7 +151,21 @@
           {% endif %}
         </div>
       </div>
+    <div>
+                  <label class="block text-sm font-medium mb-1">Description</label>
 
+
+                <textarea  name="content" placeholder="Product Details" class="form-control" rows="12" cols="50">
+
+                </textarea>
+          {% if form.content.errors %}
+            <div class="text-red-500 text-sm mt-1">
+              {% for error in form.content.errors %}
+                <p>{{ error }}</p>
+              {% endfor %}
+            </div>
+          {% endif %}
+    </div>
       <!-- Uploaded Images Stack -->
       <div id="imageStack" class="flex space-x-4 mt-6 overflow-x-auto"></div>
       <input type="hidden" name="images" id="imagesInput">
@@ -188,6 +202,11 @@
     <!-- Form End -->
   </div>
 </div>
-
+<script src="https://cdn.ckeditor.com/4.11.1/standard/ckeditor.js"></script>
+    <script>
+    window.onload = function() {
+        CKEDITOR.replace('content');
+    };
+</script>
 {% include "vendor/add_product/script.html" %}
 {% endblock content %}

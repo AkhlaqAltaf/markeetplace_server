@@ -146,7 +146,7 @@ class AddProductView(CreateView):
     def post(self,request):
         form = ProductForm(request.POST)
         print(request.POST.get('sub_category'))
-        
+        images_data = None
         if form.is_valid():
             # Save the product but don't commit to the database yet
             product = form.save(commit=False)
@@ -174,7 +174,7 @@ class AddProductView(CreateView):
             # In case the form is invalid, re-render the form with categories and origins
             categories = Category.objects.all()
 
-            return render(request, 'vendor/add_product/addproduct.html', context={"categories": categories ,'form': form})
+            return render(request, 'vendor/add_product/addproduct.html', context={"categories": categories ,'form': form,'images':images_data})
 
     def convert_base64_image(self,base64_data):
         data = next(iter(base64_data.values()))
