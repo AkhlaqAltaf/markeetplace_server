@@ -10,17 +10,19 @@
     <!-- Links and Cart (Always Visible) -->
     <div class="flex items-center gap-4 text-white">
         <!-- Search Form -->
-        <form action="{% url 'product:search' %}" method="GET" class="relative">
-            <input
-                type="text"
-                name="q"
-                class="pl-4 pr-10 py-2 border border-green-300 rounded w-40 sm:w-64 focus:outline-none focus:ring-2 focus:ring-green"
-                placeholder="Search for products"
-                required>
-            <button type="submit" class="absolute top-2 right-2 group">
-                <i class="fa fa-search text-2xl transition-transform transform group-hover:scale-125 group-hover:text-green-700"></i>
-            </button>
-        </form>
+   <!-- Desktop Search Form -->
+    <form action="{% url 'product:search' %}" method="GET"
+        class="hidden sm:block relative ml-auto text-white">
+        <input
+            type="text"
+            name="q"
+            class="pl-4 pr-10 py-2 border border-green-300 rounded w-40 sm:w-64 focus:outline-none focus:ring-2 focus:ring-green"
+            placeholder="Search for products"
+            required>
+        <button type="submit" class="absolute top-2 right-2 group">
+            <i class="fa fa-search text-green-700 text-2xl transition-transform transform group-hover:scale-125 group-hover:text-green-700"></i>
+        </button>
+    </form>
 
         <!-- Cart Icon -->
         <a href="{% url 'cart:cart' %}" class="relative group">
@@ -65,6 +67,21 @@
     </button>
 </nav>
 
+<!-- Mobile Dropdown Menu -->
+<div id="mobile-menu" class="hidden sm:hidden bg-[#073741] p-4 text-white">
+    <!-- Mobile Search Form -->
+    <form action="{% url 'product:search' %}" method="GET" class="relative">
+        <input
+            type="text"
+            name="q"
+            class="pl-4 pr-10 py-2 border border-green-300 rounded w-full focus:outline-none focus:ring-2 focus:ring-green"
+            placeholder="Search for products"
+            required>
+        <button type="submit" class="absolute top-2 right-2 group">
+            <i class="fa fa-search text-green-700 text-2xl transition-transform transform group-hover:scale-125 group-hover:text-green-700"></i>
+        </button>
+    </form>
+</div>
 <style>
     .dropdown-item {
         color: white;
@@ -83,7 +100,16 @@
 
 
 </style>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const menuToggle = document.getElementById('menu-toggle');
+        const mobileMenu = document.getElementById('mobile-menu');
 
+        menuToggle.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+    });
+</script>
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         const userMenuToggle = document.getElementById('user-menu-toggle');
