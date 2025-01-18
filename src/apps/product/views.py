@@ -170,12 +170,11 @@ class ProductDetail3DView(DetailView):
         context['products'] = products_json
         return context
 
-
 class AllProductsView(View):
-    def get(self, request,category=None):
-
+    def get(self, request, category=None):
         filter_values = request.GET.getlist('filter')
         price_filter = request.GET.get('price', None)
+        search_query = request.GET.get('q', '')  # Get the search query if provided
 
         categories = Category.objects.all()
 
@@ -183,14 +182,13 @@ class AllProductsView(View):
         min_price = Product.objects.aggregate(Min('price'))['price__min']
         max_price = Product.objects.aggregate(Max('price'))['price__max']
 
-        # Ensure the prices are whole numbers
         if min_price is not None and max_price is not None:
             min_price = round(min_price)
             max_price = round(max_price)
 
             price_range_span = max_price - min_price
             num_buckets = 3
-            
+
             if price_range_span > 500:
                 num_buckets = 10
             elif price_range_span > 200:
@@ -207,13 +205,25 @@ class AllProductsView(View):
         else:
             prices_range = {}
 
-        # Filter products based on selected categories
-
+        # Filter and search products
         products = Product.objects.all().select_related('category')
-        allProductOffers = ProductOffer.objects.all()
-        discounts = []  # Initialize discounts list
 
-        # Calculate discounts for each product
+        if search_query:  # Apply search filter
+            products = products.filter(name__icontains=search_query)
+
+        if filter_values:  # Apply category filter
+            products = products.filter(category__id__in=filter_values)
+
+        if price_filter:  # Apply price range filter
+            price_parts = price_filter.split('_')
+            if len(price_parts) == 2:
+                bucket_index = int(price_parts[1]) - 1
+                price_threshold = min_price + (bucket_index + 1) * price_step
+                products = products.filter(price__lt=price_threshold)
+
+        # Calculate discounts for products
+        allProductOffers = ProductOffer.objects.all()
+        discounts = []
         for product in products:
             product_offer = allProductOffers.filter(products=product).first()
             if product_offer:
@@ -227,34 +237,20 @@ class AllProductsView(View):
                 discount_value = None
             discounts.append(discount_value)
 
-        if filter_values:
-            products = products.filter(category__id__in=filter_values)
-
-        # Filter by price range if selected
-        if price_filter:
-            price_parts = price_filter.split('_')
-            if len(price_parts) == 2:
-                bucket_index = int(price_parts[1]) - 1
-                price_threshold = min_price + (bucket_index + 1) * price_step
-                products = products.filter(price__lt=price_threshold)
-
-        # Check if the request is an AJAX request
+        # Check for AJAX requests
         if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
             return render(request, "products/includes/product_grid.html", {'products': products})
 
-        # Pass the filtered data to the full page render
-        print(f"FILTER VALUES : {filter_values}")
+        # Pass the data to the full page render
         context = {
-            'products_with_discounts': zip(products, discounts),  # Pair products and discounts
-            'categories': categories,  # Pass all categories for the filter checkboxes
-            'prices_range': prices_range,  # Dynamic price ranges
-            'selected_filters': filter_values,  # Keep track of selected categories
-            'selected_price': price_filter,  # Keep track of the selected price range
+            'products_with_discounts': zip(products, discounts),
+            'categories': categories,
+            'prices_range': prices_range,
+            'selected_filters': filter_values,
+            'selected_price': price_filter,
+            'search_query': search_query,  # Pass the search query to the template
         }
         return render(request, "products/all_products/all_products.html", context)
-
-
-
 
 
 class CategoryProductsView(View):
@@ -270,16 +266,11 @@ class CategoryProductsView(View):
 def search(request):
     query = request.GET.get('query', '') # second is default parameter which is empty
     products = Product.objects.filter(Q(title__icontains=query) | Q(description__icontains=query))
-    return render(request, 'product/search.html', {'products':products, 'query': query})
+    return render(request, 'products/all_products/all_products.html', {'products':products, 'query': query})
 
 
 # PRODUCT SEARCH VIEW
 
-class ProductSearchView(View):
-    def get(self, request):
-        query = request.GET.get('q', '')
-        products = Product.objects.filter(name__icontains=query)  # Adjust the field as necessary
-        return render(request, 'products/all_products/all_products.html', {'products': products, 'query': query})
 
 class ForgotEmailForm(forms.Form):
     email = forms.EmailField()
