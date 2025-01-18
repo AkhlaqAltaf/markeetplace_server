@@ -1,7 +1,7 @@
 {% extends 'core/base.html' %}
 
 {% block content %}
-<div class="container mx-auto my-8 px-6">
+<div class="container lg:mx-auto my-8 lg:px-6">
     <div class="flex flex-col lg:flex-row space-x-0 lg:space-x-6">
         <!-- Sidebar -->
 
@@ -15,7 +15,7 @@
                     Show Filters
                 </button>
             </div>
-            <div class="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-8">
+            <div class="grid grid-cols-3 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-6 gap-1 justify-items-center">
                 {% for product, discount in products_with_discounts %}
                     {% include 'commons/product.html' %}
                 {% endfor %}

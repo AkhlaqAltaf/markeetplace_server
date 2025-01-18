@@ -7,42 +7,44 @@
   <title>Category Carousel</title>
   <style>
     .custom-scrollbar::-webkit-scrollbar { display: none; }
+
+
+    .category_card{
+      width: 205px; 
+      height: 237px;
+    }
+    @media (max-width: 768px)
+    {
+      .category_card{
+        width: 100px; 
+        height: 100px;
+      }
+      .category_img{
+        height: 60px;
+      }
+    }
   </style>
 </head>
 <body>
-  <div class="mt-12 flex flex-col gap-5 px-10">
-    <h2 class="text-3xl font-semibold text-center">Shop with Categories</h2>
+  <div class="mt-12 flex flex-col ml-2">
+    <h2 class="text-xl font-semibold text-start md:text-center md:px-10">Categories</h2>
     
     <div class="relative">
-      <button class="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 z-10 bg-white rounded-full p-2 shadow-lg" onclick="scrollCategories(-1)">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M15 18l-6-6 6-6" />
-        </svg>
-      </button>
-
-      <div id="scrollContainer" class="flex overflow-x-scroll custom-scrollbar space-x-4 p-4">
-        <div class="flex gap-4">
+      <div id="scrollContainer" class="flex overflow-x-scroll custom-scrollbar mt-3 md:px-10">
+        <div class="flex gap-1">
           {% for category in categories %}
-            <a href="{% url 'product:all-product' %}?filter={{ category.id }}{% if selected_filters %}&filter={{ selected_filters|join:'&filter=' }}{% endif %}" class="flex flex-col items-center bg-white border border-gray-300 p-3 shadow-sm border hover:text-[#0B5C50]" style="min-width: 205px; height: 236px;">
-               {% if category.image %}
-              <img src="{{ category.image.url }}" class="mb-2 w-full h-4/5 object-cover" style="max-height: 188px;" />
-              {% endif %}
-              <p class="text-lg font-semibold">{{category.name}}</p>
-            </a>
+          <a href="{% url 'product:all-product' %}?filter={{ category.id }}{% if selected_filters %}&filter={{ selected_filters|join:'&filter=' }}{% endif %}" class="category_card flex flex-col items-center bg-white border border-gray-300 shadow-sm border hover:text-[#0B5C50]">
+          {% if category.image %}
+          <img src="{{ category.image.url }}" class=" category_img mb-2 w-full h-4/5 object-fit pl-1 pr-1" style="" />
+          {% endif %}
+          <p class="text:sm sm:text-lg text-center overflow-hidden">{{category.name}}</p>
+          </a>
           {% endfor %}
         </div>
       </div>
       
-      
-
-      <button class="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 z-10 bg-white rounded-full p-2 shadow-lg" onclick="scrollCategories(1)">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M9 18l6-6-6-6" />
-        </svg>
-      </button>
     </div>
 
-    <div id="pagination" class="flex justify-center mt-4 space-x-2"></div>
   </div>
   <script>
     const container = document.getElementById('scrollContainer');
@@ -52,7 +54,7 @@
     let currentPage = 0;
 
     function scrollCategories(direction) {
-      const cardWidth = 221;
+      const cardWidth = 120;
       container.scrollBy({
         left: direction * cardWidth,
         behavior: 'smooth'
@@ -71,7 +73,7 @@
     }
 
     container.addEventListener('scroll', () => {
-      currentPage = Math.round(container.scrollLeft / (221 * cardsPerPage));
+      currentPage = Math.round(container.scrollLeft / (120 * cardsPerPage));
       updatePagination();
     });
 
