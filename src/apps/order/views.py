@@ -82,7 +82,6 @@ class UserOrderListView(LoginRequiredMixin, View):
         for order in orders:
             order.total_price = sum(item.product.price * item.quantity for item in order.orderitem_set.all())
             print(order.total_price)
-
         return render(request, 'order/order_list.html', {'orders': orders})
 
 # CANCEL ORDER VIEW

@@ -1,13 +1,16 @@
 {% load static %}
 
-<nav class="bg-[#073741] p-4 px-4 sm:px-24 flex items-center justify-between">
+
+<nav class="bg-[#073741] p-4 sm:px-24 flex items-center justify-between">
+    <!-- Logo -->
     <a href="/">
         <img src="{% static 'assets/logo-2.png' %}" alt="Logo" class="h-10 sm:h-16">
     </a>
 
-    <div id="nav-links" class="hidden sm:flex items-center gap-4">
+    <!-- Links and Cart (Always Visible) -->
+    <div class="flex items-center gap-4 text-white">
         <!-- Search Form -->
-        <form action="{% url 'product:search' %}" method="GET" class="relative mb-3">
+        <form action="{% url 'product:search' %}" method="GET" class="relative">
             <input
                 type="text"
                 name="q"
@@ -15,62 +18,45 @@
                 placeholder="Search for products"
                 required>
             <button type="submit" class="absolute top-2 right-2 group">
-                <i class="fa fa-search text-2xl transition-transform transform group-hover:scale-125 group-hover:text-green-700 group-hover:shadow-lg"></i>
+                <i class="fa fa-search text-2xl transition-transform transform group-hover:scale-125 group-hover:text-green-700"></i>
             </button>
         </form>
 
-        <!-- Links and Icons -->
-        <div class="flex items-center justify-center gap-4 text-white">
-            <a href="{% url 'cart:cart' %}" class="relative group">
-                <i class="fa fa-shopping-cart text-2xl transition-transform transform group-hover:scale-125 group-hover:text-green-700 group-hover:shadow-lg"></i>
-                {% if cart %}
-                <span
-                    class="absolute -top-2 -right-3 bg-green-700 text-white rounded-full px-2 text-sm group-hover:bg-green-900 transition">
-                    {{ cart|length }}
-                </span>
-                {% endif %}
-            </a>
-            <a href="{% url 'wishlist:wish-list' %}" class="relative group">
-                <i class="fa fa-heart text-2xl transition-transform transform group-hover:scale-125 group-hover:text-green-700 group-hover:shadow-lg"></i>
-            </a>
-
-            <!-- Vendor or User Dropdown -->
-            {% if request.user.vendor or request.user.is_authenticated %}
-            <div class="relative">
-                <button id="user-menu-toggle" class="flex items-center gap-2 focus:outline-none">
-                    {% if request.user.vendor %}
-                    <span>{{ request.user.vendor.name }}</span>
-                    {% else %}
-                    <span>{{ request.user.name }}</span>
-                    {% endif %}
-                    <i id="dropdown-icon" class="fa fa-caret-down text-lg"></i>
-                </button>
-
-                <!-- Dropdown Menu -->
-                <div id="user-menu" class="hidden absolute right-0 bg-[#073741] border border-white rounded shadow-lg mt-2 z-50">
-                    {% if request.user.vendor %}
-                    {% if request.user.vendor.verification_status %}
-                    <a class="dropdown-item" href="{% url 'vendor:vendor' %}">Vendor Side</a>
-                    {% else %}
-                    <p class="dropdown-item">Wait For Verification</p>
-                    {% endif %}
-                    <hr class="dropdown-divider">
-                    {% endif %}
-                    <a class="dropdown-item" href="#">Profile</a>
-                    <a class="dropdown-item" href="{% url 'order:user_order_list' %}">My Orders</a>
-{#                    {% if not request.user.vendor %}#}
-{#                    <a class="dropdown-item" href="{% url 'vendor:become-vendor' %}">Become Vendor</a>#}
-{#                    {% endif %}#}
-                    <hr class="dropdown-divider">
-                    <a class="dropdown-item" href="{% url 'accounts:logout' %}">Logout</a>
-                </div>
-            </div>
-            {% else %}
-            <a href="{% url 'accounts:accounts' %}" class="relative group">
-                <i class="fa fa-user text-2xl transition-transform transform group-hover:scale-125 group-hover:text-green-700 group-hover:shadow-lg"></i>
-            </a>
+        <!-- Cart Icon -->
+        <a href="{% url 'cart:cart' %}" class="relative group">
+            <i class="fa fa-shopping-cart text-2xl transition-transform transform group-hover:scale-125 group-hover:text-green-700"></i>
+            {% if cart %}
+            <span
+                class="absolute -top-2 -right-3 bg-green-700 text-white rounded-full px-2 text-sm group-hover:bg-green-900 transition">
+                {{ cart|length }}
+            </span>
             {% endif %}
+        </a>
+
+        <!-- Wishlist Icon -->
+        <a href="{% url 'wishlist:wish-list' %}" class="relative group">
+            <i class="fa fa-heart text-2xl transition-transform transform group-hover:scale-125 group-hover:text-green-700"></i>
+        </a>
+
+        <!-- User Dropdown -->
+        {% if request.user.is_authenticated %}
+        <div class="relative">
+            <button id="user-menu-toggle" class="flex items-center gap-2 focus:outline-none">
+                <span>{{ request.user.name }}</span>
+                <i id="dropdown-icon" class="fa fa-caret-down text-lg"></i>
+            </button>
+            <div id="user-menu" class="hidden absolute right-0 bg-[#073741] border border-white rounded shadow-lg mt-2 z-50">
+                <a class="dropdown-item" href="#">Profile</a>
+                <a class="dropdown-item" href="{% url 'order:user_order_list' %}">My Orders</a>
+                <hr class="dropdown-divider">
+                <a class="dropdown-item" href="{% url 'accounts:logout' %}">Logout</a>
+            </div>
         </div>
+        {% else %}
+        <a href="{% url 'accounts:accounts' %}" class="relative group">
+            <i class="fa fa-user text-2xl transition-transform transform group-hover:scale-125 group-hover:text-green-700"></i>
+        </a>
+        {% endif %}
     </div>
 
     <!-- Mobile Menu Button -->
