@@ -35,7 +35,7 @@
           {% for category in categories %}
           <a href="{% url 'product:all-product' %}?filter={{ category.id }}{% if selected_filters %}&filter={{ selected_filters|join:'&filter=' }}{% endif %}" class="category_card flex flex-col items-center bg-white border border-gray-300 shadow-sm border hover:text-[#0B5C50]">
           {% if category.image %}
-          <img src="{{ category.image.url }}" class=" category_img mb-2 w-full h-4/5 object-cover pl-1 pr-1" style="" />
+          <img src="{{ category.image.url }}" class=" category_img mb-2 w-full h-4/5 object-fit pl-1 pr-1" style="" />
           {% endif %}
           <p class="text:sm sm:text-lg text-center overflow-hidden">{{category.name}}</p>
           </a>

@@ -1,8 +1,8 @@
-<div class="group flex w-full max-w-xs flex-col overflow-hidden rounded-lg border border-gray-100 bg-white shadow-sm h-[225px] lg:h-[300px]">
-  <a href="{% url 'product:product-detail' product.id %}" class="relative mx-3 mt-3 flex border h-20  lg:h-36 overflow-hidden rounded-xl">
+<div class="group flex w-full max-w-xs flex-col overflow-hidden rounded-lg border border-gray-100 bg-white shadow-sm h-[185px] sm:h-[190px] lg:h-[270px]">
+  <a href="{% url 'product:product-detail' product.id %}" class="relative mx-1 sm:mx-3 mt-3 flex h-20  lg:h-36 overflow-hidden rounded-xl">
     {% with product.media.all|slice:":2" as media_list %}
     {% if media_list|length > 0 %}
-    <img class="peer absolute top-0 right-0 h-full w-full object-cover" src="{{ media_list.0.file.url }}" alt="product image" />
+    <img class="peer absolute top-0 right-0 h-full w-full object-fit" src="{{ media_list.0.file.url }}" alt="product image" />
     {% endif %}
     {% if media_list|length > 1 %}
     <img class="peer absolute top-0 -right-96 h-full w-full object-cover transition-all delay-100 duration-1000 hover:right-0 peer-hover:right-0" src="{{ media_list.1.file.url }}" alt="product image" />
@@ -10,16 +10,16 @@
     {% endwith %}
   </a>
 
-  <div class="mt-1  sm:mt-4 px-3 pb-3 sm:mt-2 sm:px-2 sm:pb-2">
+  <div class="mt-1  sm:mt-4 px-1 pb-3 sm:mt-2 sm:px-2 sm:pb-1">
     <a href="{% url 'product:product-detail' product.id %}">
       <h5 class="text-[16px] lg:text-[20px] tracking-tight text-slate-600 line-clamp-1 overflow-hidden">
   {{ product.name|truncatewords:3 }}
 </h5>
 
     </a>
-    <div class="mt-1 mb-3 flex items-center justify-between sm:mt-1 sm:mb-2">
+    <div class="mb-1 lg:mb-3 flex items-center justify-between sm:mt-1">
       <p>
-        <span class="text-[14px] lg:text-[18px] font-bold text-slate-900">{{ product.price }}</span>
+        <span class="text-[12px] lg:text-[18px] font-bold text-slate-900">{{ product.price }}</span>
       </p>
     </div>
     <div class="flex justify-center space-x-4 sm:space-x-2">
