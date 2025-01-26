@@ -148,7 +148,7 @@ class ProductDetail3DView(DetailView):
         products_json = serialize('json', products)
 
         product = self.get_object()
-        reviews = product.reviews.all()  # Assuming a related name `reviews` for the Product-Review relationship
+        reviews = product.reviews.all()
         total_reviews = reviews.count()
 
         # Calculate rating percentages
