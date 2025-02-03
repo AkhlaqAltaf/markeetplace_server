@@ -1,202 +1,134 @@
 {% extends 'core/base.html' %}
 {% load custom_filters %}
 {% block content %}
-<div class="bg-gray-50 font-sans min-h-screen flex items-center justify-center">
-  <div class="p-6 lg:max-w-7xl mx-auto">
-    <div class="grid lg:grid-cols-2 gap-12 items-center">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Detail</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.css"/>
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick-theme.css"/>
+    <script>
+        $(document).ready(function(){
+            $('.similar-items-slider').slick({
+                slidesToShow: 4,
+                slidesToScroll: 4,
+                arrows: true,
+                dots: true,
+                responsive: [
+                    {
+                        breakpoint: 1024,
+                        settings: {
+                            slidesToShow: 6
+                        }
+                    },
+                    {
+                        breakpoint: 768,
+                        settings: {
+                            slidesToShow: 4
+                        }
+                    },
+                    {
+                        breakpoint: 480,
+                        settings: {
+                            slidesToShow: 3
+                        }
+                    }
+                ]
+            });
+        });
+    </script>
+</head>
+<body class="bg-gray-100">
+    <div class="max-w-xxl mx-auto p-6">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- Product Image -->
+            <div class="relative">
+                <img src="{{ product.media.first.file.url }}" alt="Product Image" class="w-full rounded-lg">
+            </div>
+            
+            <!-- Product Details -->
+            <div>
+                <h1 class="text-xl font-bold">{{ product.name }}</h1>
+                <div class="flex items-center mt-2">
+                    {% for star in "*****" %}
+                    <svg class="w-5 h-5 {{ rating_percentages|default:0|get_star_color:forloop.counter }}" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M10 15l-5.878 3.09 1.121-6.535L0 6.545l6.545-.955L10 0l2.455 5.59L20 6.545l-5.243 4.005 1.121 6.535z"/>
+                    </svg>
+                    {% endfor %}
+                    <span class="text-gray-400 ml-2">|</span>
+                    <span class="ml-2 text-[#0B5D51] text-lg underline"> 20 Reviews</span>
+                </div>
+                
+                <div class="mt-4">
+                    <p class="text-lg font-semibold">Wholesale Price:</p>
+                    <p class="text-2xl font-bold text-[#0B5D51]">{{ product.price }} SAR</p>
+                </div>
+                
+                <!-- Offer Boxes -->
+                <div class="mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+                  {% for product_order_offer in product_order_offers %}
+                  <div class="border p-1 bg-gray-100">
+                      <p class="text-base font-semibold">{{ product_order_offer.min_products }} Products</p>
+                      <p class="text-[#0B5D51] font-bold text-sm">{{ product_order_offer.discount_value }} {{ product_order_offer.discount_type }}</p>
+                      <p class="text-gray-600 text-sm">From: {{ product_order_offer.start_date }}</p>
+                      <p class="text-gray-600 text-sm">To: {{ product_order_offer.end_date }}</p>
+                  </div>
+                  {% endfor %}
+              </div>
+              
+                
+                <div class="mt-4">
+                    <p class="text-gray-600">Stock: <span class="text-[#0B5D51]">{{ product.stock_quantity }} available</span></p>
+                </div>
+                
+                <button class="mt-4 bg-[#0B5D51] text-white px-6 py-3 rounded-lg w-full hover:bg-[#073741]">ADD TO CART</button>
+            </div>
+            
+            <!-- Description & Reviews -->
+            <!-- Description & Reviews -->
+            <div class="flex flex-col space-y-2 border h-100 overflow-y-auto">
 
-      <!-- Left Section: Images -->
-      <div class="lg:sticky top-6">
-        <!-- Main Image -->
-        <div class="relative w-full rounded-lg overflow-hidden shadow-md mb-4">
-          <img
-            id="mainImage"
-            src="{{ product.media.first.file.url }}"
-            alt="Main Product Image"
-            class="w-full h-64 object-cover transition-transform duration-500 hover:scale-110"
-          />
-        </div>
-
-        <!-- Thumbnail Images -->
-        <div class="flex gap-4 justify-center">
-          {% for media in product.media.all %}
-          {% if media.media_type != '3d' %}
-          <img
-            src="{{ media.file.url }}"
-            alt="Thumbnail"
-            class="w-16 h-16 lg:w-20 lg:h-20 object-cover rounded-lg shadow-md border border-gray-200 cursor-pointer transition-transform duration-300 hover:scale-105 hover:shadow-lg"
-            onclick="changeImage(this.src)"
-          />
-          {% endif %}
-          {% endfor %}
-        </div>
-      </div>
-
-      <!-- Right Section: Details -->
-      <div class="flex flex-col justify-center rounded-lg ">
-        <h1 class="text-3xl font-bold text-[#0B5D51] mb-4 lg:text-left">{{ product.name }}</h1>
-
-
-                <!-- Star Rating -->
-       <div class="flex items-center">
-        {% for star in "*****" %}
-         <svg class="w-5 h-5 {{ rating_percentages|default:0|get_star_color:forloop.counter }}" fill="currentColor" viewBox="0 0 20 20">
-             <path d="M10 15l-5.878 3.09 1.121-6.535L0 6.545l6.545-.955L10 0l2.455 5.59L20 6.545l-5.243 4.005 1.121 6.535z"/>
-         </svg>
-        {% endfor %}
-        <span class="text-gray-400 ml-2">|</span>
-        <span class="ml-2 text-[#0B5D51] text-lg underline"> 20 Reviews</span>
-       </div>
-
-
-        <div class="mt-3 grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-1">
-          {% for product_order_offer in product_order_offers %}
-          {% if product_order_offer %}
-          <a href="#">
-          <div class="bg-gradient-to-r from-[#0B5D51] to-[#073741] text-center rounded-lg text-white cursor-pointer transition-all duration-300 hover:shadow-lg">
-            <ul class=" mt-2 p-1">
-              <li>
-                <span class="text-yellow-300 text-sm">{{ product_order_offer.min_products }}</span>
-                <strong class="font-semibold text-sm text-gray-200">Products</strong>
-              </li>
-              <li>
-                {% if product_order_offer.discount_type == 'percentage' %}
-                <span class="text-yellow-300 text-sm">{{ product_order_offer.discount_value }}%</span>
-                {% else %}
-                <span class="text-yellow-300 text-sm">{{ product_order_offer.discount_value }}</span> <span class="text-white-300 text-sm">SAR</span>
-                {% endif %}
-              </li>
-              <li>
-                <strong class="font-semibold text-sm text-gray-200">From: </strong>
-                <span class="text-yellow-300 text-sm">{{ product_order_offer.start_date }}</span>
-              </li>
-              <li>
-                <strong class="font-semibold text-sm text-gray-200">To: </strong>
-                <span class="text-yellow-300 text-sm">{{ product_order_offer.end_date }}</span>
-              </li>
-            </ul>
-          </div>
-        </a> 
-          {% endif %}
-          {% endfor %}
+                <!-- Description Section -->
+                <div class=" p-3">
+                    <h2 class="text-2xl font-bold text-[#0B5D51] border-b pb-2 mb-4">Description</h2>
+                    <p class="text-gray-700">{{ product.content|safe }}</p>
+                </div>
+                
+                <!-- Reviews Section -->
+                <div class="p-3">
+                    <h2 class="text-2xl font-bold text-[#0B5D51] border-b pb-2 mb-4">Customer Reviews</h2>
+                    {% for review in reviews %}
+                    <div class="border-b border-gray-200 py-4">
+                        <p class="font-semibold">{{ review.user }}</p>
+                        <p class="text-yellow-500">{{ review.rating }} Stars</p>
+                        <p class="text-gray-700">{{ review.comment }}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
         </div>
         
-        <p class="mt-2">{{ product.sub_category }}</p>
-
-        <div class="flex items-center gap-6 mb-2 mt-2 justify-center lg:justify-start">
-          <p class="text-2xl font-semibold text-[#FF6A3D]">
-            {% if discount %}
-            <span style="text-decoration: line-through;" class="text-gray-500">{{ product.price }} SAR</span>
-            <br>
-            <span class="text-green-600 font-bold">{{ discount }} SAR</span>
-            {% else %}
-            {{ product.price }}<span> SAR</span>
-            {% endif %}
-          </p>
+        <!-- Similar Products Slider -->
+        <div class="mt-8">
+            <h2 class="text-xl font-bold mb-4">Similar Items</h2>
+            <div class="similar-items-slider">
+                {% for similar_product in similar_products %}
+                <div class="p-4">
+                    <img src="{{ similar_product.media.first.file.url }}" alt="Similar Product" class="w-full rounded-lg">
+                    <p class="mt-2 text-gray-700 text-center">{{ similar_product.price }} SAR</p>
+                </div>
+                {% endfor %}
+            </div>
         </div>
-        <p class="text-gray-600 text-sm mb-2 lg:text-left">
-          <span class="font-semibold">Stock:</span>
-          {% if product.stock_quantity > 0 %}
-          <span class="text-[#0B5D51]">{{ product.stock_quantity }} available</span>
-          {% else %}
-          <span class="text-[#FF6A3D]">Out of stock</span>
-          {% endif %}
-        </p>
-        
-
-
-        <div class="flex items-center gap-4 mt-3 justify-center lg:justify-start">
-          <div class="flex justify-center space-x-4">
-            {% include 'commons/addToCartButton.html' %}
-            {% include 'commons/addToWishList.html' %}
-          </div>
-        </div>
-
-
-        <!-- Order Offer Card -->
-      </div>
     </div>
-    <button id="toggleDescription" class="mt-12 text-[#0B5D51] border text-start p-3 w-100 bg-gray-100 font-semibold" onclick="toggleVisibility('description','toggleDescription')">Show Description</button>
-            <!-- About the Product -->
-    <div class="bg-grey border">
-      <div id="description" class="hidden">
-        <p class="text-gray-700 leading-6 p-4 mb-6 lg:text-left">
-          {{ product.content|safe }}
-        </p>
-      </div>
-    </div>
-    <button id="toggleReviews" class="mt-1 text-[#0B5D51] border text-start p-3 w-100 bg-gray-100 font-semibold" onclick="toggleVisibility('reviews','toggleReviews')">Show Reviews</button>
-   <p></p>
-   <a href="{% url 'product:product-detail3d' product.id %}"><div  class="mt-1 text-[#0B5D51] border text-start p-3 w-100 bg-gray-100 font-semibold" >Show Model</div></a>
+</body>
+</html>
 
 
-    <div class="mt-12">
-      <div id="reviews" class="hidden">
-        {% for review in reviews %}
-        <div class="border-b border-gray-200 py-4">
-          <p class="font-semibold">{{ review.user }}</p>
-          <p class="text-yellow-500">{{ review.rating }} Stars</p>
-          <p class="text-gray-700">{{ review.comment }}</p>
-        </div>
-        {% endfor %}
-      </div>
-    </div>
-  </div>
-</div>
 
-<script>
-  function changeImage(src) {
-    document.getElementById("mainImage").src = src;
-    const mainImage = document.getElementById("mainImage");
-    mainImage.classList.add("scale-110");
-    setTimeout(() => mainImage.classList.remove("scale-110"), 300);
-  }
-
-  const container = document.getElementById('scrollContainer');
-  const cards = document.querySelectorAll('a');
-  const pagination = document.getElementById('pagination');
-  const cardsPerPage = 5;
-  let currentPage = 0;
-
-  function scrollCategories(direction) {
-    const cardWidth = 221;
-    container.scrollBy({
-      left: direction * cardWidth,
-      behavior: 'smooth'
-    });
-  }
-
-  function updatePagination() {
-    const totalPages = Math.ceil(cards.length / cardsPerPage);
-    pagination.innerHTML = '';
-
-    for (let i = 0; i < totalPages; i++) {
-      const dot = document.createElement('div');
-      dot.className = `h-2 w-2 rounded-full ${i === currentPage ? 'bg-[#0B5D51]' : 'bg-gray-300'}`;
-      pagination.appendChild(dot);
-    }
-  }
-
-  container.addEventListener('scroll', () => {
-    currentPage = Math.round(container.scrollLeft / (221 * cardsPerPage));
-    updatePagination();
-  });
-
-  updatePagination();
-
-  function toggleVisibility(section,id) {
-    const changebg = document.getElementById(id);
-  
-    const element = document.getElementById(section);
-    if (element.classList.contains('hidden')) {
-      element.classList.remove('hidden');
-      changebg.style.backgroundColor = "#0B5D51";
-      changebg.style.color = "white";
-    } else {
-      element.classList.add('hidden');
-      changebg.style.backgroundColor = "#F3F4F6";
-      changebg.style.color = "#0B5D51";
-    }
-  }
-</script>
 {% endblock %}

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Detail</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.css"/>
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick-theme.css"/>
+    <script>
+        $(document).ready(function(){
+            $('.similar-items-slider').slick({
+                slidesToShow: 4,
+                slidesToScroll: 3,
+                arrows: true,
+                dots: true,
+                responsive: [
+                    {
+                        breakpoint: 1024,
+                        settings: {
+                            slidesToShow: 6
+                        }
+                    },
+                    {
+                        breakpoint: 768,
+                        settings: {
+                            slidesToShow: 5
+                        }
+                    },
+                    {
+                        breakpoint: 480,
+                        settings: {
+                            slidesToShow: 3
+                        }
+                    }
+                ]
+            });
+        });
+    </script>
+</head>
+<body class="bg-gray-100">
+    <div class="max-w-7xl mx-auto p-6 rounded-lg">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+            <!-- Product Image -->
+            <div class="relative">
+                <img src="product.jpg" alt="Product Image" class="w-[500px] rounded-lg">
+                <div class="absolute bottom-10 right-40 bg-[#0B5D51] text-white text-lg px-3 py-1 rounded-full">x48</div>
+            </div>
+            
+            <!-- Product Details -->
+            <div>
+                <h1 class="text-xl font-bold">Beauty of Joseon - Matte Sun Stick (x48) (Bulk Box)</h1>
+                <p class="tflex items-center mt-2">⭐⭐⭐⭐⭐ <span class="ml-2 text-gray-600">96% customers satisfied | 4,859 reviews</span></p>
+                
+                <div class="mt-4">
+                    <p class="text-lg font-semibold">Wholesale Price:</p>
+                    <p class="text-2xl font-bold text-[#0B5D51]">31.18 SAR - 34.67 SAR</p>
+                    <p class="text-gray-600">1 piece: <span class="font-semibold">34.67 SAR</span></p>
+                </div>
+                
+                <!-- Offer Boxes -->
+                <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="border p-4 rounded-lg bg-gray-100">
+                        <p class="text-lg font-semibold">1 box of 48 pieces</p>
+                        <p class="text-[#0B5D51] font-bold">1,544.40 SAR <span class="text-sm text-gray-600">(7.2% OFF)</span></p>
+                        <p class="text-gray-600">Average: 32.18 SAR</p>
+                    </div>
+                    <div class="border p-4 rounded-lg bg-gray-100">
+                        <p class="text-lg font-semibold">1 box of 192 pieces</p>
+                        <p class="text-[#0B5D51] font-bold">5,986.50 SAR <span class="text-sm text-gray-600">(10% OFF)</span></p>
+                        <p class="text-gray-600">Average: 31.18 SAR</p>
+                    </div>
+                    <div class="border p-4 rounded-lg bg-gray-100">
+                        <p class="text-lg font-semibold">1 box of 192 pieces</p>
+                        <p class="text-[#0B5D51] font-bold">5,986.50 SAR <span class="text-sm text-gray-600">(10% OFF)</span></p>
+                        <p class="text-gray-600">Average: 31.18 SAR</p>
+                    </div>
+                </div>
+                
+                <div class="mt-4">
+                    <label class="text-gray-700">Quantity:</label>
+                    <input type="number" min="1" value="1" class="border p-2 rounded w-20">
+                </div>
+                
+                <button class="mt-4 bg-[#0B5D51] text-white px-6 py-3 rounded-lg w-full hover:bg-red-600">ADD TO BAG</button>
+            </div>
+        </div>
+        
+        <!-- Similar Products Slider -->
+        <div class="mt-8">
+            <h2 class="text-xl font-bold mb-4">Similar Items</h2>
+            <div class="similar-items-slider">
+                <div class="p-4"><img src="similar1.jpg" alt="Similar Product 1" class="w-full rounded-lg"><p class="mt-2 text-gray-700 text-center">78.74 SAR</p></div>
+                <div class="p-4"><img src="similar2.jpg" alt="Similar Product 2" class="w-full rounded-lg"><p class="mt-2 text-gray-700 text-center">69.19 SAR</p></div>
+                <div class="p-4"><img src="similar3.jpg" alt="Similar Product 3" class="w-full rounded-lg"><p class="mt-2 text-gray-700 text-center">58.07 SAR</p></div>
+                <div class="p-4"><img src="similar4.jpg" alt="Similar Product 4" class="w-full rounded-lg"><p class="mt-2 text-gray-700 text-center">25.86 SAR</p></div>
+                <div class="p-4"><img src="similar1.jpg" alt="Similar Product 1" class="w-full rounded-lg"><p class="mt-2 text-gray-700 text-center">78.74 SAR</p></div>
+                <div class="p-4"><img src="similar2.jpg" alt="Similar Product 2" class="w-full rounded-lg"><p class="mt-2 text-gray-700 text-center">69.19 SAR</p></div>
+                <div class="p-4"><img src="similar3.jpg" alt="Similar Product 3" class="w-full rounded-lg"><p class="mt-2 text-gray-700 text-center">58.07 SAR</p></div>
+                <div class="p-4"><img src="similar4.jpg" alt="Similar Product 4" class="w-full rounded-lg"><p class="mt-2 text-gray-700 text-center">25.86 SAR</p></div>
+            
+            </div>
+        </div>
+    </div>
+</body>
+</html>
