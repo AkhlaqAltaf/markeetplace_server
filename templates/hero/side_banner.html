@@ -29,7 +29,7 @@
     </div>
     <div class="flex flex-col justify-center px-4 md:px-6 mt-4 md:mt-0 gap-4">
       <h4 class="text-black font-bold text-[20px] md:text-[24px]">{{ top_sale3.name }}</h4>
-      <p class="text-[#2DA5F3] text-[16px] md:text-[18px] font-semibold">${{ top_sale3.price }}</p>
+      <p class="text-[#2DA5F3] text-[16px] md:text-[18px] font-semibold">{{ top_sale3.price }}</p>
       <a href="{% url 'product:product-detail' top_sale3.id %}" 
          class="bg-[#FA8232] hover:bg-[#d1641c] hover:text-white text-white font-bold w-[120px] md:w-[150px] h-[40px] md:h-[50px] py-2 flex items-center justify-center rounded-md transition-all duration-300">
         <span>Shop Now</span>
