@@ -109,7 +109,7 @@ document.addEventListener("DOMContentLoaded", function () {
     function getVisibleCards() {
         if (window.innerWidth >= 1024) return 4; // 4 cards on desktop
         if (window.innerWidth >= 768) return 3;  // 3 cards on tablets
-        return 1; // 2 cards on mobile
+        return 2; // 2 cards on mobile
     }
 
     nextBtn.addEventListener("click", () => {
