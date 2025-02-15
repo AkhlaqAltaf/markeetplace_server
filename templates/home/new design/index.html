@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Be Stylish</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    <style>
+        
+        /* Hide scrollbar for all browsers */
+#carousel::-webkit-scrollbar {
+    display: none;
+}
+
+#carousel {
+    -ms-overflow-style: none; /* IE & Edge */
+    scrollbar-width: none; /* Firefox */
+}
+
+.testimonial-card {
+    flex: 0 0 100%; /* Default: Show 1 card on mobile */
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    text-align: left;
+    transition: transform 0.3s ease-in-out;
+}
+
+/* Tablet (2 cards) */
+@media (min-width: 640px) {
+    .testimonial-card {
+        flex: 0 0 calc(100% / 2 - 10px); /* 2 cards per row */
+    }
+}
+
+/* Desktop (3 cards) */
+@media (min-width: 1024px) {
+    .testimonial-card {
+        flex: 0 0 calc(100% / 3 - 14px); /* 3 cards per row */
+    }
+}
+
+/* Styling for heading and text */
+.testimonial-card h3 {
+    font-size: 1.25rem;
+    font-weight: bold;
+}
+.testimonial-card p {
+    margin-top: 10px;
+    color: #555;
+}
+.testimonial-card .stars {
+    margin-top: 10px;
+}
+.testimonial-card .author {
+    margin-top: 10px;
+    font-weight: bold;
+    color: #23646D;
+}
+
+/* Navigation Buttons */
+.nav-button {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: white;
+    color: #073741;
+    padding: 10px 15px;
+    border-radius: 50%;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    font-size: 20px;
+    transition: background 0.3s;
+}
+.nav-button:hover {
+    background: #ddd;
+}
+
+/* Marquee Animation */
+@keyframes marquee {
+    0% { transform: translateX(100%); }
+    100% { transform: translateX(-100%); }
+}
+.animate-marquee {
+    display: inline-block;
+    animation: marquee 40s linear infinite;
+}
+</style>
+
+</head>
+<body class="bg-white">
+    <!-- Header -->
+    <header class="absolute top-12 left-1/2 transform -translate-x-1/2 bg-white rounded-2xl shadow-md w-11/12 md:w-5/1 lg:w-3/4 p-2 flex justify-between items-center">
+        <div class="flex items-center space-x-2">
+            <img src="./images/v84_94.png" alt="Logo" class="w-12 h-12">
+        </div>
+        <nav id="menu1" class="mx-auto hidden md:flex md:space-x-3 lg:space-x-6 ">
+            <a href="#" class="lg-text-lg md-text-sm hover:text-[#0D9488]">Home</a>
+            <a href="#" class="lg-text-lg md-text-sm hover:text-[#0D9488]">Shop</a>
+            <a href="#" class="lg-text-lg md-text-sm hover:text-[#0D9488]">Categories</a>
+            <a href="#" class="lg-text-lg md-text-sm hover:text-[#0D9488]">Contact Us</a>
+            <a href="#" class="lg-text-lg md-text-sm hover:text-[#0D9488]">About Us</a>
+        </nav>
+        <div class="flex space-x-4">
+            <div class="w-8 h-8 bg-gray-300 hover:bg-[#0D9488] rounded-full flex items-center justify-center">
+                <i class="fa fa-search text-black"></i>
+            </div>
+            <div class="w-8 h-8 bg-gray-300 hover:bg-[#0D9488] rounded-full flex items-center justify-center">
+                <i class="fa fa-shopping-cart text-black"></i>
+            </div>
+            <div class="w-8 h-8 bg-gray-300 hover:bg-[#0D9488] rounded-full flex items-center justify-center">
+                <i class="fa fa-user text-black"></i>
+            </div>
+            <div class="w-8 h-8 bg-gray-300 hover:bg-[#0D9488] rounded-full flex items-center justify-center">
+                <i class="fa fa-heart text-black"></i>
+            </div>
+        </div>
+        <div class="md:hidden">
+            <button id="menu-btn" class="text-black text-2xl"><i class="fa fa-bars"></i></button>
+        </div>
+    </header>
+    
+
+    <section id="bg-container" class="bg-cover bg-center min-h-screen flex flex-col items-center rounded-3xl mt-2 justify-center transition-all duration-700 w-[96%] mx-auto" style="background-image: url('../images/v84_120.png');">
+        <div id="mobile-menu" class="fixed left-0 w-full bg-white shadow-lg transform -translate-x-full transition-transform duration-300 md:hidden flex flex-col items-center p-6 z-50">
+            <button id="close-menu" class="absolute top-4 right-6 text-3xl text-gray-700 hover:text-black"><i class="fa fa-times"></i></button>
+            <nav class="flex flex-col items-center space-y-6 mt-12">
+                <a href="#" class="lg-text-lg hover:text-[#0D9488]">Home</a>
+                <a href="#" class="lg-text-lg hover:text-[#0D9488]">Shop</a>
+                <a href="#" class="lg-text-lg hover:text-[#0D9488]">Categories</a>
+                <a href="#" class="lg-text-lg hover:text-[#0D9488]">Contact Us</a>
+                <a href="#" class="lg-text-lg hover:text-[#0D9488]">About Us</a>
+            </nav>
+        </div>
+
+        <h1 class="absolute top-1/2 text-5xl md:text-7xl font-extrabold text-white">Be Stylish</h1>
+
+        <div class="absolute bottom-10 flex space-x-2">
+            <div class="w-4 h-4 bg-teal-700 rounded-full cursor-pointer" onclick="changeBackground(0)"></div>
+            <div class="w-4 h-4 bg-white rounded-full cursor-pointer" onclick="changeBackground(1)"></div>
+            <div class="w-4 h-4 bg-white rounded-full cursor-pointer" onclick="changeBackground(2)"></div>
+        </div>
+    </section>
+
+    <main class="p-10">
+        <h2 class="text-4xl font-bold text-center">Explore Our Categories</h2>
+    </main>
+
+      <!-- Navigation Arrows -->
+      <div class="w-full max-w-screen px-5 md:px-20 mx-auto relative">
+        <!-- Left Button -->
+        <button id="prev" class="absolute top-1/2 left-0 -translate-y-1/2 p-4 bg-white rounded-full shadow-md hover:bg-gray-200 z-10">
+            <i class="fa fa-chevron-left"></i>
+        </button>
+    
+        <!-- Carousel Container -->
+        <div id="carousel" class="overflow-x-auto scrollbar-hide scroll-smooth">
+            <div class="flex space-x-1 md:space-x-4">
+                <div class="min-w-[calc(100%/2)] sm:min-w-[calc(100%/2)] md:min-w-[calc(100%/3)] lg:min-w-[calc(92%/4)] bg-[#A7C1C5] rounded-2xl p-6 shadow-lg">
+                    <h2 class="text-lg font-bold text-teal-900">Mobile Phones</h2>
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSPlfy57doEVFG1Wfi-oEEHwM3lz1fCl6NCFw&s" alt="Phones" class="w-full h-46 object-cover mt-3 rounded-lg mix-blend-multiply">
+                </div>
+                <div class="min-w-[calc(100%/2)] sm:min-w-[calc(100%/2)] md:min-w-[calc(100%/3)] lg:min-w-[calc(100%/4)] lg:min-w-[calc(100%/4)] bg-[#A7C1C5] rounded-2xl p-6 shadow-lg">
+                    <h2 class="text-lg font-bold text-teal-900">Mobile Phones</h2>
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTf99MwDVWgx03GuQydWMgvjFgPXL9xotsT0g&s" alt="Phones" class="w-full h-46 object-cover mt-3 rounded-lg mix-blend-multiply">
+                </div>
+                <div class="min-w-[calc(100%/2)] sm:min-w-[calc(100%/2)] md:min-w-[calc(100%/3)] lg:min-w-[calc(100%/4)] bg-[#A7C1C5] rounded-2xl p-6 shadow-lg">
+                    <h2 class="text-lg font-bold text-teal-900">Mobile Phones</h2>
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTl_db2uv278DAjaCiw1xwz0ZaA71keF5mNmw&s" alt="Phones" class="w-full h-46 object-cover mt-3 rounded-lg mix-blend-multiply">
+                </div>
+                <div class="min-w-[calc(100%/2)] sm:min-w-[calc(100%/2)] md:min-w-[calc(100%/3)] lg:min-w-[calc(100%/4)] bg-[#A7C1C5] rounded-2xl p-6 shadow-lg">
+                    <h2 class="text-lg font-bold text-teal-900">Mobile Phones</h2>
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTl_db2uv278DAjaCiw1xwz0ZaA71keF5mNmw&s" alt="Phones" class="w-full h-46 object-cover mt-3 rounded-lg mix-blend-multiply">
+                </div>
+            </div>
+        </div>
+    
+        <!-- Right Button -->
+        <button id="next" class="absolute top-1/2 right-0 -translate-y-1/2 p-4 bg-white rounded-full shadow-md hover:bg-gray-200 z-10">
+            <i class="fa fa-chevron-right"></i>
+        </button>
+    </div>
+    
+    
+    
+
+
+    <main class="p-10">
+        <h2 class="text-lg text-center">Our Features</h2>
+        <h2 class="text-4xl font-bold text-center">PRODUCTS</h2>
+    </main>
+
+
+    <div class="max-w-screen-screen md:px-20 mx-auto">
+        <!-- Product Grid -->
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-6">
+            <!-- Repeat for other products -->
+            <div class="bg-[#E9F0F1] rounded-2xl p-4 shadow-md">
+                <p class="text-gray-500">Category Name</p>
+                <h2 class="font-bold text-lg">Product Name</h2>
+                <div class="flex justify-center">
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQFPfbPvrZNzLMdtZf9oP2IPZvKPeAxMqvaTg&s" alt="Product" class="w-32 h-32 object-cover mt-2 rounded-lg mix-blend-multiply">
+                </div>
+                <p class="text-teal-600 font-bold text-lg text-center">SAR 26</p>
+                <button class="mt-2 bg-white text-teal-600 border border-teal-600 rounded-lg px-4 py-2 w-full hover:bg-teal-600 hover:text-white transition">SHOP NOW</button>
+            </div>
+    
+            <div class="bg-[#E9F0F1] rounded-2xl p-4 shadow-md">
+                <p class="text-gray-500">Category Name</p>
+                <h2 class="font-bold text-lg">Product Name</h2>
+                <div class="flex justify-center">
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTrWftdBJV2Q9HHuWroRuqFzRWGPZFfZa5bDw&s" alt="Product" class="w-32 h-32 object-cover mt-2 rounded-lg mix-blend-multiply">
+                </div>
+                <p class="text-teal-600 font-bold text-lg text-center">SAR 26</p>
+                <button class="mt-2 bg-white text-teal-600 border border-teal-600 rounded-lg px-4 py-2 w-full hover:bg-teal-600 hover:text-white transition">SHOP NOW</button>
+            </div>
+            <div class="bg-[#E9F0F1] rounded-2xl p-4 shadow-md">
+                <p class="text-gray-500">Category Name</p>
+                <h2 class="font-bold text-lg">Product Name</h2>
+                <div class="flex justify-center">
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ3R2gXC3aKIeJIMVZ2jyTlh8_SnbNUu4f52w&s" alt="Product" class="w-32 h-32 object-cover mt-2 rounded-lg mix-blend-multiply">
+                </div>
+                <p class="text-teal-600 font-bold text-lg text-center">SAR 26</p>
+                <button class="mt-2 bg-white text-teal-600 border border-teal-600 rounded-lg px-4 py-2 w-full hover:bg-teal-600 hover:text-white transition">SHOP NOW</button>
+            </div>
+    
+            <div class="bg-[#E9F0F1] rounded-2xl p-4 shadow-md">
+                <p class="text-gray-500">Category Name</p>
+                <h2 class="font-bold text-lg">Product Name</h2>
+                <div class="flex justify-center">
+                    <img src="./images/v84_224.png" alt="Product" class="w-32 h-32 object-cover mt-2 rounded-lg mix-blend-multiply">
+                </div>
+                <p class="text-teal-600 font-bold text-lg text-center">SAR 26</p>
+                <button class="mt-2 bg-white text-teal-600 border border-teal-600 rounded-lg px-4 py-2 w-full hover:bg-teal-600 hover:text-white transition">SHOP NOW</button>
+            </div>
+            <div class="bg-[#E9F0F1] rounded-2xl p-4 shadow-md">
+                <p class="text-gray-500">Category Name</p>
+                <h2 class="font-bold text-lg">Product Name</h2>
+                <div class="flex justify-center">
+                    <img src="./images/v84_224.png" alt="Product" class="w-32 h-32 object-cover mt-2 rounded-lg mix-blend-multiply">
+                </div>
+                <p class="text-teal-600 font-bold text-lg text-center">SAR 26</p>
+                <button class="mt-2 bg-white text-teal-600 border border-teal-600 rounded-lg px-4 py-2 w-full hover:bg-teal-600 hover:text-white transition">SHOP NOW</button>
+            </div>
+    
+            <div class="bg-[#E9F0F1] rounded-2xl p-4 shadow-md">
+                <p class="text-gray-500">Category Name</p>
+                <h2 class="font-bold text-lg">Product Name</h2>
+                <div class="flex justify-center">
+                    <img src="./images/v84_224.png" alt="Product" class="w-32 h-32 object-cover mt-2 rounded-lg mix-blend-multiply">
+                </div>
+                <p class="text-teal-600 font-bold text-lg text-center">SAR 26</p>
+                <button class="mt-2 bg-white text-teal-600 border border-teal-600 rounded-lg px-4 py-2 w-full hover:bg-teal-600 hover:text-white transition">SHOP NOW</button>
+            </div>
+            <div class="bg-[#E9F0F1] rounded-2xl p-4 shadow-md">
+                <p class="text-gray-500">Category Name</p>
+                <h2 class="font-bold text-lg">Product Name</h2>
+                <div class="flex justify-center">
+                    <img src="./images/v84_224.png" alt="Product" class="w-32 h-32 object-cover mt-2 rounded-lg mix-blend-multiply">
+                </div>
+                <p class="text-teal-600 font-bold text-lg text-center">SAR 26</p>
+                <button class="mt-2 bg-white text-teal-600 border border-teal-600 rounded-lg px-4 py-2 w-full hover:bg-teal-600 hover:text-white transition">SHOP NOW</button>
+            </div>
+    
+            <div class="bg-[#E9F0F1] rounded-2xl p-4 shadow-md">
+                <p class="text-gray-500">Category Name</p>
+                <h2 class="font-bold text-lg">Product Name</h2>
+                <div class="flex justify-center">
+                    <img src="./images/v84_224.png" alt="Product" class="w-32 h-32 object-cover mt-2 rounded-lg mix-blend-multiply">
+                </div>
+                <p class="text-teal-600 font-bold text-lg text-center">SAR 26</p>
+                <button class="mt-2 bg-white text-teal-600 border border-teal-600 rounded-lg px-4 py-2 w-full hover:bg-teal-600 hover:text-white transition">SHOP NOW</button>
+            </div>
+    
+            <!-- Repeat for other products with the same structure -->
+        </div>
+    
+        <!-- View All Products Button -->
+        <div class="text-center mt-12">
+            <button class="border-2 border-teal-600 text-teal-600 px-6 py-2 rounded-3xl hover:bg-teal-600 hover:text-white transition">VIEW ALL PRODUCTS</button>
+        </div>
+    </div>
+    
+
+    <div class="bg-[#23646D] text-white py-2 overflow-hidden whitespace-nowrap mt-10">
+        <div class="animate-marquee">
+            * 30% OFF * 30% OFF * 30% OFF * 30% OFF * 30% OFF * 30% OFF * 30% OFF * 30% OFF * 30% OFF * 30% OFF * 30% OFF * 30% OFF * 30% OFF * 30% OFF * 30% OFF * 30% OFF *
+        </div>
+    </div>
+
+    <!-- Exclusive Offers Section -->
+    <div class="max-w-screen-lg mx-auto text-center mt-10">
+        <h2 class="text-2xl font-semibold">Here's Our</h2>
+        <h1 class="text-4xl font-extrabold">EXCLUSIVE OFFERS</h1>
+    </div>
+
+    <!-- Product Grid -->
+    <div class="max-w-screen-2xl md:px-20 mx-auto grid grid-cols-1 md:grid-cols-2 gap-4 mt-8">
+    
+        <!-- Large Product (Left) -->
+        <div class="bg-[#D3E0E2] rounded-2xl p-4 shadow-md flex flex-col relative">
+            <p class="text-[#23646D] text-sm">Category Name</p>
+            <h2 class="font-bold text-md text-[#23646D]">Product Name</h2>
+            <button class="mt-3 border-2 border-teal-600 text-teal-600 px-4 py-1.5 text-sm rounded-2xl w-2/3 md:w-2/6 hover:bg-teal-600 hover:text-white transition">SHOP NOW</button>
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRFvQHFs96V-pQ57OuUM7AvMez9HDYC7q_p5A&s" 
+             alt="Product" 
+            class="w-38 h-38 object-cover mx-auto mt-3 rounded-lg mix-blend-multiply">
+           <div class="absolute top-3 right-3 bg-white p-2 rounded-full shadow-md">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                    <path d="M7 17L17 7M17 7H7M17 7V17" stroke="#0D9488" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>                  
+            </div>
+        </div>
+    
+        <!-- Right Side (Two Smaller Products) -->
+        <div class="grid grid-cols-1 gap-4">
+            
+            <div class="bg-[#E9F0F1] rounded-2xl p-4 shadow-md flex flex-col relative">
+                <div class="flex flex-col md:flex-row md:items-center">
+                    <div class="flex flex-col">
+                        <p class="text-[#23646D] text-sm">Category Name</p>
+                        <h2 class="font-bold text-md text-[#23646D]">Product Name</h2>
+                        <button class="mt-3 border-2 border-teal-600 text-teal-600 px-4 py-1.5 text-sm rounded-2xl w-2/3 md:w-full hover:bg-teal-600 hover:text-white transition">SHOP NOW</button>
+                    </div>
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRFvQHFs96V-pQ57OuUM7AvMez9HDYC7q_p5A&s" 
+                    alt="Product" 
+                    class="w-28 h-28 object-cover mx-auto mt-3 rounded-lg mix-blend-multiply">
+                </div>
+                <div class="absolute top-3 right-3 bg-white p-2 rounded-full shadow-md">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                        <path d="M7 17L17 7M17 7H7M17 7V17" stroke="#0D9488" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>                      
+                </div>
+            </div>
+    
+            <div class="bg-[#E9F0F1] rounded-2xl p-4 shadow-md flex flex-col relative">
+                <div class="flex flex-col md:flex-row md:items-center">
+                    <div class="flex flex-col">
+                        <p class="text-[#23646D] text-sm">Category Name</p>
+                        <h2 class="font-bold text-md text-[#23646D]">Product Name</h2>
+                        <button class="mt-3 border-2 border-teal-600 text-teal-600 px-4 py-1.5 text-sm rounded-2xl w-2/3 md:w-full hover:bg-teal-600 hover:text-white transition">SHOP NOW</button>
+                    </div>
+                    <img src="./images/v84_224.png" alt="Product" class="w-28 h-28 object-cover mx-auto mt-3 rounded-lg">
+                </div>
+                <div class="absolute top-3 right-3 bg-white p-2 rounded-full shadow-md">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                        <path d="M7 17L17 7M17 7H7M17 7V17" stroke="#0D9488" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>                      
+                </div>
+            </div>
+            
+        </div>
+    
+    </div>
+    
+
+
+
+    <div class="max-w-screen mx-auto text-center px-5 md:px-20 py-10">
+        <div class="max-w-screen-lg mx-auto text-center">
+            <h2 class="text-2xl font-semibold text-gray-500">What Our</h2>
+            <h1 class="text-4xl font-extrabold text-[#073741]">CUSTOMERS SAY!</h1>
+        </div>
+        <!-- Carousel Container -->
+        <div class="relative mt-8 overflow-hidden">
+            <button id="prevBtn" class="absolute top-1/2 left-0 -translate-y-1/2 p-3 bg-white rounded-full shadow-md hover:bg-gray-200 z-10">
+                <i class="fa fa-chevron-left"></i>
+            </button>
+            <!-- Wrapper -->
+            <div id="carouselWrapper" class="flex gap-4 transition-transform duration-500 ease-in-out">
+                <!-- Testimonials -->
+                <div class="testimonial-card w-full md:w-1/2 lg:w-1/3 bg-[#E9F0F1] text-[#23646D] p-6">
+                    <h3>I had a great experience</h3>
+                    <p>Absolutely love the quality of the products! Fast shipping and great customer service. Highly recommend!</p>
+                    <span class="stars bg-white">⭐⭐⭐⭐⭐</span>
+                    <p class="text-[#23646D] author">FRANKISTINE</p>
+                </div>
+    
+                <div class="testimonial-card w-full md:w-1/2 lg:w-1/3 bg-[#E9F0F1] text-[#23646D] p-6">
+                    <h3>I had a great experience</h3>
+                    <p>Absolutely love the quality of the products! Fast shipping and great customer service. Highly recommend!</p>
+                    <span class="stars bg-white">⭐⭐⭐⭐⭐</span>
+                    <p class="text-[#23646D] author">JOHN DOE</p>
+                </div>
+    
+                <div class="testimonial-card w-full md:w-1/2 lg:w-1/3 bg-[#E9F0F1] text-[#23646D] p-6">
+                    <h3>Best Service Ever</h3>
+                    <p>Absolutely love the quality of the products! Fast shipping and great customer service. Highly recommend!</p>
+                    <span class="stars bg-white">⭐⭐⭐⭐⭐</span>
+                    <p class="text-[#23646D] author">MARK ANTHONY</p>
+                </div>
+    
+                <div class="testimonial-card w-full md:w-1/2 lg:w-1/3 bg-[#E9F0F1] text-[#23646D] p-6">
+                    <h3>Amazing Service</h3>
+                    <p>Lorem Ipsum is simply dummy text.</p>
+                    <span class="stars bg-white">⭐⭐⭐⭐⭐</span>
+                    <p class="text-[#23646D] author">SARAH SMITH</p>
+                </div>
+    
+                <div class="testimonial-card w-full md:w-1/2 lg:w-1/3 bg-[#E9F0F1] text-[#23646D] p-6">
+                    <h3>Excellent Experience</h3>
+                    <p>Lorem Ipsum is simply dummy text.</p>
+                    <span class="stars bg-white">⭐⭐⭐⭐⭐</span>
+                    <p class="text-[#23646D] author">JANE DOE</p>
+                </div>
+    
+                <div class="testimonial-card w-full md:w-1/2 lg:w-1/3 bg-[#E9F0F1] text-[#23646D] p-6">
+                    <h3>Outstanding Support</h3>
+                    <p>Lorem Ipsum is simply dummy text.</p>
+                    <span class="stars bg-white">⭐⭐⭐⭐⭐</span>
+                    <p class="text-[#23646D] author">ADAM JOHNSON</p>
+                </div>
+            </div>
+            <button id="nextBtn" class="absolute top-1/2 right-0 -translate-y-1/2 p-3 bg-white rounded-full shadow-md hover:bg-gray-200 z-10">
+                <i class="fa fa-chevron-right"></i>
+            </button>
+        </div>
+    </div>
+    
+
+    <div class="max-w-screen md:px-20 w-full p-6 mx-auto mt-10">
+        <div class="max-w-screen-lg mx-auto text-center">
+            <h2 class="text-2xl font-semibold text-gray-500">Have Any</h2>
+            <h1 class="text-4xl font-extrabold text-[#073741]">QUESTIONS?</h1>
+        </div>
+        <div class="flex flex-col md:flex-row gap-6 mt-6">
+            <!-- Support Box -->
+            <div class="bg-[#23646D] text-white rounded-lg p-6 w-full md:w-1/3">
+                <h3 class="text-lg font-semibold">Help & Support</h3>
+                <p class="text-sm mt-2">Need guidance on placing an order or require technical assistance? Our support team is here to help you!</p>
+                <button class="mt-4 bg-white text-[#23646D] font-semibold py-2 px-4 rounded-lg w-full hover:bg-gray-200 transition">Get in Touch</button>
+            </div>
+
+            <!-- FAQ List -->
+            <div class="flex-1 space-y-4">
+                <!-- FAQ Item -->
+                <div class="faq-item bg-[#D3E0E2] p-4 rounded-lg cursor-pointer">
+                    <div class="flex justify-between items-center" onclick="toggleAnswer(1)">
+                        <div class="flex items-center gap-4">
+                            <span class="font-bold text-gray-500">001</span>
+                            <p class="text-[#073741] font-semibold">What types of products do you offer?</p>
+                        </div>
+                        <span class="text-gray-600 text-lg">+</span>
+                    </div>
+                    <p class="hidden text-gray-700 mt-2 ml-8 transition-all" id="answer-1">
+                        We offer a variety of products including eyewear, contact lenses, and eye care accessories.
+                    </p>
+                </div>
+
+                <div class="faq-item bg-[#D3E0E2] p-4 rounded-lg cursor-pointer">
+                    <div class="flex justify-between items-center" onclick="toggleAnswer(2)">
+                        <div class="flex items-center gap-4">
+                            <span class="font-bold text-gray-500">002</span>
+                            <p class="text-[#073741] font-semibold">Do you provide prescription lenses?</p>
+                        </div>
+                        <span class="text-gray-600 text-lg">+</span>
+                    </div>
+                    <p class="hidden text-gray-700 mt-2 ml-8 transition-all" id="answer-2">
+                        Yes, we provide custom prescription lenses tailored to your eye needs.
+                    </p>
+                </div>
+
+                <div class="faq-item bg-[#D3E0E2] p-4 rounded-lg cursor-pointer">
+                    <div class="flex justify-between items-center" onclick="toggleAnswer(3)">
+                        <div class="flex items-center gap-4">
+                            <span class="font-bold text-gray-500">003</span>
+                            <p class="text-[#073741] font-semibold">How can I track my order?</p>
+                        </div>
+                        <span class="text-gray-600 text-lg">+</span>
+                    </div>
+                    <p class="hidden text-gray-700 mt-2 ml-8 transition-all" id="answer-3">
+                        You can track your order using the tracking number provided in your email confirmation.
+                    </p>
+                </div>
+
+                <div class="faq-item bg-[#D3E0E2] p-4 rounded-lg cursor-pointer">
+                    <div class="flex justify-between items-center" onclick="toggleAnswer(4)">
+                        <div class="flex items-center gap-4">
+                            <span class="font-bold text-gray-500">004</span>
+                            <p class="text-[#073741] font-semibold">What is your return policy?</p>
+                        </div>
+                        <span class="text-gray-600 text-lg">+</span>
+                    </div>
+                    <p class="hidden text-gray-700 mt-2 ml-8 transition-all" id="answer-4">
+                        We offer a 30-day return policy for unused and undamaged products.
+                    </p>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-[#23646D] text-white py-10 px-6 md:px-16 relative rounded-t-3xl">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+            <!-- Newsletter Section -->
+            <div class="md:col-span-1 relative">
+                <h2 class="text-3xl font-semibold">NEWSLETTER</h2>
+                <p class="text-sm mt-2">
+                    Subscribe to our newsletter and get the latest updates and offers related to products...!!
+                </p>
+                <div class="mt-4 flex bg-white rounded-lg overflow-hidden">
+                    <input type="email" placeholder="Enter your Email Here" class="w-full p-3 text-gray-700 outline-none">
+                    <button class="bg-[#073741] text-white px-4 flex items-center justify-center">
+                        <i class="fa fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+    
+            <!-- Company Links (Repeated) -->
+            <div class="md:col-span-1">
+                <h3 class="font-bold text-lg mb-3">COMPANY</h3>
+                <ul class="space-y-2 text-sm">
+                    <li>About Huba Jamula</li>
+                    <li>Leading Electronics Retailer</li>
+                    <li>About Huba Jumula Group</li>
+                    <li>Help - Authorised Services</li>
+                    <li>Centers</li>
+                    <li>Techbench</li>
+                    <li>HJ + | Home Theatres & Audio</li>
+                </ul>
+            </div>
+    
+            <div class="md:col-span-1">
+                <h3 class="font-bold text-lg mb-3">COMPANY</h3>
+                <ul class="space-y-2 text-sm">
+                    <li>About Huba Jamula</li>
+                    <li>Leading Electronics Retailer</li>
+                    <li>About Huba Jumula Group</li>
+                    <li>Help - Authorised Services</li>
+                    <li>Centers</li>
+                    <li>Techbench</li>
+                    <li>HJ + | Home Theatres & Audio</li>
+                </ul>
+            </div>
+    
+            <!-- Social Media Icons -->
+            <div class="md:col-span-1">
+                <h3 class="font-bold text-lg mb-3">Follow Us</h3>
+                <div class="flex space-x-4 text-2xl">
+                    <a href="#" class="hover:text-gray-300"><i class="fa fa-facebook"></i></a>
+                    <a href="#" class="hover:text-gray-300"><i class="fa fa-whatsapp"></i></a>
+                    <a href="#" class="hover:text-gray-300"><i class="fa fa-youtube"></i></a>
+                    <a href="#" class="hover:text-gray-300"><i class="fa fa-instagram"></i></a>
+                    <a href="#" class="hover:text-gray-300"><i class="fa fa-x-twitter"></i></a>
+                </div>
+            </div>
+        </div>
+    
+        <!-- Bottom Copyright & Payment Methods -->
+        <div class="mt-8 border-t border-gray-400 pt-6 flex flex-col md:flex-row justify-between text-sm">
+            <p>© 2025 Firnas.Tech ALL RIGHTS RESERVED</p>
+            <div class="flex space-x-4 mt-4 md:mt-0 text-2xl">
+                <i class="fa fa-cc-visa"></i>
+                <i class="fa fa-cc-mastercard"></i>
+                <i class="fa fa-google-pay"></i>
+                <i class="fa fa-cc-apple-pay"></i>
+                <i class="fa fa-cc-paypal"></i>
+            </div>
+        </div>
+    </footer>
+
+    <script src="./script.js"></script>
+</body>
+</body>
+</html>
