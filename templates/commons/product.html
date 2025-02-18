@@ -1,50 +1,47 @@
 <div
-  class="group flex w-full max-w-2xl flex-col overflow-hidden rounded-lg border border-gray-100 bg-[#E0F7FA] bg-blend-color-burn bg-opacity-30 h-full max-h-fit p-2 hover:scale-105 hover:transition-all hover:shadow-lg"
+  class="group flex w-full md:max-w-2xl lg:max-w-2xl xl:max-w-2xl flex-col overflow-hidden rounded-lg border border-gray-100 bg-[#E0F7FA] bg-blend-color-burn bg-opacity-30 h[700px] md:h-full max-h-max p-2 hover:scale-105 hover:transition-all hover:shadow-lg m-2 md:m-0 px-16 md:px-0 lg:px-0 xl:px-0"
 >
- 
   <a
     href="{% url 'product:product-detail' product.id %}"
-    class="relative flex h-36 lg:h-44 overflow-hidden rounded-xl"
+    class="relative flex h-48 lg:h-44 xl:h-44 overflow-hidden rounded-xl"
   >
-  {% with product.media.all|slice:":2" as media_list %}
-  {% if media_list|length > 0 %}
-    <img
-      class="peer absolute top-0 right-0 h-full w-full object-cover"
-      src="{{ media_list.0.file.url }}"
-      alt="product image"
-    />
-  {% endif %}
-  {% if media_list|length > 1 %}
-    <img
-      class="peer absolute top-0 -right-96 h-full w-full object-cover transition-all delay-100 duration-1000 hover:right-0 peer-hover:right-0"
-      src="{{ media_list.1.file.url }}"
-      alt="product image"
-    />
-  {% endif %}
-{% endwith %}
+    {% with product.media.all|slice:":2" as media_list %}
+    {% if media_list|length > 0 %}
+      <img
+        class="peer absolute top-0 right-0 h-full w-full object-fill"
+        src="{{ media_list.0.file.url }}"
+        alt="product image"
+      />
+    {% endif %}
 
+    {% if media_list|length > 1 %}
+      <img
+        class="peer absolute top-0 -right-96 h-full w-full object-fill transition-all delay-100 duration-1000 hover:right-0 peer-hover:right-0"
+        src="{{ media_list.1.file.url }}"
+        alt="product image"
+      />
+    {% endif %}
+    {% endwith %}
   </a>
 
   <div class="mt-1 px-1 pb-3 sm:mt-2 sm:px-2 sm:pb-1">
     <a
-    href="{% url 'product:product-detail' product.id %}"
-    class="flex items-center mb-1 ml-2 hover:text-[#23646D]"
-  >
-    <span class="font-normal text-[14px] lg:text-[16px]">Product:</span>
-    <h5
-      class="text-[13px] lg:text-[15px] tracking-tight text-[#23646D] line-clamp-1 overflow-hidden ml-2 font-bold"
+      href="{% url 'product:product-detail' product.id %}"
+      class="flex items-center mb-1 ml-2 hover:text-[#23646D]"
     >
-      {{ product.name|truncatewords:3 }}
-    </h5>
-  </a>
-    <div
-      class="lg:mb-2 flex mb-4 justify-between sm:mt-1 ml-2 items-center text-center"
-    >
+      <span class="font-normal text-[14px] lg:text-[16px]">Product:</span>
+      <h5
+        class="text-[13px] lg:text-[15px] tracking-tight text-[#23646D] line-clamp-1 overflow-hidden ml-2 font-bold"
+      >
+        {{ product.name|truncatewords:3 }}
+      </h5>
+    </a>
+    <div class="lg:mb-2 flex mb-4 justify-between sm:mt-1 ml-2 items-center text-center">
       <p class="flex gap-1 text-left items-center">
         <span class="font-normal text-[12px] lg:text-[16px]">Price:</span>
-        <span class="text-[12px] lg:text-[16px] font-bold text-slate-900"
-          >${{ product.price }}</span
-        >
+        <span class="text-[12px] lg:text-[16px] font-bold text-slate-900">
+          ${{ product.price }}
+        </span>
       </p>
     </div>
     <div class="flex space-x-4 sm:space-x-1 justify-between">
