@@ -1,50 +1,69 @@
-        <div id="sidebar" class="fixed top-0 left-0 z-40 w-3/4 max-w-sm h-full bg-[#073741] text-white p-6 rounded-lg shadow-lg transform -translate-x-full space-y-6 transition-transform duration-300 overflow-y-auto">
-            <!-- Close Button (for smaller devices) -->
-            <button id="close-sidebar" class="absolute top-4 right-4 p-1 text-grey rounded-full">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-            </button>
-            <h3 class="text-2xl text-center p-10 font-semibold text-white">Filter Products</h3>
-                <hr class="border-t border-gray-200 my-4">
-            <form method="get" action="{% url 'product:all-product' %}">
-                <!-- Category Filters -->
-                <div class="category-filters space-y-4">
-                    <h4 class="font-medium text-xl text-white">Categories</h4>
-                    {% for category in categories %}
-                        <label class="block">
-                            <input type="checkbox" name="filter" value="{{ category.id }}"
-                           {% if category.id|stringformat:"s" in selected_filters %} checked {% endif %}
-                                   class="mr-2 leading-tight accent-[#0B5D51]"
-                                   style="width: 16px; height: 16px;">
-                            <span class="text-white">{{ category.name }}</span>
-                        </label>
-                    {% endfor %}
-                </div>
-                <hr class="border-t border-gray-200 my-4">
-                <!-- Price Filters -->
-                <div class="price-filters space-y-4">
-                    <h4 class="font-medium text-xl mt-[6px] text-white">Price Range</h4>
-                    {% for key, label in prices_range.items %}
-                    <label class="block">
-                        <input 
-                            type="checkbox"
-                            name="price" 
-                            value="{{ key }}"
-                            {% if selected_price == key %} checked {% endif %}
-                            class="mr-2 leading-tight accent-[#0B5D51] font-[22px]"
-                            style="width: 16px; height: 16px;">
-                        <span class="text-white">{{ label }}</span>
-                    </label>
-                    {% endfor %}
-                </div>
-        
-                <!-- Filter Button -->
-                <div class="flex justify-center">
-                    <button type="submit" class="w-full bg-[#FFFFFF] py-3 mt-[20px] text-[#0B5D51] rounded-lg hover:bg-[#0B5D51] hover:text-white transition duration-300">
-                        Apply Filters
-                    </button>
-                    
-                </div>
-            </form>
+<div id="sidebar" class="w-auto my-4 mb-11  text-black p-3 shadow-md border bottom-2 rounded-l-lg space-y-6 transition-transform duration-300 lg:translate-x-0 transform -translate-x-full m-2">
+    <!-- Close Button (for smaller devices) -->
+    {% comment %} <button id="close-sidebar" class="relative top-4 right-4 p-2 text-black rounded-full block lg:hidden hover:bg-[#0B5D51] focus:outline-none transition duration-300">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+    </button> {% endcomment %}
+
+    <!-- Sidebar Title -->
+    {% comment %} <div class="flex justify-start">
+        <h3 class="text-2xl font-semibold text-black">Filter Products</h3>
+    </div> {% endcomment %}
+
+    <!-- Filter Form -->
+    <form method="get" action="{% url 'product:all-product' %}" class="space-y-6">
+        <!-- Category Dropdown -->
+        <div class="category-filters space-y-2">
+            <h4 class="font-medium text-xl text-black">Categories</h4>
+            <select name="filter" class="w-full py-2 px-3 border border-gray-300 rounded-lg focus:outline-none hover:ring-2 hover:ring-[#0B5D51] transition duration-300">
+                <option value="" disabled selected>Select Category</option>
+                {% for category in categories %}
+                    <option value="{{ category.id }}" {% if category.id|stringformat:"s" in selected_filters %} selected {% endif %}>
+                        {{ category.name }}
+                    </option>
+                {% endfor %}
+            </select>
         </div>
+
+        <!-- Price Filters -->
+        <div class="price-filters space-y-4">
+            <h4 class="font-semibold text-xl mt-[1px] text-black">Price Range</h4>
+            {% for key, label in prices_range.items %}
+                <label class="flex items-center space-x-2">
+                    <input 
+                        type="checkbox"
+                        name="price" 
+                        value="{{ key }}"
+                        {% if selected_price == key %} checked {% endif %}
+                        class="w-5 h-5 accent-[#CDA274]">
+                    <span class="text-black text-sm">{{ label }}</span>
+                </label>
+            {% endfor %}
+        </div>
+
+        <!-- Apply Filters Button -->
+        <div class="flex justify-center">
+            <button type="submit" class="w-full bg-[#FFFFFF] py-2  text-[#0B5D51] rounded-lg hover:bg-[#143b33] hover:text-white focus:outline-none transition duration-300">
+                Apply Filters
+            </button>
+        </div>
+    </form>
+</div>
+
+<!-- JavaScript to Handle Sidebar Toggle -->
+<script>
+    const toggleSidebar = document.getElementById('toggle-sidebar');
+    const closeSidebar = document.getElementById('close-sidebar');
+    const sidebar = document.getElementById('sidebar');
+
+    // Toggle the sidebar open/close on smaller devices
+    toggleSidebar.addEventListener('click', () => {
+        sidebar.classList.toggle('-translate-x-full');
+    });
+
+    // Close the sidebar when clicking on the close button
+    closeSidebar.addEventListener('click', () => {
+        sidebar.classList.add('-translate-x-full');
+    });
+</script>
