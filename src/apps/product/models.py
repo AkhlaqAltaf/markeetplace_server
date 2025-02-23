@@ -34,6 +34,7 @@ class SubCategory(models.Model):
 
     def __str__(self):
         return f"{self.category.name} - {self.name}"
+from django.db import models
 
 
 class Product(models.Model):
@@ -62,6 +63,31 @@ class Product(models.Model):
 
     def __str__(self):
         return self.name
+
+class Offer(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='offers')
+    min_quantity = models.PositiveIntegerField()
+    max_quantity = models.PositiveIntegerField(null=True, blank=True)
+    discount_percentage = models.DecimalField(max_digits=5, decimal_places=2)
+
+    def calculate_discounted_price(self, quantity):
+        """Calculate total price after discount"""
+        if quantity < self.min_quantity or (self.max_quantity and quantity > self.max_quantity):
+            return None  # Not eligible for discount
+        discounted_price_per_unit = self.product.price * (1 - self.discount_percentage / 100)
+        total_price = discounted_price_per_unit * quantity
+        return total_price
+
+    def calculate_average_price(self, quantity):
+        """Calculate average price per unit after discount"""
+        total_price = self.calculate_discounted_price(quantity)
+        if total_price is None:
+            return None
+        return total_price / quantity
+
+    def __str__(self):
+        return f"{self.product.name} - {self.discount_percentage}% off on {self.min_quantity}+"
+
 
 # Product Tag Model
 
@@ -157,7 +183,6 @@ class TopPageProduct(models.Model):
     order = models.PositiveSmallIntegerField(default=0)
     def __str__(self):
         return f"{self.product.name}"
-
 
 
 

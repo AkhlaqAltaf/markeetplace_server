@@ -16,7 +16,7 @@ from datetime import datetime
 
 from django.core.serializers import serialize
 
-from src.apps.product.forms import ProductForm
+from src.apps.product.forms import ProductForm, OfferForm
 from src.apps.product.models import Category, SubCategory, Tag, Media, Product, ProductOffer, OrderOffer
 from src.apps.vendor.forms import VendorForm, ProductOfferForm, OrderOfferForm
 from src.apps.vendor.models import Vendor
@@ -138,21 +138,45 @@ class VendorDetailView(View):
 
 class AddProductView(CreateView):
     
-    def get(self, request):
+    def get(self, request, *args, **kwargs):
         # Create an empty form and fetch categories and origins for the dropdowns
         form = ProductForm()
+        offer_form = OfferForm()
         categories = Category.objects.all()
-        return render(request, 'vendor/add_product/addproduct.html', context={"categories": categories,'form': form})
-    def post(self,request):
+        return render(request, 'vendor/add_product/addproduct.html', context={"categories": categories,'form': form, "offer_form": offer_form})
+    def post(self,request, *args, **kwargs):
         form = ProductForm(request.POST)
         print(request.POST.get('sub_category'))
+
+
         images_data = None
         if form.is_valid():
-            # Save the product but don't commit to the database yet
             product = form.save(commit=False)
             product.vendor = request.user.vendor
             product.save()
-            
+
+
+
+            # Collect offers data
+            discount_percentages = request.POST.getlist('discount_percentage')
+            min_quantities = request.POST.getlist('min_quantity')
+            max_quantities = request.POST.getlist('max_quantity')
+
+            # Loop through the offers and create Offer instances
+            for i in range(len(discount_percentages)):
+                offer_data = {
+                    'product': product,  # Set the product instance
+                    'discount_percentage': discount_percentages[i],
+                    'min_quantity': min_quantities[i],
+                    'max_quantity': max_quantities[i] if i < len(max_quantities) else None,
+                }
+                offer_form = OfferForm(offer_data)
+
+                if offer_form.is_valid():
+                    offer_form.save()
+                    print("Offer saved...")
+                else:
+                    print(offer_form.errors)  # Log errors for debugging
             # Process images if provided
             images_data = request.POST.getlist('images')
             
@@ -174,7 +198,8 @@ class AddProductView(CreateView):
             # In case the form is invalid, re-render the form with categories and origins
             categories = Category.objects.all()
 
-            return render(request, 'vendor/add_product/addproduct.html', context={"categories": categories ,'form': form,'images':images_data})
+            return render(request, 'vendor/add_product/addproduct.html', context={"categories": categories ,'form': form,'images':images_data,            "offer_form": OfferForm()
+})
 
     def convert_base64_image(self,base64_data):
         data = next(iter(base64_data.values()))
@@ -289,7 +314,7 @@ class AddBulkProductsView(View):
             file_data = base64.b64decode(base64_data, validate=True)
 
             # Generate unique file name
-            file_name = f"{datetime.now().strftime('%Y%m%d%H%M%S')}_{uuid4().hex}.jpg"
+            file_name = f"{datetime.now().strftime('%Y%m%d%H%M%S')}_{uuid.uuid4().hex}.jpg"
             return ContentFile(file_data, name=file_name)
 
         except binascii.Error as e:
@@ -326,12 +351,12 @@ class GetSubCategory(View):
 
 def addProductTest(request):
     return render(request,template_name="vendor/add_product/addproduct.html")
-def Checkout(request):
+def checkout(request):
     return render(request,template_name="vendor/add_product/vendorcheckout.html")
 
 
 
-def Register(request):
+def register(request):
     return render(request, 'vendor/registration/registration2.html')
 
 
