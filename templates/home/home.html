@@ -94,7 +94,9 @@
 <script src="https://cdn.tailwindcss.com"></script>
 {% block content %}
 
-    <section id="bg-container" class="bg-cover bg-center min-h-screen flex flex-col items-center rounded-3xl mt-2 justify-center transition-all duration-700 w-[96%] mx-auto" style="background-image: url('../images/v84_120.png');">
+<div class="m-0 ">
+    <section id="bg-container" class="relative top-[-86px] bg-cover bg-center min-h-screen flex flex-col items-center rounded-3xl mt-2 justify-center transition-all duration-700 w-[96%] mx-auto" style="background-image: url('../images/v84_120.png');">
+
         <h1 class="absolute top-1/2 text-5xl md:text-7xl font-extrabold text-white">Be Stylish</h1>
     {% include 'home/landing_page.html' %}
 
@@ -104,13 +106,13 @@
             <div class="w-4 h-4 bg-white rounded-full cursor-pointer" onclick="changeBackground(2)"></div>
         </div>
     </section>
-
-   <main class="p-10">
+ <div>
+    <main class="p-10">
         <h2 class="text-4xl font-bold text-center">Explore Our Categories</h2>
     </main>
     {% include 'categories/categories.html' %}
     {% include 'products/featured_products/featured_products.html' %}
-
+   </div>
 
 
     <div class="bg-[#23646D] text-white py-2 overflow-hidden whitespace-nowrap mt-10">
