@@ -1,9 +1,18 @@
 {% load custom_filters %}
 <div class="relative bg-[#E9F0F1] rounded-2xl p-4 shadow-md">
     <p class="text-gray-500">{{ product.category.name }}</p>
-    <h2 class="font-bold text-lg">{{ product.name }}</h2>
+    <a href="{% url 'product:product-detail' product.id %}">
+        <h2 class="font-bold text-lg truncate" style="max-width: 100%;">{{ product.name }}</h2>
+    </a>
     <div class="flex justify-center">
-        <img src="{{ product.media.all.1.file.url }}" alt="{{ product.media.1 }}" class="w-32 h-32 object-cover mt-2 rounded-lg mix-blend-multiply">
+        {% for media in product.media.all %}
+            {% if forloop.counter <= 5 %}
+                {% if media.file %}
+                    <img src="{{ media.file.url }}" alt="{{ media }}" class="w-32 h-32 object-cover mt-2 rounded-lg mix-blend-multiply">
+                    {% break %}
+                {% endif %}
+            {% endif %}
+        {% endfor %}
     </div>
     <p class="text-teal-600 font-bold text-lg text-center">SAR {{ product.price }}</p>
     {% include 'commons/addToCartButton.html' %}
@@ -19,6 +28,14 @@
         {% endif %}
     </div>
 </div>
+
+<style>
+    .truncate {
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+</style>
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
