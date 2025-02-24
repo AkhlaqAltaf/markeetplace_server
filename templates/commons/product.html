@@ -10,9 +10,13 @@
 
     <!-- Heart Icon -->
     <div class="absolute top-2 right-2">
-        <i class="fa {% if product|is_in_wishlist:request.user %}fa-heart text-red-500{% else %}fa-heart-o text-gray-500{% endif %} text-xl wishlist-icon"
-           data-product-id="{{ product.id }}"
-           aria-hidden="true"></i>
+        {% if user.is_authenticated %}
+            <i class="fa {% if product|is_in_wishlist:user %}fa-heart text-red-500{% else %}fa-heart-o text-gray-500{% endif %} text-xl wishlist-icon"
+               data-product-id="{{ product.id }}"
+               aria-hidden="true"></i>
+        {% else %}
+            <i class="fa fa-heart-o text-gray-500 text-xl" aria-hidden="true"></i>
+        {% endif %}
     </div>
 </div>
 
