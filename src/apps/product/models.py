@@ -73,32 +73,52 @@ class Product(models.Model):
         :param user: CustomUser  instance
         :return: True if the product is in the user's wishlist, False otherwise
         """
-        # Check if the user has a wishlist and if the product is in it
         try:
             wishlist = WishListProduct.objects.get(user=user)
             return self in wishlist.products.all()
         except WishListProduct.DoesNotExist:
             return False
+
+    def get_total_price(self, quantity, offer_id=None):
+        """
+        Calculate the total price based on quantity and optional offer.
+
+        :param quantity: The quantity of the product
+        :param offer_id: The ID of the offer to apply (if any)
+        :return: The total price
+        """
+        total_price = self.price * quantity  # Default total price without offer
+
+        if offer_id:
+            try:
+                offer = Offer.objects.get(id=offer_id, product=self)
+                # Calculate discounted price
+                discounted_price_per_unit = self.price * (1 - offer.discount_percentage / 100)
+                total_price = discounted_price_per_unit * quantity
+            except Offer.DoesNotExist:
+                pass  # If the offer does not exist, use the default price
+
+        return round(total_price, 2)  # Return total price rounded to 2 decimal places
 class Offer(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='offers')
     min_quantity = models.PositiveIntegerField()
     max_quantity = models.PositiveIntegerField(null=True, blank=True)
     discount_percentage = models.DecimalField(max_digits=5, decimal_places=2)
 
-    def calculate_discounted_price(self, quantity):
+    def calculate_discounted_price(self):
         """Calculate total price after discount"""
-        if quantity < self.min_quantity or (self.max_quantity and quantity > self.max_quantity):
+        if self.min_quantity < self.min_quantity or (self.max_quantity and self.min_quantity > self.max_quantity):
             return None  # Not eligible for discount
         discounted_price_per_unit = self.product.price * (1 - self.discount_percentage / 100)
-        total_price = discounted_price_per_unit * quantity
-        return total_price
+        total_price = discounted_price_per_unit * self.min_quantity
+        return round(total_price,2)
 
-    def calculate_average_price(self, quantity):
+    def calculate_average_price(self):
         """Calculate average price per unit after discount"""
-        total_price = self.calculate_discounted_price(quantity)
+        total_price = self.calculate_discounted_price()
         if total_price is None:
             return None
-        return total_price / quantity
+        return  round(total_price / self.min_quantity,2)
 
     def __str__(self):
         return f"{self.product.name} - {self.discount_percentage}% off on {self.min_quantity}+"

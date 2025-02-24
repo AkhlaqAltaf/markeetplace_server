@@ -66,7 +66,7 @@ def cart_detail(request):
         return redirect('cart:cart')
     
     if change_quantity:
-        cart.add(change_quantity, quantity, True)
+        cart.update_quantity(change_quantity, int(quantity) )
         print("CART ACCESS")
 
         return redirect('cart:cart')
@@ -95,3 +95,13 @@ class AddToCartView(View):
         cart = Cart(request)
         cart.add(product_id=product.id, quantity=quantity, update_quantity=False)
         return  JsonResponse({'success': True})
+
+
+class AddToCartWithOffer(View):
+    def get(self, request,id,quantity,offerid):
+        cart = Cart(request)
+        cart.add_with_specific_quantity(request,id,quantity,offerid)
+        return JsonResponse({'success': True})
+
+
+
