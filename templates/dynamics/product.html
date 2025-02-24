@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<!-- Code for the to show the database data in browser -->
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hero</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+    />
+  </head>
+  <body>
+    <main class="p-10">
+      <h2 class="text-lg text-center">Our Features</h2>
+      <h2 class="text-4xl font-bold text-center">PRODUCTS</h2>
+    </main>
+
+    <div class="max-w-screen-screen md:px-20 mx-auto">
+      <!-- Header Section -->
+      <div class="flex flex-col md:flex-row justify-between items-center mb-4">
+        <h3 class="text-lg font-semibold text-center">Featured Products</h3>
+        <div class="flex flex-wrap justify-center gap-3 text-sm text-center">
+          <a
+            href="{% url 'product:all-product' %}"
+            class="hover:underline hover:text-orange-500"
+            >All Products</a
+          >
+          {% for category in categories|slice:':4' %}
+          <a
+            href="{% url 'product:category-product' category.id %}"
+            class="hover:underline hover:text-orange-500"
+          >
+            {{ category.name }}
+          </a>
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- Product Grid -->
+      <div
+        class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-6"
+      >
+        {% for product in products %}
+        <div class="bg-[#E9F0F1] rounded-2xl p-4 shadow-md">
+          <p class="text-gray-500">{{ product.category.name }}</p>
+          <h2 class="font-bold text-lg">{{ product.name }}</h2>
+          <div class="flex justify-center">
+            <img
+              src="{{ product.image.url }}"
+              alt="{{ product.name }}"
+              class="w-32 h-32 object-cover mt-2 rounded-lg mix-blend-multiply"
+            />
+          </div>
+          <p class="text-teal-600 font-bold text-lg text-center">
+            SAR {{ product.price }}
+          </p>
+          <button
+            class="mt-2 bg-white text-teal-600 border border-teal-600 rounded-lg px-4 py-2 w-full hover:bg-teal-600 hover:text-white transition"
+          >
+            SHOP NOW
+          </button>
+        </div>
+        {% endfor %}
+      </div>
+
+      <!-- View All Products Button -->
+      <div class="text-center mt-12">
+        <button
+          class="border-2 border-teal-600 text-teal-600 px-6 py-2 rounded-3xl hover:bg-teal-600 hover:text-white transition"
+        >
+          VIEW ALL PRODUCTS
+        </button>
+      </div>
+    </div>
+  </body>
+</html>
+
+{% comment %} <!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>hero</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+    />
+  </head>
+  <body>
+    <main class="p-10">
+      <h2 class="text-lg text-center">Our Features</h2>
+      <h2 class="text-4xl font-bold text-center">PRODUCTS</h2>
+    </main>
+
+    <div class="max-w-screen-screen md:px-20 mx-auto">
+      <!-- Product Grid -->
+      <div
+        class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-6"
+      >
+        <!-- Repeat for other products -->
+        <div class="bg-[#E9F0F1] rounded-2xl p-4 shadow-md">
+          <p class="text-gray-500">Category Name</p>
+          <h2 class="font-bold text-lg">Product Name</h2>
+          <div class="flex justify-center">
+            <img
+              src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQFPfbPvrZNzLMdtZf9oP2IPZvKPeAxMqvaTg&s"
+              alt="Product"
+              class="w-32 h-32 object-cover mt-2 rounded-lg mix-blend-multiply"
+            />
+          </div>
+          <p class="text-teal-600 font-bold text-lg text-center">SAR 26</p>
+          <button
+            class="mt-2 bg-white text-teal-600 border border-teal-600 rounded-lg px-4 py-2 w-full hover:bg-teal-600 hover:text-white transition"
+          >
+            SHOP NOW
+          </button>
+        </div>
+
+        <div class="bg-[#E9F0F1] rounded-2xl p-4 shadow-md">
+          <p class="text-gray-500">Category Name</p>
+          <h2 class="font-bold text-lg">Product Name</h2>
+          <div class="flex justify-center">
+            <img
+              src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTrWftdBJV2Q9HHuWroRuqFzRWGPZFfZa5bDw&s"
+              alt="Product"
+              class="w-32 h-32 object-cover mt-2 rounded-lg mix-blend-multiply"
+            />
+          </div>
+          <p class="text-teal-600 font-bold text-lg text-center">SAR 26</p>
+          <button
+            class="mt-2 bg-white text-teal-600 border border-teal-600 rounded-lg px-4 py-2 w-full hover:bg-teal-600 hover:text-white transition"
+          >
+            SHOP NOW
+          </button>
+        </div>
+        <div class="bg-[#E9F0F1] rounded-2xl p-4 shadow-md">
+          <p class="text-gray-500">Category Name</p>
+          <h2 class="font-bold text-lg">Product Name</h2>
+          <div class="flex justify-center">
+            <img
+              src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ3R2gXC3aKIeJIMVZ2jyTlh8_SnbNUu4f52w&s"
+              alt="Product"
+              class="w-32 h-32 object-cover mt-2 rounded-lg mix-blend-multiply"
+            />
+          </div>
+          <p class="text-teal-600 font-bold text-lg text-center">SAR 26</p>
+          <button
+            class="mt-2 bg-white text-teal-600 border border-teal-600 rounded-lg px-4 py-2 w-full hover:bg-teal-600 hover:text-white transition"
+          >
+            SHOP NOW
+          </button>
+        </div>
+
+        <div class="bg-[#E9F0F1] rounded-2xl p-4 shadow-md">
+          <p class="text-gray-500">Category Name</p>
+          <h2 class="font-bold text-lg">Product Name</h2>
+          <div class="flex justify-center">
+            <img
+              src="./images/v84_224.png"
+              alt="Product"
+              class="w-32 h-32 object-cover mt-2 rounded-lg mix-blend-multiply"
+            />
+          </div>
+          <p class="text-teal-600 font-bold text-lg text-center">SAR 26</p>
+          <button
+            class="mt-2 bg-white text-teal-600 border border-teal-600 rounded-lg px-4 py-2 w-full hover:bg-teal-600 hover:text-white transition"
+          >
+            SHOP NOW
+          </button>
+        </div>
+
+        <div class="bg-[#E9F0F1] rounded-2xl p-4 shadow-md">
+          <p class="text-gray-500">Category Name</p>
+          <h2 class="font-bold text-lg">Product Name</h2>
+          <div class="flex justify-center">
+            <img
+              src="./images/v84_224.png"
+              alt="Product"
+              class="w-32 h-32 object-cover mt-2 rounded-lg mix-blend-multiply"
+            />
+          </div>
+          <p class="text-teal-600 font-bold text-lg text-center">SAR 26</p>
+          <button
+            class="mt-2 bg-white text-teal-600 border border-teal-600 rounded-lg px-4 py-2 w-full hover:bg-teal-600 hover:text-white transition"
+          >
+            SHOP NOW
+          </button>
+        </div>
+
+        <div class="bg-[#E9F0F1] rounded-2xl p-4 shadow-md">
+          <p class="text-gray-500">Category Name</p>
+          <h2 class="font-bold text-lg">Product Name</h2>
+          <div class="flex justify-center">
+            <img
+              src="./images/v84_224.png"
+              alt="Product"
+              class="w-32 h-32 object-cover mt-2 rounded-lg mix-blend-multiply"
+            />
+          </div>
+          <p class="text-teal-600 font-bold text-lg text-center">SAR 26</p>
+          <button
+            class="mt-2 bg-white text-teal-600 border border-teal-600 rounded-lg px-4 py-2 w-full hover:bg-teal-600 hover:text-white transition"
+          >
+            SHOP NOW
+          </button>
+        </div>
+        <div class="bg-[#E9F0F1] rounded-2xl p-4 shadow-md">
+          <p class="text-gray-500">Category Name</p>
+          <h2 class="font-bold text-lg">Product Name</h2>
+          <div class="flex justify-center">
+            <img
+              src="./images/v84_224.png"
+              alt="Product"
+              class="w-32 h-32 object-cover mt-2 rounded-lg mix-blend-multiply"
+            />
+          </div>
+          <p class="text-teal-600 font-bold text-lg text-center">SAR 26</p>
+          <button
+            class="mt-2 bg-white text-teal-600 border border-teal-600 rounded-lg px-4 py-2 w-full hover:bg-teal-600 hover:text-white transition"
+          >
+            SHOP NOW
+          </button>
+        </div>
+
+        <div class="bg-[#E9F0F1] rounded-2xl p-4 shadow-md">
+          <p class="text-gray-500">Category Name</p>
+          <h2 class="font-bold text-lg">Product Name</h2>
+          <div class="flex justify-center">
+            <img
+              src="./images/v84_224.png"
+              alt="Product"
+              class="w-32 h-32 object-cover mt-2 rounded-lg mix-blend-multiply"
+            />
+          </div>
+          <p class="text-teal-600 font-bold text-lg text-center">SAR 26</p>
+          <button
+            class="mt-2 bg-white text-teal-600 border border-teal-600 rounded-lg px-4 py-2 w-full hover:bg-teal-600 hover:text-white transition"
+          >
+            SHOP NOW
+          </button>
+        </div>
+
+        <!-- Repeat for other products with the same structure -->
+      </div>
+
+      <!-- View All Products Button -->
+      <div class="text-center mt-12">
+        <button
+          class="border-2 border-teal-600 text-teal-600 px-6 py-2 rounded-3xl hover:bg-teal-600 hover:text-white transition"
+        >
+          VIEW ALL PRODUCTS
+        </button>
+      </div>
+      </div>
+    </div>
+  </body>
+</html> {% endcomment %}

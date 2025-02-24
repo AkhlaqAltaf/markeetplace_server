@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      .custom-scrollbar::-webkit-scrollbar {
+        display: none;
+      }
+      .category_card {
+        width: 205px;
+        height: 237px;
+      }
+      @media (max-width: 768px) {
+        .category_card {
+          width: 100px;
+          height: 100px;
+        }
+        .category_img {
+          height: 60px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="p-10">
+      <h2 class="text-4xl font-bold text-center">Explore Our Categories</h2>
+    </main>
+
+    <div class="w-full max-w-screen px-5 md:px-20 mx-auto relative">
+      <button
+        id="prev"
+        class="absolute top-1/2 left-0 -translate-y-1/2 p-4 bg-white rounded-full shadow-md hover:bg-gray-200 z-10"
+      >
+        <i class="fa fa-chevron-left"></i>
+      </button>
+
+      <div id="carousel" class="overflow-x-auto scrollbar-hide scroll-smooth">
+        <div class="flex space-x-1 md:space-x-4">
+          {% for category in categories %}
+          <div
+            class="min-w-[calc(100%/2)] sm:min-w-[calc(100%/2)] md:min-w-[calc(100%/3)] lg:min-w-[calc(92%/4)] bg-[#A7C1C5] rounded-2xl p-6 shadow-lg"
+          >
+            <h2 class="text-lg font-bold text-teal-900">{{ category.name }}</h2>
+            {% if category.image %}
+            <img
+              src="{{ category.image.url }}"
+              alt="{{ category.name }}"
+              class="md:w-[200px] md:h-[250px] sm:w-[100px] sm:h-[140px] object-cover mt-3 rounded-lg mix-blend-multiply"
+            />
+            {% endif %}
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <button
+        id="next"
+        class="absolute top-1/2 right-0 -translate-y-1/2 p-4 bg-white rounded-full shadow-md hover:bg-gray-200 z-10"
+      >
+        <i class="fa fa-chevron-right"></i>
+      </button>
+    </div>
+
+    <script>
+      document.getElementById("prev").addEventListener("click", () => {
+        document
+          .getElementById("carousel")
+          .scrollBy({ left: -200, behavior: "smooth" });
+      });
+
+      document.getElementById("next").addEventListener("click", () => {
+        document
+          .getElementById("carousel")
+          .scrollBy({ left: 200, behavior: "smooth" });
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,58 @@
+/* base.css */
+
+/* General styles */
+body {
+  background-color: #121212; /* Dark background */
+  color: white; /* White text color */
+  font-family: Arial, sans-serif;
+}
+
+a {
+  color: #00ff00; /* Green links */
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+h1, h2 {
+  color: #00ff00; /* Green headings */
+}
+
+/* Header */
+#header {
+  background-color: #1f1f1f; /* Dark background for header */
+  padding: 20px;
+  border-bottom: 1px solid #333;
+}
+
+#branding {
+  color: #00ff00;
+}
+
+#user-tools {
+  color: #00ff00;
+}
+
+#user-tools a {
+  color: #00ff00;
+  margin-right: 10px;
+}
+
+/* Buttons */
+button {
+  background-color: #00ff00; /* Green background for buttons */
+  color: #121212; /* Dark text */
+  padding: 10px 20px;
+  border: none;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #00cc00; /* Darker green when hovered */
+}
+
+button:disabled {
+  background-color: #555; /* Disabled button with dark background */
+}
