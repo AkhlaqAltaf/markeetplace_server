@@ -4,13 +4,13 @@
 
 
     .category_card{
-      width: 205px; 
+      width: 205px;
       height: 237px;
     }
     @media (max-width: 768px)
     {
       .category_card{
-        width: 100px; 
+        width: 100px;
         height: 100px;
       }
       .category_img{
@@ -21,7 +21,7 @@
 
   <div class="mt-12 flex flex-col ml-2">
     <h2 class="text-xl font-semibold text-start md:text-center md:px-10">Categories</h2>
-    
+
     <div class="relative">
       <div id="scrollContainer" class="flex overflow-x-scroll custom-scrollbar mt-3 md:px-10">
         <div class="flex gap-1">
@@ -57,7 +57,7 @@
     function updatePagination() {
       const totalPages = Math.ceil(cards.length / cardsPerPage);
       pagination.innerHTML = '';
-      
+
       for (let i = 0; i < totalPages; i++) {
         const dot = document.createElement('div');
         dot.className = `h-2 w-2 rounded-full ${i === currentPage ? 'bg-[#0B5C50]' : 'bg-gray-300'}`;

@@ -1,18 +1,129 @@
-{% extends 'core/base.html' %} {% block title %}Home{% endblock title %} {%
-block head_content %}
+{% extends 'core/base.html' %}
+
+{% load static %}
+{% block title %}Home{% endblock title %}
+
+
+{%block head_content %}
+        <style>
+
+        /* Hide scrollbar for all browsers */
+#carousel::-webkit-scrollbar {
+    display: none;
+}
+
+#carousel {
+    -ms-overflow-style: none; /* IE & Edge */
+    scrollbar-width: none; /* Firefox */
+}
+
+.testimonial-card {
+    flex: 0 0 100%; /* Default: Show 1 card on mobile */
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    text-align: left;
+    transition: transform 0.3s ease-in-out;
+}
+
+/* Tablet (2 cards) */
+@media (min-width: 640px) {
+    .testimonial-card {
+        flex: 0 0 calc(100% / 2 - 10px); /* 2 cards per row */
+    }
+}
+
+/* Desktop (3 cards) */
+@media (min-width: 1024px) {
+    .testimonial-card {
+        flex: 0 0 calc(100% / 3 - 14px); /* 3 cards per row */
+    }
+}
+
+/* Styling for heading and text */
+.testimonial-card h3 {
+    font-size: 1.25rem;
+    font-weight: bold;
+}
+.testimonial-card p {
+    margin-top: 10px;
+    color: #555;
+}
+.testimonial-card .stars {
+    margin-top: 10px;
+}
+.testimonial-card .author {
+    margin-top: 10px;
+    font-weight: bold;
+    color: #23646D;
+}
+
+/* Navigation Buttons */
+.nav-button {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: white;
+    color: #073741;
+    padding: 10px 15px;
+    border-radius: 50%;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    font-size: 20px;
+    transition: background 0.3s;
+}
+.nav-button:hover {
+    background: #ddd;
+}
+
+/* Marquee Animation */
+@keyframes marquee {
+    0% { transform: translateX(100%); }
+    100% { transform: translateX(-100%); }
+}
+.animate-marquee {
+    display: inline-block;
+    animation: marquee 40s linear infinite;
+}
+</style>
 <link
   rel="stylesheet"
   href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
 />
+{% endblock head_content %}
 <script src="https://cdn.tailwindcss.com"></script>
-{% endblock head_content %} {% block content %}
-<div>
-  {% comment %} {% include 'hero/hero.html' %} {% endcomment %} {% include
-  'categories/categories.html' %} {% include
-  'products/featured_products/featured_products.html' %} {% comment %} {%
-  include 'products/item_card/item.html' %} {% endcomment %} {# {% include
-  'products/items/items.html' %}#} {# {% include 'products/offers/offers.html'
-  %}#} {% include 'newletter/newsletter.html' %}
+{% block content %}
+
+<div class="m-0">
+    <section id="bg-container" class="bg-cover bg-center min-h-screen flex flex-col items-center rounded-3xl mt-2 justify-center transition-all duration-700 w-[96%] mx-auto" style="background-image: url('../images/v84_120.png');">
+        <h1 class="absolute top-1/2 text-5xl md:text-7xl font-extrabold text-white">Be Stylish</h1>
+    {% include 'home/landing_page.html' %}
+
+        <div class="absolute bottom-10 flex space-x-2">
+            <div class="w-4 h-4 bg-teal-700 rounded-full cursor-pointer" onclick="changeBackground(0)"></div>
+            <div class="w-4 h-4 bg-white rounded-full cursor-pointer" onclick="changeBackground(1)"></div>
+            <div class="w-4 h-4 bg-white rounded-full cursor-pointer" onclick="changeBackground(2)"></div>
+        </div>
+    </section>
+
+   <main class="p-10">
+        <h2 class="text-4xl font-bold text-center">Explore Our Categories</h2>
+    </main>
+    {% include 'categories/categories.html' %}
+    {% include 'products/featured_products/featured_products.html' %}
+
+
 </div>
+    <div class="bg-[#23646D] text-white py-2 overflow-hidden whitespace-nowrap mt-10">
+        <div class="animate-marquee">
+            * 30% OFF * 30% OFF * 30% OFF * 30% OFF * 30% OFF * 30% OFF * 30% OFF * 30% OFF * 30% OFF * 30% OFF * 30% OFF * 30% OFF * 30% OFF * 30% OFF * 30% OFF * 30% OFF *
+        </div>
+    </div>
+
+{% include 'home/offers.html' %}
+{% include 'home/customer_say.html' %}
+
+
+{% include 'home/questions.html' %}
 
 {% endblock content %}
