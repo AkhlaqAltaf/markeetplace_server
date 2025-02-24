@@ -5,19 +5,11 @@
         <h2 class="font-bold text-lg truncate" style="max-width: 100%;">{{ product.name }}</h2>
     </a>
     <div class="flex justify-center">
-        {% with image_displayed=False %}
-            {% for media in product.media.all %}
-                {% if forloop.counter <= 5 %}
-                    {% if media.file %}
-                        {% if not image_displayed %}
-                            <img src="{{ media.file.url }}" alt="{{ media }}" class="w-32 h-32 object-cover mt-2 rounded-lg mix-blend-multiply">
-                            {% with True as image_displayed %}
-                            {% endwith %}
-                        {% endif %}
-                    {% endif %}
-                {% endif %}
-            {% endfor %}
-        {% endwith %}
+        {% for media in product.media.all %}
+            {% if forloop.counter == 1 and media.file %}
+                <img src="{{ media.file.url }}" alt="{{ media }}" class="w-32 h-32 object-cover mt-2 rounded-lg mix-blend-multiply">
+            {% endif %}
+        {% endfor %}
     </div>
     <p class="text-teal-600 font-bold text-lg text-center">SAR {{ product.price }}</p>
     {% include 'commons/addToCartButton.html' %}
