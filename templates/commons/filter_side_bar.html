@@ -1,8 +1,7 @@
-<!-- Header (Contains Sidebar Toggle for Mobile) -->
-<header class="bg-white shadow-md p-4 flex justify-between items-center lg:hidden">
-    <h1 class="text-2xl font-bold text-black">Products</h1>
+<header class="bg-white shadow-md p-4 md:p-0 flex justify-between  md:h-screen items-start">
+    <h1 class="text-2xl font-bold text-black md:hidden">Products</h1>
 
-    <!-- Sidebar Toggle Button (Mobile & Tablet Only) -->
+    <!-- Sidebar Toggle Button -->
     <button id="toggle-sidebar" class="p-2 text-black rounded-lg hover:bg-[#0B5D51] transition duration-300 focus:outline-none flex items-center space-x-2">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
             <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16m-7 6h7" />
@@ -12,9 +11,9 @@
 </header>
 
 <!-- Sidebar -->
-<div id="sidebar" class="fixed top-0 left-0 w-72 h-full bg-white shadow-lg transform -translate-x-full transition-transform duration-300 lg:translate-x-0 lg:relative lg:w-auto lg:block p-6 z-50">
-    <!-- Close Button (Only for Mobile) -->
-    <button id="close-sidebar" class="absolute top-4 right-4 p-2 text-black rounded-full hover:bg-[#0B5D51] transition duration-300 focus:outline-none lg:hidden">
+<div id="sidebar" class="fixed top-0 left-0 w-72 h-full bg-white shadow-lg transform -translate-x-full transition-transform duration-300 ease-in-out p-6 z-50">
+    <!-- Close Button Inside Sidebar -->
+    <button id="close-sidebar" class="absolute top-4 right-4 p-2 text-black rounded-full hover:bg-[#0B5D51] transition duration-300 focus:outline-none">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
         </svg>
@@ -24,16 +23,16 @@
     <h3 class="text-xl font-semibold text-black mb-4">Filter Products</h3>
 
     <!-- Filter Form -->
-    <form method="get" action="{% url 'product:all-product' %}" class="space-y-6" >
+    <form method="get" action="{% url 'product:all-product' %}" class="space-y-6">
         <!-- Category Dropdown -->
         <div class="category-filters space-y-2">
             <h4 class="font-medium text-lg text-black">Categories</h4>
             <select name="filter" class="w-full py-1 px-3 border border-gray-300 rounded-lg focus:outline-none hover:ring-2 hover:ring-[#0B5D51] transition duration-300">
                 <option value="" disabled selected>Select Category</option>
                 {% for category in categories %}
-                    <option value="{{ category.id }}" {% if category.id|stringformat:"s" in selected_filters %} selected {% endif %}>
-                        {{ category.name }}
-                    </option>
+                <option value="{{ category.id }}" {% if category.id|stringformat:"s" in selected_filters %} selected {% endif %}>
+                    {{ category.name }}
+                </option>
                 {% endfor %}
             </select>
         </div>
@@ -42,43 +41,45 @@
         <div class="price-filters space-y-4">
             <h4 class="font-semibold text-lg text-black">Price Range</h4>
             {% for key, label in prices_range.items %}
-                <label class="flex items-center space-x-2">
-                    <input 
-                        type="checkbox"
-                        name="price" 
-                        value="{{ key }}"
-                        {% if selected_price == key %} checked {% endif %}
-                        class="w-5 h-5 accent-[#f8f6f4]">
-                    <span class="text-black text-sm">{{ label }}</span>
-                </label>
+            <label class="flex items-center space-x-2">
+                <input type="checkbox" name="price" value="{{ key }}" {% if selected_price == key %} checked {% endif %}
+                    class="w-5 h-5 accent-[#f8f6f4]">
+                <span class="text-black text-sm">{{ label }}</span>
+            </label>
             {% endfor %}
         </div>
-       <!-- Apply Filters Button -->
-       <div class="flex justify-center">
-        <button type="submit" class="w-full bg-[#FFFFFF] py-2  text-[#0B5D51] rounded-lg hover:bg-[#143b33] hover:text-white focus:outline-none transition duration-300">
-            Apply Filters
-        </button>
-    </div>
 
+        <!-- Apply Filters Button -->
+        <div class="flex justify-center">
+            <button type="submit" class="w-full bg-[#FFFFFF] py-2 text-[#0B5D51] rounded-lg hover:bg-[#143b33] hover:text-white focus:outline-none transition duration-300">
+                Apply Filters
+            </button>
+        </div>
     </form>
 </div>
 
-<!-- JavaScript for Sidebar Toggle & Auto-Submit -->
+<!-- JavaScript for Sidebar Toggle -->
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         const toggleSidebar = document.getElementById("toggle-sidebar");
         const closeSidebar = document.getElementById("close-sidebar");
-        
+        const sidebar = document.getElementById("sidebar");
 
-        // Toggle the sidebar only for mobile & tablet
+        // Toggle Sidebar on Button Click
         toggleSidebar.addEventListener("click", () => {
             sidebar.classList.toggle("-translate-x-full");
         });
 
-        // Close the sidebar when clicking on the close button
+        // Close Sidebar on Close Button Click
         closeSidebar.addEventListener("click", () => {
             sidebar.classList.add("-translate-x-full");
         });
 
+        // Close Sidebar when clicking outside of it
+        document.addEventListener("click", (event) => {
+            if (!sidebar.contains(event.target) && !toggleSidebar.contains(event.target)) {
+                sidebar.classList.add("-translate-x-full");
+            }
+        });
     });
 </script>

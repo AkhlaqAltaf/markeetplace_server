@@ -52,3 +52,6 @@ def frontpage(request):
 
 def contactpage(request):
     return render(request, 'core/contact.html')
+
+def aboutpage(request):
+    return render(request, 'core/about.html')
