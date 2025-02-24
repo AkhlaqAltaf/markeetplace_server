@@ -8,10 +8,12 @@
         {% with image_displayed=False %}
             {% for media in product.media.all %}
                 {% if forloop.counter <= 5 %}
-                    {% if media.file and not image_displayed %}
-                        <img src="{{ media.file.url }}" alt="{{ media }}" class="w-32 h-32 object-cover mt-2 rounded-lg mix-blend-multiply">
-                        {% with True as image_displayed %}
-                        {% endwith %}
+                    {% if media.file %}
+                        {% if not image_displayed %}
+                            <img src="{{ media.file.url }}" alt="{{ media }}" class="w-32 h-32 object-cover mt-2 rounded-lg mix-blend-multiply">
+                            {% with True as image_displayed %}
+                            {% endwith %}
+                        {% endif %}
                     {% endif %}
                 {% endif %}
             {% endfor %}
