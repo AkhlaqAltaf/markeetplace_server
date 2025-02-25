@@ -1,5 +1,5 @@
 {% load custom_filters %}
-<div class="relative bg-[#E9F0F1] rounded-2xl p-4 shadow-md">
+<div class="relative bg-[#E9F0F1] rounded-2xl p-4 shadow-md ">
     <p class="text-gray-500 truncate" style="max-width: 100%;">{{ product.category.name }}</p>
     <a href="{% url 'product:product-detail' product.id %}">
         <h2 class="font-bold text-lg truncate" style="max-width: 100%;">{{ product.name }}</h2>
