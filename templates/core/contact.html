@@ -1,0 +1,112 @@
+{% extends 'core/base.html' %}
+{%load static%}
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Form</title>
+    
+    <!-- Google Font: Poppins -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            overflow-x: hidden;
+        }
+    </style>
+</head>
+<body>
+{% block content %}
+<div class=''>
+<section id="bg-container" class="bg-cover bg-center min-h-screen flex flex-col items-center rounded-3xl  justify-center transition-all duration-700 w-[96%] mx-auto -mt-[5.5rem]" style="background-image: url('../images/v84_120.png');">
+    <h1 class="absolute top-1/2 text-5xl md:text-7xl font-extrabold text-white">Contact Us</h1>
+{% include 'home/landing_page.html' %}
+
+    <div class="absolute bottom-10 flex space-x-2">
+        <div class="w-4 h-4 bg-teal-700 rounded-full cursor-pointer" onclick="changeBackground(0)"></div>
+        <div class="w-4 h-4 bg-white rounded-full cursor-pointer" onclick="changeBackground(1)"></div>
+        <div class="w-4 h-4 bg-white rounded-full cursor-pointer" onclick="changeBackground(2)"></div>
+    </div>
+</section>
+
+  <div class="bg-white flex flex-col  items-center min-h-screen  w-[100%] space-y-8">  
+    
+    <div class=''>
+    {% include 'hero/hero.html' %}
+    </div>
+    
+    <div class="max-w-6xl w-full bg-white flex flex-col md:flex-row items-center justify-center gap-8">
+
+        <div class="w-full md:w-1/2 flex justify-center">
+            <img src="{% static 'assets/contact.png' %}" alt="logo" class="w-80">
+        </div>
+
+        <div class="w-full md:w[95%]">
+            <form class="space-y-4 p-3">
+                
+                <div class="flex flex-col md:flex-row gap-4">
+                    <div class="w-full">
+                        <label class="block text-gray-700  font-semibold">Full Name<span class="text-black">*</span></label>
+                        <input type="text" placeholder="Enter your name" class="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-teal-500">
+                    </div>
+                    <div class="w-full">
+                        <label class="block text-gray-700 font-semibold">Mobile</label>
+                        <input type="text" placeholder="Mobile Number" class="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-teal-500">
+                    </div>
+                </div>
+
+                <div class="flex flex-col md:flex-row gap-4">
+                    <div class="w-full">
+                        <label class="block text-gray-700 font-semibold">Subject<span class="text-black">*</span></label>
+                        <input type="text" placeholder="Type Here....." class="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-teal-500">
+                    </div>
+                    <div class="w-full">
+                        <label class="block text-gray-700  font-semibold">Email Address</label>
+                        <input type="email" placeholder="Email Here....." class="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-teal-500">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-gray-700 font-semibold">Feedback</label>
+                    <textarea placeholder="Your feedback about Huba Wa Jumla Website" class="w-full border border-gray-300 rounded-md p-2 h-24 focus:outline-none focus:ring-2 focus:ring-teal-500"></textarea>
+                </div>
+
+                <div class="flex items-center">
+                    <input type="checkbox" class="mr-1 w-5 h-5">
+                    <p class="text-gray-600 text-sm">
+                        By submitting the form I agree to Huba Wa Jumla’s Standard
+                        <a href="#" class="text-teal-600 font-medium">terms and conditions</a>.
+                    </p>
+                </div>
+
+                <div class="text-center">
+                    <button class="w-full py-2 px-6 text-teal-600 font-semibold border rounded-md hover:bg-teal-600 hover:text-white transition">
+                        SUBMIT
+                    </button>
+                </div>
+                
+                
+                
+            </form>
+        </div>
+    </div>
+  
+    
+    <!-- Footer -->
+    <div class="flex align-bottom w-screen ">
+    </div>
+
+</div>  
+</div>
+
+{%endblock content %}
+</body>
+</html>
+
