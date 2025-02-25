@@ -2,7 +2,7 @@
 <div class="bg-[#073741] p-2 px-4 sm:px-24 flex flex-col md:flex-row justify-centre sm:justify-between items-center text-white">
     <p class="text-sm">Welcome to HabaWaJumla online Shopping store</p>
     <div class="flex items-center gap-3 mt-2 sm:mt-0">
-      <div class="flex items-center gap-2">
+      <div class="flex items-center gap-3">
         <p class="hidden sm:block">Follow us:</p>
         <i class="fa fa-twitter"></i>
         <i class="fa fa-facebook-f"></i>
@@ -40,7 +40,7 @@
           id="language-btn"
           onclick="toggleDropdown()"
         >
-          <span class="language-text">ENG</span>
+          <span class="language-text text-white">ENG</span>
           <svg
           xmlns="http://www.w3.org/2000/svg"
           class="w-4 h-4 dropdown-icon"
@@ -58,28 +58,28 @@
         </button>
         <div
           id="language-dropdown"
-          class="hidden absolute bg-white text-black rounded mt-2 shadow-lg z-10 p-7 left-[-34px] navbar-dropdown custom-dropdown"
+          class="hidden absolute bg-white text-black rounded mt-1 shadow-lg z-10  left-[-36px] navbar-dropdown custom-dropdown items-start "
         >
           <div
-            class="flex items-center gap-2 p-2 cursor-pointer navbar-item"
-            onclick="selectLanguage('ENG')"
+            class="flex gap-1 items-start cursor-pointer navbar-item"
+            onclick="selectLanguage('ENG') text-left py-2"
           >
             <img
               src="{% static 'assets/usimage.png' %}"
               alt="US Flag"
-              class="w-5 h-5 rounded-full border"
+              class="w-6 h-6 rounded-full border"
             />
             <p>English</p>
           </div>
-          <hr class="navbar-divider" />
+         
           <div
-            class="flex items-center gap-2 p-2 cursor-pointer navbar-item"
+            class="flex  gap-1 cursor-pointer navbar-item text-left py-2"
             onclick="selectLanguage('ARB')"
           >
             <img
               src="{% static 'assets/saudiflag.png' %}"
               alt="Saudi Flag"
-              class="w-5 h-5 rounded-full border"
+              class="w-6 h-6 rounded-full border"
             />
             <p>Arabic</p>
           </div>
@@ -114,6 +114,8 @@
         .dropdown-icon:hover {
           stroke: white; /* Keep it white */
         }
+
+       
       </style>
       
 

@@ -29,10 +29,10 @@ urlpatterns = [
     path('create-order-offer/', views.create_order_offer, name='create_order_offer'),
 
     path('store-analytics/',views.storeAnalytics,name="store-analytics"),
-    path('signup/',views.Register,name="signup"),
+    path('signup/',views.register,name="signup"),
     path('create-product/',views.ProductAdd,name="create-product"),
     path('product-list/',views.ProductList,name="product-list"),
-    path('checkout/',views.Checkout,name="checkout"),
+    path('checkout/',views.checkout,name="checkout"),
 
     path('invoice-list/',views.InvoiceList,name="invoice-list"),
     path('invoice-details/',views.InvoiceDetails,name="invoice-details"),

@@ -1,10 +1,15 @@
+
+<script>
+    {% load static %}
+console.log("HELLO WORLD?....");
+function  test(){
+    console.log("TEST FUNCTION");
+}
 const backgrounds = [
-    "{% static 'images/v84_120.png'%}",
-    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRFvQHFs96V-pQ57OuUM7AvMez9HDYC7q_p5A&s",
-    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRFvQHFs96V-pQ57OuUM7AvMez9HDYC7q_p5A&s"
+    "{% static '/images/v84_120.png' %}",
+    "{% static '/images/v84_120.png' %}",
+    "{% static '/images/v84_120.png' %}",
 ];
-
-
 
 let currentIndex = 0;
 
@@ -151,3 +156,5 @@ document.addEventListener('click', (event) => {
         mobileMenu.classList.add('-translate-x-full');
     }
 });
+
+    </script>

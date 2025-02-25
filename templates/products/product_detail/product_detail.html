@@ -50,30 +50,28 @@
 
 
         <div class="mt-3 grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-1">
-          {% for product_order_offer in product_order_offers %}
+          {% for product_order_offer in product.offers.all %}
           {% if product_order_offer %}
-          <a href="#">
+          <a href="javascript:void(0);" onclick="addWithOffer('{{ product.id }}', '{{ product_order_offer.min_quantity }}',{{ product_order_offer.id }})">
           <div class="bg-gradient-to-r from-[#0B5D51] to-[#073741] text-center rounded-lg text-white cursor-pointer transition-all duration-300 hover:shadow-lg">
             <ul class=" mt-2 p-1">
               <li>
-                <span class="text-yellow-300 text-sm">{{ product_order_offer.min_products }}</span>
-                <strong class="font-semibold text-sm text-gray-200">Products</strong>
+
+                <span class="text-yellow-300 text-sm">1 box of
+                <strong class="font-semibold text-sm text-gray-200">{{ product_order_offer.min_quantity }}</strong>
+             products</span>
               </li>
               <li>
-                {% if product_order_offer.discount_type == 'percentage' %}
-                <span class="text-yellow-300 text-sm">{{ product_order_offer.discount_value }}%</span>
-                {% else %}
-                <span class="text-yellow-300 text-sm">{{ product_order_offer.discount_value }}</span> <span class="text-white-300 text-sm">SAR</span>
-                {% endif %}
+
+                <span class="text-yellow-300 text-sm">{{ product_order_offer.calculate_discounted_price }}</span> <span class="text-white-300 text-sm">SAR</span>
+                <span class="text-yellow-300 text-sm">({{ product_order_offer.discount_percentage }}% OFF)</span>
+
               </li>
               <li>
-                <strong class="font-semibold text-sm text-gray-200">From: </strong>
-                <span class="text-yellow-300 text-sm">{{ product_order_offer.start_date }}</span>
+                <strong class="font-semibold text-sm text-gray-200">Average Price </strong>
+                <span class="text-yellow-300 text-sm">{{ product_order_offer.calculate_average_price }}</span>
               </li>
-              <li>
-                <strong class="font-semibold text-sm text-gray-200">To: </strong>
-                <span class="text-yellow-300 text-sm">{{ product_order_offer.end_date }}</span>
-              </li>
+
             </ul>
           </div>
         </a>
@@ -198,5 +196,28 @@
       changebg.style.color = "#0B5D51";
     }
   }
+   function addWithOffer(productId, minQuantity,offerID) {
+        fetch(`/cart/add_with_offer/${productId}/${minQuantity}/${offerID}/`, {
+            method: 'GET',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Optionally, you can refresh the cart total displayed on the page
+                // document.getElementById('cart-total').innerText = data.cart_total;
+                location.reload(); // Reload the page to reflect changes
+            } else {
+                alert('Failed to add product with offer.');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    }
 </script>
+
+
 {% endblock %}

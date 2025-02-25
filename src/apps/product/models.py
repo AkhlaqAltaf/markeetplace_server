@@ -8,6 +8,8 @@ from io import BytesIO
 from django.core.files import File
 from ckeditor.fields import RichTextField
 
+from src.apps.wishlist.models import WishListProduct
+
 
 # PRODUCT PARENT CATEGORY
 
@@ -34,6 +36,7 @@ class SubCategory(models.Model):
 
     def __str__(self):
         return f"{self.category.name} - {self.name}"
+from django.db import models
 
 
 class Product(models.Model):
@@ -45,23 +48,81 @@ class Product(models.Model):
     name = models.CharField(max_length=255)
     description = models.TextField()
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, related_name='products')
-    brand = models.CharField(max_length=255,null=True, blank=True)
+    brand = models.CharField(max_length=255, null=True, blank=True)
     sub_category = models.ForeignKey(SubCategory, on_delete=models.SET_NULL, null=True, related_name='products')
     price = models.DecimalField(max_digits=10, decimal_places=2)
     stock_quantity = models.PositiveIntegerField(default=0)
     sku = models.CharField(max_length=100, unique=True)
-    barcode = models.CharField(max_length=100, unique=True,blank=True,null=True)
+    barcode = models.CharField(max_length=100, unique=True, blank=True, null=True)
     vendor = models.ForeignKey(Vendor, on_delete=models.CASCADE, related_name='products')
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='review')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     is_featured = models.BooleanField(default=False)
     sales_count = models.PositiveIntegerField(default=0)
-    content = RichTextField(blank=True,null=True)
+    content = RichTextField(blank=True, null=True)
     added_date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.name
+
+    def is_in_wishlist(self, user):
+        """
+        Check if the product is in the user's wishlist.
+
+        :param user: CustomUser  instance
+        :return: True if the product is in the user's wishlist, False otherwise
+        """
+        try:
+            wishlist = WishListProduct.objects.get(user=user)
+            return self in wishlist.products.all()
+        except WishListProduct.DoesNotExist:
+            return False
+
+    def get_total_price(self, quantity, offer_id=None):
+        """
+        Calculate the total price based on quantity and optional offer.
+
+        :param quantity: The quantity of the product
+        :param offer_id: The ID of the offer to apply (if any)
+        :return: The total price
+        """
+        total_price = self.price * quantity  # Default total price without offer
+
+        if offer_id:
+            try:
+                offer = Offer.objects.get(id=offer_id, product=self)
+                # Calculate discounted price
+                discounted_price_per_unit = self.price * (1 - offer.discount_percentage / 100)
+                total_price = discounted_price_per_unit * quantity
+            except Offer.DoesNotExist:
+                pass  # If the offer does not exist, use the default price
+
+        return round(total_price, 2)  # Return total price rounded to 2 decimal places
+class Offer(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='offers')
+    min_quantity = models.PositiveIntegerField()
+    max_quantity = models.PositiveIntegerField(null=True, blank=True)
+    discount_percentage = models.DecimalField(max_digits=5, decimal_places=2)
+
+    def calculate_discounted_price(self):
+        """Calculate total price after discount"""
+        if self.min_quantity < self.min_quantity or (self.max_quantity and self.min_quantity > self.max_quantity):
+            return None  # Not eligible for discount
+        discounted_price_per_unit = self.product.price * (1 - self.discount_percentage / 100)
+        total_price = discounted_price_per_unit * self.min_quantity
+        return round(total_price,2)
+
+    def calculate_average_price(self):
+        """Calculate average price per unit after discount"""
+        total_price = self.calculate_discounted_price()
+        if total_price is None:
+            return None
+        return  round(total_price / self.min_quantity,2)
+
+    def __str__(self):
+        return f"{self.product.name} - {self.discount_percentage}% off on {self.min_quantity}+"
+
 
 # Product Tag Model
 
@@ -157,7 +218,6 @@ class TopPageProduct(models.Model):
     order = models.PositiveSmallIntegerField(default=0)
     def __str__(self):
         return f"{self.product.name}"
-
 
 
 

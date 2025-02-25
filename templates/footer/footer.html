@@ -1,13 +1,83 @@
-<!-- Footer Section -->
-<footer class="mt-12 bg-[#073741] text-white flex flex-col gap-10">
-    <!-- Newsletter Section -->
-    {% include 'footer/newsletter.html' %}
-    <!-- Footer Links Section -->
-    {% include 'footer/links.html' %}
-    <!-- Footer Bottom -->
-    <div class="text-center mt-8 mb-8 text-[#ADB7BC] text-sm">
-        <span>EasyBuy</span> - Crafted with excellence by <span>Akhlaq Altaf , Huzaifa Sajjab , Rimsha Muneer</span>.
-        <br>
-        © 2024 All rights reserved.
-    </div>
-</footer>
+{#<!-- Footer Section -->#}
+{#<footer class=" bg-[#073741] text-white flex flex-col gap-10">#}
+{#    <!-- Newsletter Section -->#}
+{#    {% include 'footer/newsletter.html' %}#}
+{#    <!-- Footer Links Section -->#}
+{#    {% include 'footer/links.html' %}#}
+{#    <!-- Footer Bottom -->#}
+{#    <div class="text-center mt-8 mb-8 text-[#ADB7BC] text-sm">#}
+{#        <span>EasyBuy</span> - Crafted with excellence by <span>Akhlaq Altaf , Huzaifa Sajjab , Rimsha Muneer</span>.#}
+{#        <br>#}
+{#        © 2024 All rights reserved.#}
+{#    </div>#}
+{#</footer>#}
+
+
+    <footer class="bg-[#23646D] text-white py-10 px-6 md:px-16 relative rounded-t-3xl">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+            <!-- Newsletter Section -->
+            <div class="md:col-span-1 relative">
+                <h2 class="text-3xl font-semibold">NEWSLETTER</h2>
+                <p class="text-sm mt-2">
+                    Subscribe to our newsletter and get the latest updates and offers related to products...!!
+                </p>
+                <div class="mt-4 flex bg-white rounded-lg overflow-hidden">
+                    <input type="email" placeholder="Enter your Email Here" class="w-full p-3 text-gray-700 outline-none">
+                    <button class="bg-[#073741] text-white px-4 flex items-center justify-center">
+                        <i class="fa fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Company Links (Repeated) -->
+            <div class="md:col-span-1">
+                <h3 class="font-bold text-lg mb-3">COMPANY</h3>
+                <ul class="space-y-2 text-sm">
+                    <li>About Huba Jamula</li>
+                    <li>Leading Electronics Retailer</li>
+                    <li>About Huba Jumula Group</li>
+                    <li>Help - Authorised Services</li>
+                    <li>Centers</li>
+                    <li>Techbench</li>
+                    <li>HJ + | Home Theatres & Audio</li>
+                </ul>
+            </div>
+
+            <div class="md:col-span-1">
+                <h3 class="font-bold text-lg mb-3">COMPANY</h3>
+                <ul class="space-y-2 text-sm">
+                    <li>About Huba Jamula</li>
+                    <li>Leading Electronics Retailer</li>
+                    <li>About Huba Jumula Group</li>
+                    <li>Help - Authorised Services</li>
+                    <li>Centers</li>
+                    <li>Techbench</li>
+                    <li>HJ + | Home Theatres & Audio</li>
+                </ul>
+            </div>
+
+            <!-- Social Media Icons -->
+            <div class="md:col-span-1">
+                <h3 class="font-bold text-lg mb-3">Follow Us</h3>
+                <div class="flex space-x-4 text-2xl">
+                    <a href="#" class="hover:text-gray-300"><i class="fa fa-facebook"></i></a>
+                    <a href="#" class="hover:text-gray-300"><i class="fa fa-whatsapp"></i></a>
+                    <a href="#" class="hover:text-gray-300"><i class="fa fa-youtube"></i></a>
+                    <a href="#" class="hover:text-gray-300"><i class="fa fa-instagram"></i></a>
+                    <a href="#" class="hover:text-gray-300"><i class="fa fa-x-twitter"></i></a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Copyright & Payment Methods -->
+        <div class="mt-8 border-t border-gray-400 pt-6 flex flex-col md:flex-row justify-between text-sm">
+            <p>© 2025 Firnas.Tech ALL RIGHTS RESERVED</p>
+            <div class="flex space-x-4 mt-4 md:mt-0 text-2xl">
+                <i class="fa fa-cc-visa"></i>
+                <i class="fa fa-cc-mastercard"></i>
+                <i class="fa fa-google-pay"></i>
+                <i class="fa fa-cc-apple-pay"></i>
+                <i class="fa fa-cc-paypal"></i>
+            </div>
+        </div>
+    </footer>

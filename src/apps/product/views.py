@@ -38,8 +38,6 @@ class ProductDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         product = self.get_object()
-
-        # Initialize variables for product offers and order offers
         product_offers = None
         product_order_offers = None
         product_after_discount = 0
@@ -48,7 +46,6 @@ class ProductDetailView(DetailView):
             # Fetch product offers and related order offers
             product_offers = ProductOffer.objects.filter(products=product).first()
             product_order_offers = OrderOffer.objects.filter(products=product)
-
             # PRODUCT OFFER: check for discount type and calculate discounted price
             if product_offers:
                 if product_offers.discount_type == 'percentage':
@@ -78,16 +75,15 @@ class ProductDetailView(DetailView):
 
         # REVIEWS SECTION
 
-        reviews = product.reviews.all()  # Assuming a related name `reviews` for the Product-Review relationship
+        reviews = product.reviews.all()
         total_reviews = reviews.count()
 
         # Calculate rating percentages
-        rating_distribution = {rating: 0 for rating in range(1, 6)}  # Initialize for ratings 1 to 5
+        rating_distribution = {rating: 0 for rating in range(1, 6)}
 
         for review in reviews:
             print("REVIEW : ",review.rating)
-            rating_distribution[review.rating] += 1  # Assuming `rating` is an attribute of Review
-
+            rating_distribution[review.rating] += 1
         rating_percentages = {
             rating: (count / total_reviews) * 100 if total_reviews > 0 else 0
             for rating, count in rating_distribution.items()

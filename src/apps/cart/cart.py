@@ -1,7 +1,7 @@
+from itertools import product
 from django.conf import settings
-
+from django.contrib import messages
 from src.apps.product.models import Product, ProductOffer
-
 
 class Cart(object):
     def __init__(self, request):
@@ -13,38 +13,62 @@ class Cart(object):
 
         self.cart = cart
 
+    def update_quantity(self, product_id, quantity):
+        product_id = str(product_id)
+        print("UPDATING QUANTITY...........")
+        # Check if the product is in the cart
+        if product_id in self.cart:
+            # Update the quantity
+            self.cart[product_id]['quantity'] += quantity
+
+            # Remove the product if quantity is 0 or less
+            if self.cart[product_id]['quantity'] <= 0:
+                self.remove(product_id)
+
+            self.save()
+
     def __iter__(self):
         for p in self.cart.keys():
             self.cart[str(p)]['product'] = Product.objects.get(pk=p)
             # Fetch product offers for discount
-            self.cart[str(p)]['product_offers'] = self.get_product_offers(self.cart[str(p)]['product'])
 
-            # Apply the discount if any
-            self.cart[str(p)]['discounted_price'] = self.calculate_discounted_price(
-                self.cart[str(p)]['product'],
-                self.cart[str(p)]['product_offers']
-            )
+            # Calculate total price using the get_total_price method
+            offer_id = self.cart[str(p)]['offer']  # Get the offer ID if it exists
+            quantity = self.cart[str(p)]['quantity']
+            self.cart[str(p)]['total_price'] = self.cart[str(p)]['product'].get_total_price(quantity, offer_id)
 
-        for item in self.cart.values():
-            item['total_price'] = item['discounted_price'] * item['quantity']
-
-            yield item
+            yield self.cart[str(p)]
 
     def __len__(self):
         return sum(item['quantity'] for item in self.cart.values())
+
+    def cart_length(self):
+        return len(self.cart)
+
+    def add_with_specific_quantity(self, request, product_id, quantity, offer_id):
+        if product_id not in self.cart:
+            print("PRODUCT ADD WITH QUANTITY")
+            self.cart[product_id] = {'quantity': quantity, 'id': product_id, 'offer': offer_id}
+            self.save()
+            messages.success(request, f"Product Added Successfully with Quantity: {quantity}")
+        else:
+            print ("THIS IS ALREADY IN CART")
+            messages.info(request=request, message="THIS IS ALREADY IN CART")
 
     def add(self, product_id, quantity=1, update_quantity=False):
         product_id = str(product_id)
 
         # Check if the product is already in the cart
         if product_id not in self.cart:
-            self.cart[product_id] = {'quantity': 0, 'id': product_id}
+            print("PRODUCT IS NOT IN CART....")
+            self.cart[product_id] = {'quantity': 0, 'id': product_id, 'offer': None}
 
         # Update quantity
         if update_quantity:
             self.cart[product_id]['quantity'] += int(quantity)
         else:
-            self.cart[product_id]['quantity'] = int(quantity)
+            print("PRODUCT IS IN CART....")
+            self.cart[product_id]['quantity'] += int(quantity)
 
         # Fetch and apply discount if quantity > 0
         if self.cart[product_id]['quantity'] <= 0:
@@ -62,40 +86,9 @@ class Cart(object):
         self.session.modified = True
 
     def clear(self):
-        del self.session[settings.CART_SESSION_ID ]
+        del self.session[settings.CART_SESSION_ID]
         self.session.modified = True
 
     def get_total_cost(self):
-        total_cost = 0
-        for p in self.cart.keys():
-            self.cart[str(p)]['product'] = Product.objects.get(pk=p)
-            self.cart[str(p)]['product_offers'] = self.get_product_offers(self.cart[str(p)]['product'])
-            self.cart[str(p)]['discounted_price'] = self.calculate_discounted_price(
-                self.cart[str(p)]['product'],
-                self.cart[str(p)]['product_offers']
-            )
-            total_cost += self.cart[str(p)]['discounted_price'] * self.cart[str(p)]['quantity']
-
-        return total_cost
-
-    def get_product_offers(self, product):
-        try:
-            # Fetch product offers related to the product
-            product_offers = ProductOffer.objects.filter(products=product).first()
-            return product_offers
-        except ProductOffer.DoesNotExist:
-            return None
-
-    def calculate_discounted_price(self, product, product_offers):
-        # Apply discount logic
-        if product_offers:
-            if product_offers.discount_type == 'percentage':
-                return round(product.price - ((product.price / 100) * product_offers.discount_value), 1)
-            else:
-                return product.price - product_offers.discount_value
-        else:
-            # If no product offer is found, return original price
-            return product.price
-
-
-        
+        total_cost = sum(item['total_price'] for item in self.cart.values())
+        return round(total_cost, 2)  # Return total cost rounded to 2 decimal places
