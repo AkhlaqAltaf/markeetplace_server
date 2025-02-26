@@ -7,4 +7,9 @@ def get_star_color(rating_percentages, star_index):
     star_index -= 1
     if star_index in rating_percentages:
         return 'text-yellow-500' if rating_percentages[star_index + 1] > 0 else 'text-gray-300'
-    return 'text-gray-300' 
+    return 'text-gray-300'
+
+
+@register.filter
+def is_in_wishlist(product, user):
+    return product.is_in_wishlist(user)

@@ -1,5 +1,5 @@
 from django import forms
-from src.apps.product.models import Category, Product, Media, SubCategory
+from src.apps.product.models import Category, Product, Media, SubCategory, Offer
 from ckeditor.widgets import CKEditorWidget
 
 class CategoryCreateForm(forms.ModelForm):
@@ -28,6 +28,11 @@ class ProductForm(forms.ModelForm):
             'price',  'stock_quantity', 'sku',
              'brand','barcode','content'
         ]
+class OfferForm(forms.ModelForm):
+    class Meta:
+        model = Offer
+        fields = ['product',  'discount_percentage','min_quantity','max_quantity']
+
 
 class SubCategoryForm(forms.ModelForm):
     class Meta:
