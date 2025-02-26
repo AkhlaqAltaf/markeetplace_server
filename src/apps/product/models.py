@@ -179,16 +179,16 @@ class Media(models.Model):
         """
         if self.is_primary:
             return image
-        img = Image.open(image)
-        img = img.convert('RGB')
-        img.thumbnail(size)
-
-        thumb_io = BytesIO()
-        img.save(thumb_io, 'JPEG', quality=100)
-
-        unique_name = f"{uuid.uuid4().hex}.jpg"  # Generate a unique filename
-        thumbnail = File(thumb_io, name=unique_name)
-        return thumbnail
+        # img = Image.open(image)
+        # img = img.convert('RGB')
+        # img.thumbnail(size)
+        #
+        # thumb_io = BytesIO()
+        # img.save(thumb_io, 'JPEG', quality=100)
+        #
+        # unique_name = f"{uuid.uuid4().hex}.jpg"  # Generate a unique filename
+        # thumbnail = File(thumb_io, name=unique_name)
+        return image
 
     def save(self, *args, **kwargs):
         """
