@@ -1,5 +1,6 @@
 import binascii
 import json
+from multiprocessing import context
 import uuid
 
 from django.contrib import messages
@@ -16,7 +17,7 @@ from datetime import datetime
 
 from django.core.serializers import serialize
 
-from src.apps.product.forms import ProductForm, OfferForm
+from src.apps.product.forms import ProductForm
 from src.apps.product.models import Category, SubCategory, Tag, Media, Product, ProductOffer, OrderOffer
 from src.apps.vendor.forms import VendorForm, ProductOfferForm, OrderOfferForm
 from src.apps.vendor.models import Vendor
@@ -64,10 +65,53 @@ class BecomeVendorView(View):
         return render(request, self.template_name, {'form': vendor_form})
 
 
-class VendorSiteView(CheckVendorMixin,View):
+class VendorSiteView(CheckVendorMixin, View):
     template_name = 'vendor/Analytics.html'
-    def get(self,request):
-        return  render(request, self.template_name)
+
+    def get(self, request):
+        # Get the vendor object
+        
+        vendor = request.user.vendor
+        user = CustomUser.objects.filter(name=vendor).first()
+        if not user:
+            return render(request, self.template_name, {"error": "Vendor not found."})
+
+        # Filter delivered orders for the vendor
+        delivered_orders = Order.objects.filter(user=user.id, status='delivered')
+
+        # Initialize total sales counter and product list
+        totalSales = 0
+        products = Product.objects.filter(vendor=vendor).order_by('-stock_quantity')
+
+
+        for order in delivered_orders:
+            order_items = order.orderitem_set.all()  # Access the related OrderItem instances
+            for order_item in order_items:
+                product = order_item.product  # Get the associated product for each order item
+                product_offer = ProductOffer.objects.filter(products=product).first()  # Get the first matching offer for the product
+                
+                # Calculate total sales based on the discount type
+                if product_offer:
+                    if product_offer.discount_type == 'percentage':
+                        # Apply percentage discount
+                        totalSales += (product.price - (product.price * (product_offer.discount_value / 100))) * order_item.quantity
+                    elif product_offer.discount_type == 'fixed':
+                        # Apply fixed discount
+                        totalSales += (product.price - product_offer.discount_value) * order_item.quantity
+                    else:
+                        # No discount, use original price
+                        totalSales += product.price * order_item.quantity
+                else:
+                    # No offer, use the original price
+                    totalSales += product.price * order_item.quantity
+
+        # Prepare context with filtered products and total sales
+        context = {
+            "products": products,
+            "total_sales": totalSales,
+            }
+
+        return render(request, self.template_name, context)
 
 
 class VendorAdminView(CheckVendorMixin, View):
