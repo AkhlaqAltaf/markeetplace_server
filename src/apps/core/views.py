@@ -9,7 +9,9 @@ from src.apps.product.models import Category, Product, TopPageProduct
 
 
 class FrontPageView(TemplateView):
-    template_name = "home/home.html"
+    # template_name = "home/home.html"
+    # template_name = "home/new design/index.html"
+    template_name = "Dynamics/index.html"
     def get(self,request):
 
         products = Product.objects.all()[0:12]
