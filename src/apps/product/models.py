@@ -177,6 +177,8 @@ class Media(models.Model):
         """
         Generate a thumbnail for the uploaded image.
         """
+        if self.is_primary:
+            return
         img = Image.open(image)
         img = img.convert('RGB')
         img.thumbnail(size)

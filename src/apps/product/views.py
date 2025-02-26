@@ -1,31 +1,16 @@
-from django.core.serializers import serialize
-from symtable import Class
-
-from django.contrib import messages
-from django.db.models import Min, Max
-from django.views import View
-from django.http import HttpResponse, JsonResponse, Http404
-from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
-from django.urls import reverse_lazy
-from django.shortcuts import get_object_or_404, redirect, render
-from django.http import JsonResponse, HttpResponseBadRequest
-from ..cart import cart
-from ..cart.cart import Cart
-from ..vendor.models import Vendor
 from django import forms
-
-# from .models import Category, CountryOrigin, Product, Media, SubCategory, Tag, WishListProduct, Order, OrderItem
-from .forms import CategoryCreateForm, ProductForm, SubCategoryCreateForm, SubCategoryForm
-from .forms import ProductForm, SubCategoryForm
-
 from django.core.serializers import serialize
 from django.db.models import Min, Max
 from django.db.models import Q
+from django.http import HttpResponse, Http404
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.shortcuts import render
 from django.views import View
 from django.views.generic import DetailView
+
+# from .models import Category, CountryOrigin, Product, Media, SubCategory, Tag, WishListProduct, Order, OrderItem
+from .forms import CategoryCreateForm, SubCategoryCreateForm
 from .forms import SubCategoryForm
 from .models import Category, Product, SubCategory, ProductOffer, OrderOffer
 
