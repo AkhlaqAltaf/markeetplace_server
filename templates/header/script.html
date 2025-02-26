@@ -1,0 +1,138 @@
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const menuBtn = document.getElementById('menu-btn');
+        const closeMenuBtn = document.getElementById('close-menu');
+        const mobileMenu = document.getElementById('mobile-menu');
+
+        // Open menu
+        menuBtn.addEventListener('click', () => {
+            mobileMenu.classList.remove('-translate-x-full');
+        });
+
+        // Close menu
+        closeMenuBtn.addEventListener('click', () => {
+            mobileMenu.classList.add('-translate-x-full');
+        });
+
+        // Close menu when clicking outside
+        document.addEventListener('click', (event) => {
+            if (!mobileMenu.contains(event.target) && !menuBtn.contains(event.target)) {
+                mobileMenu.classList.add('-translate-x-full');
+            }
+        });
+
+        const carouselWrapper = document.getElementById("carouselWrapper");
+        const prevBtn = document.getElementById("prevBtn");
+        const nextBtn = document.getElementById("nextBtn");
+        const cards = document.querySelectorAll(".testimonial-card");
+
+        let currentIndex = 0;
+        let visibleCards = getVisibleCards();
+        let maxIndex = Math.max(0, cards.length - visibleCards);
+
+        function getVisibleCards() {
+            if (window.innerWidth >= 1024) return 3;
+            if (window.innerWidth >= 640) return 2;
+            return 1;
+        }
+
+        function updateCarousel() {
+            const cardWidth = cards[0].getBoundingClientRect().width;
+            carouselWrapper.style.transform = `translateX(-${currentIndex * cardWidth}px)`;
+        }
+
+        nextBtn.addEventListener("click", () => {
+            if (currentIndex < maxIndex) {
+                currentIndex++;
+                updateCarousel();
+            }
+        });
+
+        prevBtn.addEventListener("click", () => {
+            if (currentIndex > 0) {
+                currentIndex--;
+                updateCarousel();
+            }
+        });
+
+        window.addEventListener("resize", () => {
+            visibleCards = getVisibleCards();
+            maxIndex = Math.max(0, cards.length - visibleCards);
+            updateCarousel();
+        });
+
+        const carousel = document.getElementById("carousel");
+        const prev = document.getElementById("prev");
+        const next = document.getElementById("next");
+
+        let scrollStep = calculateScrollStep();
+
+        function calculateScrollStep() {
+            const visibleCards = getVisibleCards();
+            return carousel.clientWidth / visibleCards;
+        }
+
+        next.addEventListener("click", () => {
+            carousel.scrollBy({ left: scrollStep, behavior: "smooth" });
+        });
+
+        prev.addEventListener("click", () => {
+            carousel.scrollBy({ left: -scrollStep, behavior: "smooth" });
+        });
+
+        window.addEventListener("resize", () => {
+            scrollStep = calculateScrollStep();
+        });
+    });
+    document.addEventListener("DOMContentLoaded", function () {
+        const userMenuBtn = document.getElementById("user-menu-btn");
+        const userDropdown = document.getElementById("user-dropdown");
+
+        if (userMenuBtn) {
+            userMenuBtn.addEventListener("click", function () {
+                userDropdown.classList.toggle("hidden");
+            });
+
+            // Close dropdown when clicking outside
+            document.addEventListener("click", function (event) {
+                if (!userMenuBtn.contains(event.target) && !userDropdown.contains(event.target)) {
+                    userDropdown.classList.add("hidden");
+                }
+            });
+        }
+    });
+</script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const searchIcon = document.querySelector(".fa-search");
+    const menu = document.getElementById("menu1");
+    const header = document.querySelector("header");
+    const searchBar = document.createElement("input");
+
+    searchBar.setAttribute("type", "text");
+    searchBar.setAttribute("placeholder", "Search...");
+    searchBar.classList.add("border", "rounded-md", "px-2", "py-1", "transition-all", "duration-300");
+
+    let isSearchOpen = false;
+
+    searchIcon.addEventListener("click", function () {
+        if (window.innerWidth > 768) {
+   if (!isSearchOpen) {
+                searchBar.classList.add("absolute", "top-14", "left-1/2", "transform", "-translate-x-1/2", "w-10/12" , "transition-all", "duration-300");
+                header.appendChild(searchBar);
+            } else {
+                searchBar.remove();
+            }
+        } else {
+            // For small screens: Show search bar below the navbar
+            if (!isSearchOpen) {
+                searchBar.classList.add("absolute", "top-14", "left-1/2", "transform", "-translate-x-1/2", "w-10/12", "transition-all", "duration-300");
+                header.appendChild(searchBar);
+            } else {
+                searchBar.remove();
+            }
+        }
+        isSearchOpen = !isSearchOpen;
+    });
+});
+</script>
