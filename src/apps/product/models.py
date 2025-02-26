@@ -1,4 +1,6 @@
 import os
+import uuid
+
 from src.apps.accounts.models import CustomUser
 from src.apps.vendor.models import Vendor
 from django.db import models
