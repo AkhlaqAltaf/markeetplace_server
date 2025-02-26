@@ -1,0 +1,41 @@
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        function updateWishlist() {
+            const wishlistCountElement = document.getElementById("wishlistCount");
+            const wishlistItems = document.getElementById("wishlistItems");
+            if (wishlistCountElement && wishlistItems) {
+                wishlistCountElement.textContent = `${wishlistItems.children.length} items`;
+            }
+        }
+
+        function removeFromWishlist(productId) {
+            const url = `/wishlist/remove-from-wishlist/${productId}/`;
+
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}',
+                },
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const itemToRemove = document.querySelector(`.wishlist-item[data-id="${productId}"]`);
+                        if (itemToRemove) {
+                            itemToRemove.remove();
+                            updateWishlist();
+                        }
+                    } else {
+                        alert('Error removing product from wishlist');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while removing the product.');
+                });
+        }
+
+        updateWishlist();
+    });
+</script>

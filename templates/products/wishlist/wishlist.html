@@ -1,37 +1,12 @@
 {% extends 'core/base.html' %}
-
+{% load static %}
 {% block content %}
-<style>
-    .add-to-cart {
-        padding: 8px 16px;
-        border: none;
-        border-radius: 8px;
-        cursor: pointer;
-        transition: all 0.3s ease;
-    }
+<link rel="stylesheet" type="text/css"  href="{% static 'css/wishlist.css' %}" >
 
-    .add-to-cart:hover {
-        transform: translateY(-2px);
-    }
 
-    .remove-item {
-        padding: 8px 16px;
-        background: white;
-        color: var(--danger-color);
-        border: 1px solid #fecaca;
-        border-radius: 8px;
-        cursor: pointer;
-        transition: all 0.3s ease;
-    }
-
-    .remove-item:hover {
-        background: #fef2f2;
-        transform: translateY(-2px);
-    }
-</style>
-
-<div class="container mx-auto px-4">
+    <div class="container mx-auto px-4">
     <div class="bg-white mt-4 shadow-lg rounded-xl overflow-hidden">
+<div id="wishlistCount" class="wishlist-count">0 items</div>
 
         <div id="wishlistItems">
             {% if products %}
@@ -91,39 +66,5 @@
         </div>
     </div>
 </div>
-
-<script>
-    function updateWishlist() {
-        const wishlistCountElement = document.getElementById("wishlistCount");
-        const wishlistItems = document.getElementById("wishlistItems");
-        wishlistCountElement.textContent = `${wishlistItems.children.length} items`;
-    }
-
-    function removeFromWishlist(productId) {
-        const url = `/wishlist/remove-from-wishlist/${productId}/`;
-
-        fetch(url, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': '{{ csrf_token }}',
-            },
-        })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    document.querySelector(`.wishlist-item[data-id="${productId}"]`).remove();
-                    updateWishlist();
-                } else {
-                    alert('Error removing product from wishlist');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('An error occurred while removing the product.');
-            });
-    }
-
-    updateWishlist();
-</script>
+{% include 'products/wishlist/script.html' %}
 {% endblock %}

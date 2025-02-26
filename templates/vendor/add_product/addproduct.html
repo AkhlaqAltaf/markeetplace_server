@@ -211,36 +211,6 @@
     <!-- Form End -->
   </div>
 </div>
-<script>
-  document.getElementById("addOfferButton").addEventListener("click", function() {
-      let container = document.getElementById("offer-container");
-      let newOfferForm = document.createElement("div");
-      newOfferForm.classList.add("offer-form");
-      newOfferForm.innerHTML = `
 
-          <label>Discount (%)</label>
-          <input type="number" name="discount_percentage" class="w-full border rounded p-2" step="0.01">
-          <label>Min Quantity</label>
-          <input type="number" name="min_quantity" class="w-full border rounded p-2">
-          <label>Max Quantity</label>
-          <input type="number" name="max_quantity" class="w-full border rounded p-2">
-          <button type="button" class="remove-offer bg-red-500 text-white px-2 py-1 rounded mt-2">Remove</button>
-      `;
-      container.appendChild(newOfferForm);
-  });
-
-  document.addEventListener("click", function(event) {
-      if (event.target.classList.contains("remove-offer")) {
-          event.target.parentElement.remove();
-      }
-  });
-</script>
-
-<script src="https://cdn.ckeditor.com/4.11.1/standard/ckeditor.js"></script>
-    <script>
-    window.onload = function() {
-        CKEDITOR.replace('content');
-    };
-</script>
 {% include "vendor/add_product/script.html" %}
 {% endblock content %}

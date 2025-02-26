@@ -1,0 +1,18 @@
+{% load static %}
+
+<div class="min-w-[calc(100%/2)] sm:min-w-[calc(100%/2)] md:min-w-[calc(100%/3)] lg:min-w-[calc(100%/4)] bg-[#A7C1C5] rounded-2xl p-6 shadow-lg transition-transform duration-300 hover:scale-105">
+        <h2 class="text-lg font-bold text-teal-900 text-center">{{ category.name }}</h2>
+        {% if category.image %}
+        <img
+          src="{{ category.image.url }}"
+          alt="{{ category.name }}"
+          class="w-full h-40 object-cover mt-3 rounded-lg shadow-md"
+        />
+        {% else %}
+        <img
+          src="{% static 'placeholder.png' %}"
+          alt="No image available"
+          class="w-full h-40 object-cover mt-3 rounded-lg shadow-md"
+        />
+        {% endif %}
+      </div>

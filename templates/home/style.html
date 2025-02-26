@@ -1,0 +1,81 @@
+        <style>
+
+        /* Hide scrollbar for all browsers */
+#carousel::-webkit-scrollbar {
+    display: none;
+}
+
+#carousel {
+    -ms-overflow-style: none; /* IE & Edge */
+    scrollbar-width: none; /* Firefox */
+}
+
+.testimonial-card {
+    flex: 0 0 100%; /* Default: Show 1 card on mobile */
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    text-align: left;
+    transition: transform 0.3s ease-in-out;
+}
+
+/* Tablet (2 cards) */
+@media (min-width: 640px) {
+    .testimonial-card {
+        flex: 0 0 calc(100% / 2 - 10px); /* 2 cards per row */
+    }
+}
+
+/* Desktop (3 cards) */
+@media (min-width: 1024px) {
+    .testimonial-card {
+        flex: 0 0 calc(100% / 3 - 14px); /* 3 cards per row */
+    }
+}
+
+/* Styling for heading and text */
+.testimonial-card h3 {
+    font-size: 1.25rem;
+    font-weight: bold;
+}
+.testimonial-card p {
+    margin-top: 10px;
+    color: #555;
+}
+.testimonial-card .stars {
+    margin-top: 10px;
+}
+.testimonial-card .author {
+    margin-top: 10px;
+    font-weight: bold;
+    color: #23646D;
+}
+
+/* Navigation Buttons */
+.nav-button {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: white;
+    color: #073741;
+    padding: 10px 15px;
+    border-radius: 50%;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    font-size: 20px;
+    transition: background 0.3s;
+}
+.nav-button:hover {
+    background: #ddd;
+}
+
+/* Marquee Animation */
+@keyframes marquee {
+    0% { transform: translateX(100%); }
+    100% { transform: translateX(-100%); }
+}
+.animate-marquee {
+    display: inline-block;
+    animation: marquee 40s linear infinite;
+}
+</style>

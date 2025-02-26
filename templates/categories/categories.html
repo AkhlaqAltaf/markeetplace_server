@@ -1,157 +1,29 @@
 {% load static %}
 
-<style>
-    .custom-scrollbar::-webkit-scrollbar { display: none; }
+{% include 'categories/style.html' %}
+<div class="w-full max-w-screen px-5 md:px-20 mx-auto relative">
+  <button
+    id="prev"
+    class="absolute top-1/2 left-0 -translate-y-1/2 p-4 bg-white rounded-full shadow-md hover:bg-gray-200 z-10"
+  >
+    <i class="fa fa-chevron-left"></i>
+  </button>
 
-    .category_card {
-        width: 205px;
-        height: 237px;
-        transition: transform 0.2s;
-    }
-
-    .category_card:hover {
-        transform: scale(1.05);
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-    }
-
-    .category_img {
-        height: 150px; /* Adjusted for better visibility */
-        object-fit: cover;
-        border-radius: 10px;
-    }
-
-    @media (max-width: 768px) {
-        .category_card {
-            width: 100px;
-            height: 100px;
-        }
-        .category_img {
-            height: 60px;
-        }
-    }
-
-    .carousel-container {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        position: relative;
-    }
-
-    .carousel {
-        overflow-x: auto;
-        display: flex;
-        scroll-behavior: smooth;
-        padding: 10px 0;
-    }
-
-    .carousel::-webkit-scrollbar {
-        display: none; /* Hide scrollbar */
-    }
-
-    .pagination {
-        display: flex;
-        justify-content: center;
-        margin-top: 10px;
-    }
-
-    .dot {
-        height: 8px;
-        width: 8px;
-        margin: 0 4px;
-        border-radius: 50%;
-        background-color: gray;
-        cursor: pointer;
-    }
-
-    .active {
-        background-color: #0B5C50;
-    }
-</style>
-
-<div class="w-full max-w-screen px-5 md:px-20 mx-auto relative carousel-container">
-    <!-- Left Button -->
-    <button id="prev" class="absolute top-1/2 left-0 -translate-y-1/2 p-4 bg-white rounded-full shadow-md hover:bg-gray-200 z-10">
-        <i class="fa fa-chevron-left"></i>
-    </button>
-
-    <div id="carousel" class="carousel">
-        {% for category in categories %}
-            <a href="{% url 'product:all-product' %}?filter={{ category.id }}{% if selected_filters %}&filter={{ selected_filters|join:'&filter=' }}{% endif %}" class="category_card flex flex-col items-center bg-white border border-gray-300 shadow-sm hover:text-[#0B5C50]">
-                <div class="bg-[#A7C1C5] rounded-2xl p-4 flex flex-col items-center">
-                    <h2 class="text-lg font-bold text-teal-900">{{ category.name }}</h2>
-                    {% if category.image and category.image.url %}
-                        <img src="{{ category.image.url }}" alt="{{ category.name }}" class="category_img mt-3">
-                    {% else %}
-                        <img src="{% static 'placeholder.png' %}" alt="No image available" class="category_img mt-3">
-                    {% endif %}
-                </div>
-            </a>
-        {% endfor %}
+  <div id="carousel" class="overflow-x-auto scrollbar-hide scroll-smooth">
+    <div class="flex space-x-4">
+      {% for category in categories %}
+          {% include 'commons/category.html' %}
+      {% endfor %}
     </div>
+  </div>
 
-    <!-- Right Button -->
-    <button id="next" class="absolute top-1/2 right-0 -translate-y-1/2 p-4 bg-white rounded-full shadow-md hover:bg-gray-200 z-10">
-        <i class="fa fa-chevron-right"></i>
-    </button>
+  <button
+    id="next"
+    class="absolute top-1/2 right-0 -translate-y-1/2 p-4 bg-white rounded-full shadow-md hover:bg-gray-200 z-10"
+  >
+    <i class="fa fa-chevron-right"></i>
+  </button>
 </div>
 
-<div id="pagination" class="pagination"></div>
-<div id="pagination" class="pagination"></div>
 
-<script>
-    const container = document.getElementById('carousel');
-    const cards = document.querySelectorAll('.category_card');
-    const pagination = document.getElementById('pagination');
-    const cardsPerPage = 5;
-    let currentPage = 0;
-
-    function scrollCategories(direction) {
-        const cardWidth = 205; // Adjusted to match the card width
-        container.scrollBy({
-            left: direction * cardWidth,
-            behavior: 'smooth'
-        });
-    }
-
-    function updatePagination() {
-        const totalPages = Math.ceil(cards.length / cardsPerPage);
-        pagination.innerHTML = '';
-
-        for (let i = 0; i < totalPages; i++) {
-            const dot = document.createElement('div');
-            dot.className = `dot ${i === currentPage ? 'active' : ''}`;
-            dot.addEventListener('click', () => {
-                currentPage = i;
-                updatePagination();
-                container.scrollTo({
-                    left: i * (cardWidth * cardsPerPage),
-                    behavior: 'smooth'
-                });
-            });
-            pagination.appendChild(dot);
-        }
-    }
-
-    document.getElementById('prev').addEventListener('click', () => {
-        if (currentPage > 0) {
-            currentPage--;
-            scrollCategories(-1);
-            updatePagination();
-        }
-    });
-
-    document .getElementById('next').addEventListener('click', () => {
-        if (currentPage < Math.ceil(cards.length / cardsPerPage) - 1) {
-            currentPage++;
-            scrollCategories(1);
-            updatePagination();
-        }
-    });
-
-    container.addEventListener('scroll', () => {
-        currentPage = Math.round(container.scrollLeft / (205 * cardsPerPage));
-        updatePagination();
-    });
-
-    updatePagination();
-</script>
+{% include 'categories/scripts.html' %}

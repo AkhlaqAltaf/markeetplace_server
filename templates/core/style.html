@@ -1,0 +1,41 @@
+<style>
+    .messages {
+        position: fixed; /* Use fixed positioning */
+        top: 20px; /* Distance from the top */
+        left: 50%; /* Center horizontally */
+        transform: translateX(-50%); /* Adjust to center */
+        width: auto; /* Adjust width as needed */
+        max-width: 90%; /* Limit max width */
+        z-index: 1000; /* Ensure it appears above other content */
+    }
+
+    .message {
+        background-color: #f0f9ff; /* Light blue background */
+        color: #1a1f36; /* Text color */
+        padding: 15px;
+        border-radius: 5px;
+        margin-bottom: 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transition: opacity 0.3s ease, transform 0.3s ease;
+        box-shadow: 0  2px 10px rgba(0, 0, 0, 0.1); /* Add shadow for better visibility */
+    }
+
+    .fade-out {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+
+    .delete {
+        background: none;
+        border: none;
+        color: #1a1f36; /* Text color for the close button */
+        font-size: 1.5rem;
+        cursor: pointer;
+    }
+
+    .delete:hover {
+        color: #ef4444; /* Change color on hover */
+    }
+</style>

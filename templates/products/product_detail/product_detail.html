@@ -102,7 +102,6 @@
         </p>
 
 
-
         <div class="flex items-center gap-4 mt-3 justify-center lg:justify-start">
           <div class="flex justify-center space-x-4">
             {% include 'commons/addToCartButton.html' %}
@@ -110,12 +109,9 @@
           </div>
         </div>
 
-
-        <!-- Order Offer Card -->
       </div>
     </div>
     <button id="toggleDescription" class="mt-12 text-[#0B5D51] border text-start p-3 w-100 bg-gray-100 font-semibold" onclick="toggleVisibility('description','toggleDescription')">Show Description</button>
-            <!-- About the Product -->
     <div class="bg-grey border">
       <div id="description" class="hidden">
         <p class="text-gray-700 leading-6 p-4 mb-6 lg:text-left">
@@ -125,8 +121,6 @@
     </div>
     <button id="toggleReviews" class="mt-1 text-[#0B5D51] border text-start p-3 w-100 bg-gray-100 font-semibold" onclick="toggleVisibility('reviews','toggleReviews')">Show Reviews</button>
    <p></p>
-{#   <a href="{% url 'product:product-detail3d' product.id %}"><div  class="mt-1 text-[#0B5D51] border text-start p-3 w-100 bg-gray-100 font-semibold" >Show Model</div></a>#}
-
 
     <div class="mt-12">
       <div id="reviews" class="hidden">
@@ -141,83 +135,5 @@
     </div>
   </div>
 </div>
-
-<script>
-  function changeImage(src) {
-    document.getElementById("mainImage").src = src;
-    const mainImage = document.getElementById("mainImage");
-    mainImage.classList.add("scale-110");
-    setTimeout(() => mainImage.classList.remove("scale-110"), 300);
-  }
-
-  const container = document.getElementById('scrollContainer');
-  const cards = document.querySelectorAll('a');
-  const pagination = document.getElementById('pagination');
-  const cardsPerPage = 5;
-  let currentPage = 0;
-
-  function scrollCategories(direction) {
-    const cardWidth = 221;
-    container.scrollBy({
-      left: direction * cardWidth,
-      behavior: 'smooth'
-    });
-  }
-
-  function updatePagination() {
-    const totalPages = Math.ceil(cards.length / cardsPerPage);
-    pagination.innerHTML = '';
-
-    for (let i = 0; i < totalPages; i++) {
-      const dot = document.createElement('div');
-      dot.className = `h-2 w-2 rounded-full ${i === currentPage ? 'bg-[#0B5D51]' : 'bg-gray-300'}`;
-      pagination.appendChild(dot);
-    }
-  }
-
-  container.addEventListener('scroll', () => {
-    currentPage = Math.round(container.scrollLeft / (221 * cardsPerPage));
-    updatePagination();
-  });
-
-  updatePagination();
-
-  function toggleVisibility(section,id) {
-    const changebg = document.getElementById(id);
-
-    const element = document.getElementById(section);
-    if (element.classList.contains('hidden')) {
-      element.classList.remove('hidden');
-      changebg.style.backgroundColor = "#0B5D51";
-      changebg.style.color = "white";
-    } else {
-      element.classList.add('hidden');
-      changebg.style.backgroundColor = "#F3F4F6";
-      changebg.style.color = "#0B5D51";
-    }
-  }
-   function addWithOffer(productId, minQuantity,offerID) {
-        fetch(`/cart/add_with_offer/${productId}/${minQuantity}/${offerID}/`, {
-            method: 'GET',
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest',
-            },
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                // Optionally, you can refresh the cart total displayed on the page
-                // document.getElementById('cart-total').innerText = data.cart_total;
-                location.reload(); // Reload the page to reflect changes
-            } else {
-                alert('Failed to add product with offer.');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-        });
-    }
-</script>
-
-
+    {% include 'products/product_detail/script.html' %}
 {% endblock %}

@@ -1,5 +1,4 @@
 import os
-
 from src.apps.accounts.models import CustomUser
 from src.apps.vendor.models import Vendor
 from django.db import models
@@ -7,11 +6,9 @@ from PIL import Image
 from io import BytesIO
 from django.core.files import File
 from ckeditor.fields import RichTextField
-
 from src.apps.wishlist.models import WishListProduct
 
 
-# PRODUCT PARENT CATEGORY
 
 
 class Category(models.Model):
@@ -220,6 +217,23 @@ class TopPageProduct(models.Model):
         return f"{self.product.name}"
 
 
+
+class LandingPageProduct(models.Model):
+    slide1_product = models.OneToOneField(Product, on_delete=models.CASCADE, related_name='slide1', null=True, blank=True)
+    slide2_product = models.OneToOneField(Product, on_delete=models.CASCADE, related_name='slide2', null=True, blank=True)
+    slide3_product = models.OneToOneField(Product, on_delete=models.CASCADE, related_name='slide3', null=True, blank=True)
+    exc1_offer_product = models.OneToOneField(Product, on_delete=models.CASCADE, related_name='exc1_offer', null=True, blank=True)
+    exc2_offer_product = models.OneToOneField(Product, on_delete=models.CASCADE, related_name='exc2_offer', null=True, blank=True)
+    exc3_offer_product = models.OneToOneField(Product, on_delete=models.CASCADE, related_name='exc3_offer', null=True, blank=True)
+
+    def save(self, *args, **kwargs):
+        # Ensure only one instance of LandingPageProduct exists
+        if not self.pk and LandingPageProduct.objects.exists():
+            raise ValueError("There can only be one LandingPageProduct instance.")
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return "Landing Page Products"
 
 class ProductOffer(models.Model):
     DISCOUNT_TYPE_CHOICES = [

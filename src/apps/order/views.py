@@ -1,19 +1,15 @@
 from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import HttpResponseBadRequest, JsonResponse
+from django.http import HttpResponseBadRequest
 from django.shortcuts import redirect, render
 from django.views import View
-
 from src.apps.cart.cart import Cart
+from src.apps.mixins.auth_mixins import BaseLoginRequiredView, VendorRequiredMixin
 from src.apps.order.models import Order, OrderItem
 from src.apps.product.models import Product
 
-# ORDER PLACE VIEW
 
-class PlaceOrderView(LoginRequiredMixin,View):
-    login_url = '/accounts/login/'  # URL to redirect to if user is not authenticated
-    redirect_field_name = 'next'  # Field to store the URL the user was trying to access
-
+class PlaceOrderView(BaseLoginRequiredView,View):
+    """WHEN USER PLACE ORDER THIS VIEW CALLED ALSO IT WILL CHECK IF USER IS ALREADY LOGE-IN OR NOT"""
     def post(self, request):
         cart = Cart(request)
         user = request.user
@@ -36,16 +32,13 @@ class PlaceOrderView(LoginRequiredMixin,View):
             payment_method=payment_method
         )
         order.save()
-        print("ORDER SAVED...........")
         for product_id, item in cart.cart.items():
             quantity = item['quantity']
-
             try:
                 product = Product.objects.get(id=product_id)  # Get the product
                 if product.stock_quantity < quantity:
                     return HttpResponseBadRequest(f"Not enough stock for product ID {product_id}. Available: {product.stock_quantity}")
 
-                # Create order item
                 order_item = OrderItem.objects.create(order=order, product=product, quantity=quantity)
                 order_item.save()
                 print("ORDER SAVED.......")
@@ -59,16 +52,14 @@ class PlaceOrderView(LoginRequiredMixin,View):
         messages.success(request, "Your order was successful!")
         return redirect('/')
 
-    # ORDER DETAIL VIEW
-
-class OrderDetailView(View):
+class OrderDetailView(BaseLoginRequiredView,View):
+    """IF USER WANT TO SEE ORDER DETAIL"""
     def get(self, request, id):
         try:
             order = Order.objects.get(id=id)
         except Order.DoesNotExist:
             messages.error(request, "Order does not exist.")
             return HttpResponseBadRequest("Order does not exist or you do not have permission to view it.")
-
         return render(request, 'order/order_detail.html', {'order': order})
 
 
@@ -76,7 +67,8 @@ class OrderDetailView(View):
 
               # ORDER LIST VIEW
 
-class UserOrderListView(LoginRequiredMixin, View):
+class UserOrderListView(BaseLoginRequiredView, View):
+    """IF CUSTOMER WANTS TO SEE HIS ORDERS"""
     def get(self, request):
         orders = Order.objects.filter(user=request.user)
         for order in orders:
@@ -87,11 +79,12 @@ class UserOrderListView(LoginRequiredMixin, View):
 # CANCEL ORDER VIEW
 
 
-class CancelOrderView(LoginRequiredMixin, View):
+class CancelOrderView(BaseLoginRequiredView, View):
+    """IF CUSTOMER WANT TO CANCEL HIS ORDER"""
     def post(self, request, order_id):
         try:
             order = Order.objects.get(id=order_id, user=request.user)
-            if order.status == 'pending':  # Allow cancellation only if the order is pending
+            if order.status == 'pending':
                 order.status = 'cancelled'
                 order.save()
                 messages.success(request, "Your order has been cancelled.")
@@ -104,7 +97,21 @@ class CancelOrderView(LoginRequiredMixin, View):
             return redirect('order:user_order_list')
 
 
-class UpdateOrderStatusView(View):
+
+
+
+
+
+
+
+""""....................THESE VIEWS ONLY FOR VENDOR .............."""
+
+
+
+
+class UpdateOrderStatusView(VendorRequiredMixin,View):
+    """THIS VIEW IS SPECIFY ONLY FOR ADMIN AND VENDOR THEY CAN ONLY UPDATE STATUS OF ORDERS"""
+
     def post(self, request, order_id):
         try:
             order = Order.objects.get(id=order_id)
@@ -120,25 +127,22 @@ class UpdateOrderStatusView(View):
 
         return redirect('order:orders')
 
-class OrderListView(LoginRequiredMixin, View):
+class OrderListView(VendorRequiredMixin, View):
+    """ORDER LIST FOR VENDOR"""
     def get(self, request):
-        # Get all products for the vendor
         vendor_products = Product.objects.filter(vendor=request.user.vendor)  # Assuming the user has a related Vendor
-        # Get all orders that contain the vendor's products
         orders = Order.objects.filter(products__in=vendor_products).distinct()
-        print("ORDERS ,",orders)
-        return render(request, 'vendor/order/../../../templates/order/orderlist.html', {'orders': orders})
+        return render(request, 'order/order_list.html', {'orders': orders})
 
 
-class OrderFilterView(LoginRequiredMixin, View):
+class OrderFilterView(VendorRequiredMixin, View):
+    """FILTER ORDER BASED ON STATUS FOR VENDOR"""
     def get(self, request, status):
-        # Get all products for the vendor
-        vendor_products = Product.objects.filter(vendor=request.user.vendor)  # Assuming the user has a related Vendor
-        # Filter orders based on status
+        vendor_products = Product.objects.filter(vendor=request.user.vendor)
         if status == 'ALL':
             orders = Order.objects.filter(products__in=vendor_products).distinct()
         else:
             orders = Order.objects.filter(products__in=vendor_products, status=status.lower()).distinct()
-        return render(request, 'vendor/order/../../../templates/order/orderlist.html', {'orders': orders})
+        return render(request, 'order/orderlist.html', {'orders': orders})
 
 

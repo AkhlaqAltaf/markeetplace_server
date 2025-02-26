@@ -1,0 +1,28 @@
+
+    .add-to-cart {
+        padding: 8px 16px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .add-to-cart:hover {
+        transform: translateY(-2px);
+    }
+
+    .remove-item {
+        padding: 8px 16px;
+        background: white;
+        color: var(--danger-color);
+        border: 1px solid #fecaca;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .remove-item:hover {
+        background: #fef2f2;
+        transform: translateY(-2px);
+    }
+

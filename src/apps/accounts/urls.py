@@ -8,8 +8,8 @@ urlpatterns = [
     path('login/',views.LoginView.as_view(),name="login"),
     path('signup/', views.UserRegistrationView.as_view(), name='signup'),
     path('logout/', views.LogoutView.as_view(), name='logout'),
-    path('verify/<str:token>/', views.verify_email, name='verify_email'),
-    path('forgot-email/', views.Forgot_Email_View, name='forgot_email'),
-    path('verify-email/<str:email>/', views.verify_email, name='verify_email'),
-    path('resend-otp/', views.resend_otp, name='resend_otp'),
+    path('verify/<str:token>/', views.VerifyEmail.as_view(), name='verify_email'),
+    path('forgot-email/', views.ForgotPasswordView.as_view(), name='forgot_email'),
+    path('verify-email/<str:email>/', views.VerifyEmail.as_view(), name='verify_email'),
+    path('resend-otp/', views.ResendOtp.as_view(), name='resend_otp'),
 ]

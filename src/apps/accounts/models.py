@@ -1,11 +1,10 @@
-# accounts/models.py
 
 import random
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.db import models
-from django.core import signing
 from django.utils import timezone
 from django.utils.timezone import now
+
 from src.apps.whisper.main import Mailing
 
 
@@ -110,6 +109,7 @@ class CustomUser(AbstractBaseUser):
     is_superuser = models.BooleanField(default=False)
     date_joined = models.DateTimeField(auto_now_add=True)
     objects = CustomUserManager()
+
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []

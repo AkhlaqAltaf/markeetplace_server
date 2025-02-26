@@ -1,57 +1,77 @@
 
 <script>
-    const thumbnails = document.querySelectorAll("#thumbnail-container img");
-    const mainImage = document.getElementById("main-image");
-    const thumbnailContainer = document.getElementById("thumbnail-container");
-    const thumbUp = document.getElementById("thumb-up");
-    const thumbDown = document.getElementById("thumb-down");
-    const mainLeft = document.getElementById("main-left");
-    const mainRight = document.getElementById("main-right");
+  function changeImage(src) {
+    document.getElementById("mainImage").src = src;
+    const mainImage = document.getElementById("mainImage");
+    mainImage.classList.add("scale-110");
+    setTimeout(() => mainImage.classList.remove("scale-110"), 300);
+  }
 
-    let currentIndex = 0;
+  const container = document.getElementById('scrollContainer');
+  const cards = document.querySelectorAll('a');
+  const pagination = document.getElementById('pagination');
+  const cardsPerPage = 5;
+  let currentPage = 0;
 
-    // Change Main Image on Thumbnail Click
-    thumbnails.forEach((thumbnail, index) => {
-        thumbnail.addEventListener("click", () => {
-            mainImage.src = thumbnail.src;
-            currentIndex = index;
+  function scrollCategories(direction) {
+    const cardWidth = 221;
+    container.scrollBy({
+      left: direction * cardWidth,
+      behavior: 'smooth'
+    });
+  }
+
+  function updatePagination() {
+    const totalPages = Math.ceil(cards.length / cardsPerPage);
+    pagination.innerHTML = '';
+
+    for (let i = 0; i < totalPages; i++) {
+      const dot = document.createElement('div');
+      dot.className = `h-2 w-2 rounded-full ${i === currentPage ? 'bg-[#0B5D51]' : 'bg-gray-300'}`;
+      pagination.appendChild(dot);
+    }
+  }
+
+  container.addEventListener('scroll', () => {
+    currentPage = Math.round(container.scrollLeft / (221 * cardsPerPage));
+    updatePagination();
+  });
+
+  updatePagination();
+
+  function toggleVisibility(section,id) {
+    const changebg = document.getElementById(id);
+
+    const element = document.getElementById(section);
+    if (element.classList.contains('hidden')) {
+      element.classList.remove('hidden');
+      changebg.style.backgroundColor = "#0B5D51";
+      changebg.style.color = "white";
+    } else {
+      element.classList.add('hidden');
+      changebg.style.backgroundColor = "#F3F4F6";
+      changebg.style.color = "#0B5D51";
+    }
+  }
+   function addWithOffer(productId, minQuantity,offerID) {
+        fetch(`/cart/add_with_offer/${productId}/${minQuantity}/${offerID}/`, {
+            method: 'GET',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Optionally, you can refresh the cart total displayed on the page
+                // document.getElementById('cart-total').innerText = data.cart_total;
+                location.reload(); // Reload the page to reflect changes
+            } else {
+                alert('Failed to add product with offer.');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
         });
-    });
-
-    // Scroll Thumbnail Up/Down
-    let scrollAmount = 0;
-    thumbUp.addEventListener("click", () => {
-        scrollAmount = Math.max(scrollAmount - 50, 0);
-        thumbnailContainer.firstElementChild.style.transform = `translateY(-${scrollAmount}px)`;
-    });
-
-    thumbDown.addEventListener("click", () => {
-        const maxScroll = thumbnailContainer.scrollHeight - thumbnailContainer.clientHeight;
-        scrollAmount = Math.min(scrollAmount + 50, maxScroll);
-        thumbnailContainer.firstElementChild.style.transform = `translateY(-${scrollAmount}px)`;
-    });
-
-    // Scroll Main Image Left/Right
-    mainLeft.addEventListener("click", () => {
-        currentIndex = (currentIndex - 1 + thumbnails.length) % thumbnails.length;
-        mainImage.src = thumbnails[currentIndex].src;
-    });
-
-    mainRight.addEventListener("click", () => {
-        currentIndex = (currentIndex + 1) % thumbnails.length;
-        mainImage.src = thumbnails[currentIndex].src;
-    });
-
-
-    function toggleSection(sectionId, headId) {
-        const section = document.getElementById(sectionId);
-        const head = document.getElementById(headId);
-        if (section.classList.contains('hidden')) {
-            section.classList.remove('hidden');
-            head.classList.add('text-black', 'font-semibold');
-        } else {
-            section.classList.add('hidden');
-            head.classList.remove('text-black', 'font-semibold');
-        }
     }
 </script>

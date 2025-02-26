@@ -1,6 +1,5 @@
 from django import forms
 from src.apps.product.models import Category, Product, Media, SubCategory, Offer
-from ckeditor.widgets import CKEditorWidget
 
 class CategoryCreateForm(forms.ModelForm):
     class Meta:

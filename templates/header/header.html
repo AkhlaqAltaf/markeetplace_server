@@ -5,11 +5,11 @@
         <a href="/"> <img src="{% static 'assets/logo-2.png' %}" alt="Logo" class="w-12 h-12"></a>
     </div>
     <nav id="menu1" class="mx-auto hidden md:flex md:space-x-3 lg:space-x-6">
-        <a href="#" class="lg:text-lg md:text-sm hover:text-[#0D9488]">Home</a>
-        <a href="#" class="lg:text-lg md:text-sm hover:text-[#0D9488]">Shop</a>
+        <a href="/" class="lg:text-lg md:text-sm hover:text-[#0D9488]">Home</a>
+        <a href="{% url 'product:all-product'%}" class="lg:text-lg md:text-sm hover:text-[#0D9488]">Shop</a>
         <a href="#" class="lg:text-lg md:text-sm hover:text-[#0D9488]">Categories</a>
-        <a href="#" class="lg:text-lg md:text-sm hover:text-[#0D9488]">Contact Us</a>
-        <a href="#" class="lg:text-lg md:text-sm hover:text-[#0D9488]">About Us</a>
+        <a href="{% url 'core:contact' %}" class="lg:text-lg md:text-sm hover:text-[#0D9488]">Contact Us</a>
+        <a href="{% url 'core:about' %}" class="lg:text-lg md:text-sm hover:text-[#0D9488]">About Us</a>
     </nav>
     <div class="flex space-x-4">
         <div class="w-8 h-8 bg-gray-300 hover:bg-[#0D9488] rounded-full flex items-center justify-center">
