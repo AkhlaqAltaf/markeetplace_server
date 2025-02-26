@@ -7,19 +7,19 @@ function  test(){
 }
 const slides = [
     {
-        image: "{{ top_product.slide1_product.media.1.file.url|safe }}",
+        image: "{{ top_product.slide1_product.media.all.0.file.url|safe }}",
         link: "{% url 'product:product-detail' top_product.slide1_product.id %}",
         btntext: 'Shop Now',
         style: "bg-teal-700 text-white px-4 py-2 rounded"
     },
     {
-        image: "{{ top_product.slide2_product.media.1.file.url|safe }}",
+        image: "{{ top_product.slide2_product.media.all.0.file.url|safe }}",
         link: "{% url 'product:product-detail' top_product.slide2_product.id %}",
         btntext: 'Shop Now',
         style: "bg-blue-500 text-white px-4 py-2 rounded"
     },
     {
-        image: "{{ top_product.slide3_product.media.1.file.url|safe }}",
+        image: "{{ top_product.slide3_product.media.all.0.file.url|safe }}",
         link: "{% url 'product:product-detail' top_product.slide1_product.id %}",
         btntext: 'Shop Now',
         style: "bg-red-500 text-white px-4 py-2 rounded"
