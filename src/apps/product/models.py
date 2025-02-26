@@ -165,15 +165,13 @@ class Review(models.Model):
     def __str__(self):
         return f"Review for {self.product.name} by {self.user.name}"
 
-# PRODUCT MEDIA
-
 class Media(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="media")
+    product = models.ForeignKey("Product", on_delete=models.CASCADE, related_name="media")
     file = models.FileField(upload_to="products/", default='https://via.placeholder.com/240x180.jpg')
-    media_type = models.CharField(max_length=10, editable=False)  # Editable is False to set it programmatically.
+    media_type = models.CharField(max_length=10, editable=False)
     is_primary = models.BooleanField(default=False)
 
-    def make_thumbnail(self, image, size=(300, 200)):
+    def make_thumbnail(self, image, size=(536, 536)):
         """
         Generate a thumbnail for the uploaded image.
         """
@@ -184,24 +182,27 @@ class Media(models.Model):
         img.thumbnail(size)
 
         thumb_io = BytesIO()
-        img.save(thumb_io, 'JPEG', quality=85)
+        img.save(thumb_io, 'JPEG', quality=100)
 
-        thumbnail = File(thumb_io, name=image.name)
+        unique_name = f"{uuid.uuid4().hex}.jpg"  # Generate a unique filename
+        thumbnail = File(thumb_io, name=unique_name)
         return thumbnail
 
     def save(self, *args, **kwargs):
         """
-        Override the save method to handle file type and dynamically set media_type.
+        Override the save method to ensure unique filenames and handle file type detection.
         """
         if self.file:
-            # Extract the file extension
             ext = os.path.splitext(self.file.name)[1].lower()
 
-            # Check the file type and set media_type accordingly
+            # Generate a unique filename
+            unique_filename = f"{uuid.uuid4().hex}{ext}"
+            self.file.name = os.path.join("products/", unique_filename)
+
+            # Set media type based on file extension
             if ext in ['.jpg', '.jpeg', '.png']:
                 self.media_type = 'image'
-                # Generate a thumbnail for images
-                self.file = self.make_thumbnail(self.file)
+                self.file = self.make_thumbnail(self.file)  # Generate a thumbnail
             elif ext in ['.mp4', '.avi', '.mov', '.mkv']:
                 self.media_type = 'video'
             elif ext in ['.glb', '.gltf', '.obj', '.fbx']:
@@ -209,8 +210,7 @@ class Media(models.Model):
             else:
                 raise ValueError(f"Unsupported file type: {ext}. Only images, videos, and 3D models are allowed.")
 
-        super().save(*args, **kwargs)  # Call the original save method
-
+        super().save(*args, **kwargs)
 
 class TopPageProduct(models.Model):
     product = models.OneToOneField(Product, on_delete=models.CASCADE, related_name='top_page')
