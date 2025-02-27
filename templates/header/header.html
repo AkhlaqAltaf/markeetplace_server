@@ -1,95 +1,61 @@
 {% load static %}
 
-<header class="fixed top-4 left-1/2 transform -translate-x-1/2 bg-white rounded-b-2xl shadow-md w-11/12 md:w-5/12 lg:w-3/4 p-2 flex justify-between items-center z-50">
+<header id="navbar" class="fixed top-4 left-1/2 transform -translate-x-1/2 bg-white rounded-b-2xl shadow-md w-11/12 md:w-8/11 lg:w-3/4 p-2 flex justify-between items-center z-50 transition-all duration-300">
     <div class="flex items-center space-x-2">
-        <a href="/"> <img src="{% static 'assets/logo-2.png' %}" alt="Logo" class="w-12 h-12"></a>
+        <a href="/"> 
+            <img src="{% static 'assets/logo-2.png' %}" alt="Logo" class="w-12 h-12">
+        </a>
     </div>
-    <nav id="menu1" class="mx-auto hidden md:flex md:space-x-3 lg:space-x-6">
+    <nav id="menu1" class="hidden md:flex md:space-x-3 lg:space-x-6">
         <a href="/" class="lg:text-lg md:text-sm hover:text-[#0D9488]">Home</a>
-        <a href="{% url 'product:all-product'%}" class="lg:text-lg md:text-sm hover:text-[#0D9488]">Shop</a>
-        <div class="relative group">
-            <a href="#" class="lg:text-lg md:text-sm hover:text-[#0D9488]">Categories</a>
-            <div class="absolute left-1/2 transform -translate-x-1/2 top-full bg-[#A7C1C5]/90 shadow-lg hidden group-hover:flex flex-col items-center p-6 z-50 w-[750px] rounded-lg">
-                <div class="flex flex-wrap justify-center items-start w-full">
-                    <div class="w-full md:w-1/3 lg:w-1/4 p-4 text-center">
-                        <h3 class="text-lg font-semibold text-gray-700">Eyewear</h3>
-                        <ul class="mt-2 space-y-2">
-                            <li><a href="#" class="text-gray-600 hover:text-[#0D9488]">Sunglasses</a></li>
-                            <li><a href="#" class="text-gray-600 hover:text-[#0D9488]">Prescription Glasses</a></li>
-                            <li><a href="#" class="text-gray-600 hover:text-[#0D9488]">Blue Light Glasses</a></li>
-                        </ul>
-                    </div>
-                    <div class="w-full md:w-1/3 lg:w-1/4 p-4 text-center">
-                        <h3 class="text-lg font-semibold text-gray-700">Lenses</h3>
-                        <ul class="mt-2 space-y-2">
-                            <li><a href="#" class="text-gray-600 hover:text-[#0D9488]">Contact Lenses</a></li>
-                            <li><a href="#" class="text-gray-600 hover:text-[#0D9488]">Colored Lenses</a></li>
-                            <li><a href="#" class="text-gray-600 hover:text-[#0D9488]">Multifocal Lenses</a></li>
-                        </ul>
-                    </div>
-                    <div class="w-full md:w-1/3 lg:w-1/4 p-4 text-center">
-                        <h3 class="text-lg font-semibold text-gray-700">Accessories</h3>
-                        <ul class="mt-2 space-y-2">
-                            <li><a href="#" class="text-gray-600 hover:text-[#0D9488]">Lens Cleaners</a></li>
-                            <li><a href="#" class="text-gray-600 hover:text-[#0D9488]">Cases & Holders</a></li>
-                            <li><a href="#" class="text-gray-600 hover:text-[#0D9488]">Eye Drops</a></li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
+        <a href="{% url 'product:all-product' %}" class="lg:text-lg md:text-sm hover:text-[#0D9488]">Shop</a>
+        <a href="#" class="lg:text-lg md:text-sm hover:text-[#0D9488]">Categories</a>
         <a href="{% url 'core:contact' %}" class="lg:text-lg md:text-sm hover:text-[#0D9488]">Contact Us</a>
         <a href="{% url 'core:about' %}" class="lg:text-lg md:text-sm hover:text-[#0D9488]">About Us</a>
     </nav>
-    <div class="flex items-center space-x-3">
-        <div class="relative">
-            <input type="text" placeholder="Search" class="border rounded-full py-2 px-3 md:px-6 pl-10 focus:outline-none focus:ring-2 focus:ring-[#0D9488]">
+    <div class="flex items-center space-x-2">
+       <div class="relative">
+    <input type="text" placeholder="Search" 
+        class="w-40 sm:w-60 md:w-40 lg:w-60 border rounded-full py-1 px-1 md:px-4 lg:px-6 pl-10 focus:outline-none focus:ring-2 focus:ring-[#0D9488]">
+</div>
+        <a href="#" class="text-black text-xl md:text-2xl"><i class="fa fa-shopping-cart"></i></a>
+        <a href="#" class="text-black text-xl md:text-2xl"><i class="fa fa-heart"></i></a>
+        <div class="md:hidden">
+            <button id="menu-btn" class="text-black text-2xl"><i class="fa fa-bars"></i></button>
         </div>
-        <a href="#" class="text-black text-2xl"><i class="fa fa-shopping-cart"></i></a>
-        <a href="#" class="text-black text-2xl"><i class="fa fa-heart"></i></a>
-    </div>
-    <div class="md:hidden">
-        <button id="menu-btn" class="text-black text-2xl"><i class="fa fa-bars"></i></button>
     </div>
 </header>
 
-<div id="mobile-menu" class="bg-cover fixed left-0 w-full bg-[#A7C1C5]/90 shadow-lg transform -translate-x-full transition-transform duration-300 md:hidden flex flex-col items-center p-6 z-50">
+<div id="mobile-menu" class="fixed left-0 top-1/4 w-full h-1/2 bg-[#A7C1C5]/90 shadow-lg transform -translate-x-full transition-transform duration-300 md:hidden flex flex-col items-center justify-center p-6 z-50 rounded-lg">
     <button id="close-menu" class="absolute top-4 right-6 text-3xl text-gray-700 hover:text-black"><i class="fa fa-times"></i></button>
-    <nav class="flex flex-col items-center space-y-6 mt-12">
+    <nav class="flex flex-col items-center space-y-6">
         <a href="#" class="lg:text-lg hover:text-[#0D9488]">Home</a>
         <a href="#" class="lg:text-lg hover:text-[#0D9488]">Shop</a>
-        <div class="relative w-full text-center">
-            <button id="mobile-dropdown-btn" class="lg:text-lg hover:text-[#0D9488] w-full">Categories</button>
-            <div id="mobile-dropdown" class="hidden flex-row mt-2 p-4 space-y-4 w-full">
-                <h3 class="text-lg font-semibold text-gray-700">Eyewear</h3>
-                <a href="#" class="text-gray-600 hover:text-[#0D9488]">Sunglasses</a>
-                <a href="#" class="text-gray-600 hover:text-[#0D9488]">Prescription Glasses</a>
-                <a href="#" class="text-gray-600 hover:text-[#0D9488]">Blue Light Glasses</a>
-                <hr class="border-gray-300">
-                <h3 class="text-lg font-semibold text-gray-700">Lenses</h3>
-                <a href="#" class="text-gray-600 hover:text-[#0D9488]">Contact Lenses</a>
-                <a href="#" class="text-gray-600 hover:text-[#0D9488]">Colored Lenses</a>
-                <a href="#" class="text-gray-600 hover:text-[#0D9488]">Multifocal Lenses</a>
-                <hr class="border-gray-300">
-                <h3 class="text-lg font-semibold text-gray-700">Accessories</h3>
-                <a href="#" class="text-gray-600 hover:text-[#0D9488]">Lens Cleaners</a>
-                <a href="#" class="text-gray-600 hover:text-[#0D9488]">Cases & Holders</a>
-                <a href="#" class="text-gray-600 hover:text-[#0D9488]">Eye Drops</a>
-            </div>
-        </div>
+        <a href="#" class="lg:text-lg hover:text-[#0D9488]">Categories</a>
         <a href="#" class="lg:text-lg hover:text-[#0D9488]">Contact Us</a>
         <a href="#" class="lg:text-lg hover:text-[#0D9488]">About Us</a>
     </nav>
 </div>
+
 <script>
     document.getElementById('menu-btn').addEventListener('click', function() {
-        document.getElementById('mobile-menu').classList.toggle('translate-x-0');
+        document.getElementById('mobile-menu').classList.remove('-translate-x-full');
+        document.getElementById('mobile-menu').classList.add('translate-x-0');
     });
+
     document.getElementById('close-menu').addEventListener('click', function() {
-        document.getElementById('mobile-menu').classList.toggle('translate-x-0');
+        document.getElementById('mobile-menu').classList.remove('translate-x-0');
+        document.getElementById('mobile-menu').classList.add('-translate-x-full');
     });
-    document.getElementById('mobile-dropdown-btn').addEventListener('click', function() {
-        document.getElementById('mobile-dropdown').classList.toggle('hidden');
+    // Navbar scroll effect
+    window.addEventListener("scroll", function() {
+        const navbar = document.getElementById("navbar");
+        if (window.scrollY > 50) {
+            navbar.classList.add("top-0", "left-0", "w-full", "rounded-none", "shadow-lg", "bg-[#A7C1C5]/90");
+            navbar.classList.remove("top-4", "left-1/2", "-translate-x-1/2", "rounded-b-2xl", "w-11/12", "md:w-8/11", "lg:w-3/4", "bg-white");
+        } else {
+            navbar.classList.add("top-4", "left-1/2", "-translate-x-1/2", "rounded-b-2xl", "w-11/12", "md:w-8/11", "lg:w-3/4", "bg-white");
+            navbar.classList.remove("top-0", "left-0", "w-full", "rounded-none", "shadow-lg", "bg-[#A7C1C5]/90");
+        }
     });
 </script>
