@@ -4,15 +4,18 @@
         <h2 class="text-lg font-bold text-teal-900 text-center">{{ category.name }}</h2>
         {% if category.image %}
         <img
-          src="{{ category.image.url }}"
-          alt="{{ category.name }}"
-          class="w-full h-41 object-cover mt-3 rounded-lg shadow-md"
-        />
+        src="{{ category.image.url }}"
+        alt="{{ category.name }}"
+        class="w-full h-14 md:h-48 lg:h-64 object-cover mt-3 rounded-lg shadow-md"
+      />
+      
+
+
         {% else %}
         <img
           src="{% static 'placeholder.png' %}"
           alt="No image available"
-          class="w-full h-41 object-cover mt-3 rounded-lg shadow-md"
+          class="w-full h-14 md:h-48 lg:h-64 object-cover mt-3 rounded-lg shadow-md"
         />
         {% endif %}
       </div>
