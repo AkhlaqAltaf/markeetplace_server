@@ -9,15 +9,11 @@
 
 {% block content %}
 <div class=''>
-<section id="bg-container" class="bg-cover bg-center min-h-screen flex flex-col items-center rounded-3xl  justify-center transition-all duration-700 w-[96%] mx-auto -mt-[5.5rem]" style="background-image: url('../images/v84_120.png');">
-    <h1 class="absolute top-1/2 text-5xl md:text-7xl font-extrabold text-white">Contact Us</h1>
-{% include 'home/script.html' %}
+ <section id="bg-container" class="bg-cover bg-center min-h-screen flex flex-col items-center rounded-3xl  justify-center transition-all duration-700 w-[96%] mx-auto -mt-[5.5rem]"
+           style="background-image: url('{% static 'images/v84_120.png' %}');">
+     <h1 class="absolute top-1/2 text-5xl md:text-7xl font-extrabold text-white">Contact Us</h1>
 
-    <div class="absolute bottom-10 flex space-x-2">
-        <div class="w-4 h-4 bg-teal-700 rounded-full cursor-pointer" onclick="changeBackground(0)"></div>
-        <div class="w-4 h-4 bg-white rounded-full cursor-pointer" onclick="changeBackground(1)"></div>
-        <div class="w-4 h-4 bg-white rounded-full cursor-pointer" onclick="changeBackground(2)"></div>
-    </div>
+
 </section>
 
   <div class="bg-white flex flex-col  items-center min-h-screen  w-[100%] space-y-8">  

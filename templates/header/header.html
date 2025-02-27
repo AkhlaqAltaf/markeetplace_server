@@ -1,6 +1,8 @@
 {% load static %}
-
 <header class="fixed top-4 left-1/2 transform -translate-x-1/2 bg-white rounded-b-2xl shadow-md w-11/12 md:w-5/12 lg:w-3/4 p-2 flex justify-between items-center z-50">
+
+{% include 'header/script.html' %}
+
     <div class="flex items-center space-x-2">
         <a href="/"> <img src="{% static 'assets/logo-2.png' %}" alt="Logo" class="w-12 h-12"></a>
     </div>
@@ -41,6 +43,7 @@
         
         <a href="{% url 'core:contact' %}" class="lg:text-lg md:text-sm hover:text-[#0D9488]">Contact Us</a>
         <a href="{% url 'core:about' %}" class="lg:text-lg md:text-sm hover:text-[#0D9488]">About Us</a>
+
     </nav>
     <div class="flex items-center space-x-3">
         <div class="relative">
@@ -48,6 +51,56 @@
         </div>
         <a href="#" class="text-black text-2xl"><i class="fa fa-shopping-cart"></i></a>
         <a href="#" class="text-black text-2xl"><i class="fa fa-heart"></i></a>
+
+
+    <!-- User Authentication -->
+    <div class="relative">
+        {% if request.user.is_authenticated %}
+            <!-- Logged-in User -->
+            <button id="user-menu-btn" class="flex items-center space-x-2 px-3 py-2 rounded-md border border-gray-300 hover:bg-gray-100">
+                <span class="font-semibold">{{ request.user.username }}</span>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                </svg>
+            </button>
+
+            <!-- Dropdown Menu -->
+            <div id="user-dropdown" class="absolute right-0 mt-2 w-40 bg-white rounded-md shadow-lg hidden">
+                <a href="{% url 'order:user_order_list' %}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Orders</a>
+                <a href="{% url 'accounts:logout' %}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Logout</a>
+            </div>
+        {% else %}
+            <!-- Login Button -->
+            <a href="{% url 'accounts:login' %}" class="px-4 py-2 bg-teal-600 text-white rounded-md hover:bg-teal-700">Login</a>
+        {% endif %}
+    </div>    </nav>
+    <div class="flex space-x-4">
+        <div class="w-8 h-8 bg-gray-300 hover:bg-[#0D9488] rounded-full flex items-center justify-center">
+            <i class="fa fa-search text-black"></i>
+        </div>
+        <a href="{% url 'cart:cart' %}" class="relative group">
+            <div class="w-8 h-8 bg-gray-300 hover:bg-[#0D9488] rounded-full flex items-center justify-center">
+                <i class="fa fa-shopping-cart text-black"></i>
+            </div>
+                  {% if cart %}
+      <span
+        class="absolute -top-2 -right-3 bg-green-700 text-white rounded-full px-2 text-sm group-hover:bg-green-900 transition"
+      >
+        {{ cart.cart_length }}
+      </span>
+      {% endif %}
+        </a>
+        <a href="{% url 'wishlist:wish-list' %}" class="relative group">
+            <div class="w-8 h-8 bg-gray-300 hover:bg-[#0D9488] rounded-full flex items-center justify-center">
+                <i class="fa fa-heart text-black"></i>
+            </div>
+        </a>
+        <a href="{% url 'accounts:accounts' %}" class="relative group">
+            <div class="w-8 h-8 bg-gray-300 hover:bg-[#0D9488] rounded-full flex items-center justify-center">
+                <i class="fa fa-bell text-black"></i>
+            </div>
+        </a>
+
     </div>
     <div class="md:hidden">
         <button id="menu-btn" class="text-black text-2xl"><i class="fa fa-bars"></i></button>
