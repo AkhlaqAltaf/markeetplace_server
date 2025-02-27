@@ -3,10 +3,10 @@
 {% block content %}
 <div id="page" class="bg-gray-50 p-6">
   <div class="max-w-4xl mx-auto bg-white shadow-md p-6 rounded-lg">
-    <h1 class="text-xl font-semibold mb-4">Product Details</h1>
+    <h1 class="text-xl font-semibold mb-4">{{ form.instance.id }}</h1>
 
     <!-- Form Start -->
-    <form id="productForm" action="{% url 'vendor:add' %}" method="POST" enctype="multipart/form-data">
+    <form id="productForm" action="{% url 'vendor:edit_product' form.instance.id  %}" method="POST" enctype="multipart/form-data">
       {% csrf_token %}
 
       {% if form.non_field_errors %}
@@ -34,25 +34,23 @@
         </div>
 
         <div>
-          <label  class="block text-sm font-medium mb-1">Brand Name</label>
+          <label class="block text-sm font-medium mb-1">Brand Name</label>
           <input type="text" name="brand"
             class="w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-orange-500"
-          value="{{ form.brand.value|default:"" }}"
-          >
-                    {% if form.brand.errors %}
-          <div class="text-red-500 text-sm mt-1">
-            {% for error in form.brand.errors %}
-              <p>{{ error }}</p>
-            {% endfor %}
-          </div>
-        {% endif %}
+            value="{{ form.brand.value|default:"" }}">
+          {% if form.brand.errors %}
+            <div class="text-red-500 text-sm mt-1">
+              {% for error in form.brand.errors %}
+                <p>{{ error }}</p>
+              {% endfor %}
+            </div>
+          {% endif %}
         </div>
-
 
         <div>
           <label class="block text-sm font-medium mb-1">Price</label>
           <input type="number" name="price" step="0.1"
-            class="w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-orange-500"
+            class="w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring -orange-500"
             value="{{ form.price.value|default:"" }}">
           {% if form.price.errors %}
             <div class="text-red-500 text-sm mt-1">
@@ -62,22 +60,6 @@
             </div>
           {% endif %}
         </div>
-
-
-        <div>
-          <label class="block text-sm font-medium mb-1">SKU</label>
-          <input type="text" name="sku"
-            class="w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-orange-500"
-            value="{{ form.sku.value|default:"" }}">
-          {% if form.sku.errors %}
-            <div class="text-red-500 text-sm mt-1">
-              {% for error in form.sku.errors %}
-                <p>{{ error }}</p>
-              {% endfor %}
-            </div>
-          {% endif %}
-        </div>
-
 
         <div>
           <label class="block text-sm font-medium mb-1">Barcode</label>
@@ -93,7 +75,6 @@
           {% endif %}
         </div>
 
-
         <div>
           <label class="block text-sm font-medium mb-1">Stock Quantity</label>
           <input type="number" name="stock_quantity"
@@ -108,7 +89,7 @@
           {% endif %}
         </div>
 
-         <div>
+        <div>
           <label class="block text-sm font-medium mb-1">Product Category</label>
           <select name="category" id="categorySelect" class="w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-orange-500">
             <option value="" disabled {% if not form.category.value %}selected{% endif %}>Select Category</option>
@@ -124,8 +105,20 @@
             </div>
           {% endif %}
         </div>
-
-        <div>
+        <div class="hidden">
+          <label class="block text-sm font-medium mb-1">SKU</label>
+          <input type="text" name="sku"
+            class="w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-orange-500"
+            value="{{ form.sku.value|default:"" }}">
+          {% if form.sku.errors %}
+            <div class="text-red-500 text-sm mt-1">
+              {% for error in form.sku.errors %}
+                <p>{{ error }}</p>
+              {% endfor %}
+            </div>
+          {% endif %}
+        </div>
+     <div>
           <label class="block text-sm font-medium mb-1">Sub Category</label>
           <select name="sub_category" id="subcategorySelect" class="w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-orange-500">
             <option value="" disabled {% if not form.sub_category.value %}selected{% endif %}>Select Sub-Category</option>
@@ -144,7 +137,6 @@
           <textarea name="description"
             class="w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-orange-500">
               {{ form.description.value }}
-
           </textarea>
           {% if form.description.errors %}
             <div class="text-red-500 text-sm mt-1">
@@ -155,20 +147,21 @@
           {% endif %}
         </div>
       </div>
-    <div>
-                  <label class="block text-sm font-medium mb-1">Description</label>
 
-                <textarea  name="content" placeholder="Product Details" class="form-control" rows="12" cols="50">
+      <div>
+        <label class="block text-sm font-medium mb-1">Content</label>
+        <textarea name="content" placeholder="Product Details" class="form-control" rows="12" cols="50">
+          {{ form.content.value }}
+        </textarea>
+        {% if form.content.errors %}
+          <div class="text-red-500 text-sm mt-1">
+            {% for error in form.content.errors %}
+              <p>{{ error }}</p>
+            {% endfor %}
+          </div>
+        {% endif %}
+      </div>
 
-                </textarea>
-          {% if form.content.errors %}
-            <div class="text-red-500 text-sm mt-1">
-              {% for error in form.content.errors %}
-                <p>{{ error }}</p>
-              {% endfor %}
-            </div>
-          {% endif %}
-    </div>
       <!-- Uploaded Images Stack -->
       <div id="imageStack" class="flex space-x-4 mt-6 overflow-x-auto"></div>
       <input type="hidden" name="images" id="imagesInput">
@@ -177,10 +170,8 @@
       <div class="w-full mt-6">
         <div class="border-dashed border-2 border-gray-300 p-4 rounded flex justify-center items-center cursor-pointer hover:border-orange-500">
           <label for="uploadImages" class="cursor-pointer">
-            <svg class="w-6 h-6 text-gray-500 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-              stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M3 16l-1 5h19l-1-5m-4-4V3H8v9m5 7l1.4-1.6L21 20M8 3H7V5M17 3h-1v2M7 20h10M4 3l1 2 2 3M20 5l-1 2-2 3" />
+            <svg class="w-6 h-6 text-gray-500 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 16l-1 5h19l-1-5m-4-4V3H8v9m5 7l1.4-1.6L21 20M8 3H7V5M17 3h-1v2M7 20h10M4 3l1 2 2 3M20 5l-1 2-2 3" />
             </svg>
             <input type="file" name="images" id="uploadImages" class="hidden" multiple accept="image/*">
             <p class="text-sm mt-2 text-gray-500">Upload Images</p>
@@ -194,20 +185,18 @@
           </div>
         {% endif %}
       </div>
+
       <!-- ADD OFFER SECTION -->
       <h2 class="text-lg font-semibold mt-6 mb-3">Offers</h2>
-      <div class="offer-form" id="offer-container">
+      <div class="offer-form" id="offer-container"></div>
 
-      </div>
-
-      <button type="button" id="addOfferButton"
-        class="bg-green-500 text-white px-4 py-2 rounded mt-2">
+      <button type="button" id="addOfferButton" class="bg-green-500 text-white px-4 py-2 rounded mt- 2">
         + Add Offer
       </button>
       <!-- Submit Button -->
       <div class="mt-6">
         <button type="submit" class="w-full py-2 bg-[#0B5D51] text-white font-semibold rounded-lg focus:outline-none focus:ring-2">
-          Submit
+          Update Product
         </button>
       </div>
     </form>
@@ -215,5 +204,5 @@
   </div>
 </div>
 
-{% include "vendor/add_product/script.html" %}
+{% include "vendor/add_product/edit_script.html" %}
 {% endblock content %}

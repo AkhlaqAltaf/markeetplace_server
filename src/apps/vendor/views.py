@@ -1,56 +1,44 @@
 import binascii
 import json
-from multiprocessing import context
 import uuid
-
+from datetime import datetime
 from django.contrib import messages
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import get_object_or_404
-from django.utils.decorators import method_decorator
-# Converting Title into Slug
-from django.utils.text import slugify
-from django.views import View
-from django.views.decorators.csrf import csrf_exempt
-from django.views.generic import CreateView, UpdateView, DetailView
-from datetime import datetime
-
+from django.core.files.base import ContentFile
 from django.core.serializers import serialize
-
+from django.shortcuts import get_object_or_404
+from django.views import View
+from django.views.generic import CreateView, UpdateView, DetailView
 from src.apps.accounts.models import CustomUser
-
 from src.apps.product.forms import ProductForm, OfferForm
-
-from src.apps.product.models import Category, SubCategory, Tag, Media, Product, ProductOffer, OrderOffer
+from src.apps.product.models import Category, SubCategory, Media, Product, ProductOffer, OrderOffer
 from src.apps.vendor.forms import VendorForm, ProductOfferForm, OrderOfferForm
 from src.apps.vendor.models import Vendor
 from .mixins import CheckVendorMixin
-import base64
-from django.core.files.base import ContentFile
-
-from ..order.models import Order
-
-
-# Create your views here.
+from ..order.models import Order, OrderItem
+from django.db.models import Sum
+from datetime import datetime, timedelta
 
 
-def vendors(request):
-    return render(request, 'vendor/vendors.html')
+class  Vendors(View):
+    """THIS VIEW IS FOR SHOWING LIST OF REVIEWS"""
+    template_name = 'vendors/vendors.html'
+    def get(self, request):
+        return render(request, self.template_name)
 
 
 class BecomeVendorView(View):
+    """BECOME VENDOR VIEW"""
     template_name = 'vendor/become_vendor.html'
-
     def get(self, request):
         if request.user.is_authenticated:
             vendor_form = VendorForm()
             return render(request, self.template_name, {'form': vendor_form})
         else:
             return redirect('/accounts')
-
     def post(self, request):
         vendor_form = VendorForm(request.POST, request.FILES)
-
         if vendor_form.is_valid():
             user = request.user
             Vendor.objects.create(
@@ -61,84 +49,83 @@ class BecomeVendorView(View):
                 cr_file=vendor_form.cleaned_data['cr_file'],
                 created_by=user,
             )
-
             login(request, user)
             return redirect('core:home')
-
         return render(request, self.template_name, {'form': vendor_form})
 
 
 class VendorSiteView(CheckVendorMixin, View):
-    template_name = 'vendor/Analytics.html'
+    """VENDOR SITE VIEW AND ANALYTICS PAGE VIEW"""
+    template_name = 'vendor/analytics/analytics.html'
 
     def get(self, request):
-        # Get the vendor object
-        
         vendor = request.user.vendor
         user = CustomUser.objects.filter(name=vendor).first()
         if not user:
             return render(request, self.template_name, {"error": "Vendor not found."})
 
-        # Filter delivered orders for the vendor
-        delivered_orders = Order.objects.filter(user=user.id, status='delivered')
+        delivered_orders = Order.objects.filter(status='delivered', products__vendor=vendor).distinct()
 
-        # Initialize total sales counter and product list
-        totalSales = 0
+        total_sales = 0
+        total_cost = 0
         products = Product.objects.filter(vendor=vendor).order_by('-stock_quantity')
 
-
         for order in delivered_orders:
-            order_items = order.orderitem_set.all()  # Access the related OrderItem instances
+            order_items = order.orderitem_set.all()
             for order_item in order_items:
-                product = order_item.product  # Get the associated product for each order item
-                product_offer = ProductOffer.objects.filter(products=product).first()  # Get the first matching offer for the product
-                
-                # Calculate total sales based on the discount type
+                product = order_item.product
+                product_offer = ProductOffer.objects.filter(products=product).first()
                 if product_offer:
                     if product_offer.discount_type == 'percentage':
-                        # Apply percentage discount
-                        totalSales += (product.price - (product.price * (product_offer.discount_value / 100))) * order_item.quantity
+                        total_sales += ((product.price - (
+                                    product.price * (product_offer.discount_value / 100)))
+                                        * order_item.quantity)
                     elif product_offer.discount_type == 'fixed':
-                        # Apply fixed discount
-                        totalSales += (product.price - product_offer.discount_value) * order_item.quantity
-                    else:
-                        # No discount, use original price
-                        totalSales += product.price * order_item.quantity
+                        total_sales += ((product.price - product_offer.discount_value)
+                                        * order_item.quantity)
                 else:
-                    # No offer, use the original price
-                    totalSales += product.price * order_item.quantity
+                    total_sales += product.price * order_item.quantity
 
-        # Prepare context with filtered products and total sales
+                total_cost += product.price * order_item.quantity
+        total_profit = total_sales - total_cost
+        top_selling_products = OrderItem.objects.filter(order__products__vendor=
+                                                        vendor).values('product').annotate(
+            total_quantity=Sum('quantity')).order_by('-total_quantity')[:5]
+        top_products = Product.objects.filter(id__in=[item['product']
+                                                      for item in top_selling_products])
+
+        under_review_count = Product.objects.filter(vendor=vendor, status='review').count()
+        active_count = Product.objects.filter(vendor=vendor, status='active').count()
+        out_of_stock_count = Product.objects.filter(vendor=vendor, stock_quantity=0).count()
+        not_sold_count = sum(1 for product in products if product.get_total_sales() == 0)
+        today = datetime.now()
+        start_of_month = today.replace(day=1)
+        end_of_month = (start_of_month + timedelta(days=31)).replace(day=1)
+        sales_revenue_data = []
+        for day in range(1, (end_of_month - start_of_month).days):
+            date = start_of_month + timedelta(days=day - 1)
+            daily_sales = \
+            OrderItem.objects.filter(order__products__vendor=vendor,
+                                     order__created_at__date=date).aggregate(
+                total_sales=Sum('quantity'))['total_sales'] or 0
+            sales_revenue_data.append(daily_sales)
+
         context = {
             "products": products,
-            "total_sales": totalSales,
-            }
-
+            "total_sales": total_sales,
+            "total_cost": total_cost,
+            "total_profit": total_profit,
+            "top_products": top_products,
+            "under_review_count": under_review_count,
+            "active_count": active_count,
+            "out_of_stock_count": out_of_stock_count,
+            "not_sold_count": not_sold_count,
+            "sales_revenue_data": sales_revenue_data,
+            "current_month": start_of_month.strftime("%B %Y"),
+        }
         return render(request, self.template_name, context)
 
 
-class VendorAdminView(CheckVendorMixin, View):
-    """This VIEW is For Vendor Admin Side"""
-    template_name = 'vendor/Analytics.html'
-    def get(self, request, *args, **kwargs):
-        vendor = request.user.vendor
-        products = vendor.products.all()
-        orders = vendor.orders.all()
-
-        for order in orders:
-            order.vendor_amount = 0
-            order.vendor_paid_amount = 0
-            order.fully_paid = True
-
-            for item in order.items.all():
-                if item.vendor == vendor:
-                    if item.vendor_paid:
-                        order.vendor_paid_amount += item.get_total_price()
-                    else:
-                        order.vendor_amount += item.get_total_price()
-                        order.fully_paid = False
-
-        return render(request, self.template_name, {'vendor': vendor, 'products': products, 'orders': orders})
 
 
 
@@ -182,84 +169,256 @@ class VendorDetailView(View):
     
     
     
+from django.shortcuts import render, get_object_or_404, redirect
+from django.views import View
 
-class AddProductView(CreateView):
-    
+import json
+import base64
+from django.core.files.base import ContentFile
+from datetime import datetime
+
+class BaseProductView(View):
+    """Base view for creating and editing products."""
+
+    def get_categories(self):
+        return Category.objects.all()
+
+    def get_images(self, product):
+        media_files = product.media.all()
+        return [media.file.url for media in media_files]
+
+    def handle_offers(self, product, request):
+        discount_percentages = request.POST.getlist('discount_percentage')
+        min_quantities = request.POST.getlist('min_quantity')
+        max_quantities = request.POST.getlist('max_quantity')
+
+        for i in range(len(discount_percentages)):
+            offer_data = {
+                'product': product,
+                'discount_percentage': discount_percentages[i],
+                'min_quantity': min_quantities[i],
+                'max_quantity': max_quantities[i] if i < len(max_quantities) else None,
+            }
+            offer_form = OfferForm(offer_data)
+
+            if offer_form.is_valid():
+                offer_form.save()
+            else:
+                print(offer_form.errors)
+
+    def handle_images(self, images_data, product):
+        if images_data:
+            images_data = json.loads(images_data[0])
+        else:
+            images_data = []
+        for image in images_data:
+            file = self.convert_base64_image(image)
+            if file:
+                Media.objects.create(product=product, file=file)
+    def convert_base64_image(self, base64_data):
+        if base64_data.startswith("data:image"):
+            data = base64_data.split(",")[1]  # Remove the data:image part
+            file_data = base64.b64decode(data)  # Decode the base64 string into binary data
+            file_name = f"{datetime.now()}.jpg"  # Generate a unique file name
+            return ContentFile(file_data, name=file_name)
+        return None
+
+
+class AddProductView(BaseProductView):
+    """View for creating a single product."""
+
     def get(self, request, *args, **kwargs):
-        # Create an empty form and fetch categories and origins for the dropdowns
         form = ProductForm()
         offer_form = OfferForm()
-        categories = Category.objects.all()
-        return render(request, 'vendor/add_product/addproduct.html', context={"categories": categories,'form': form, "offer_form": offer_form})
-    def post(self,request, *args, **kwargs):
+        categories = self.get_categories()
+        images = []
+        product_id = request.GET.get('product_id')
+
+        if product_id:
+            product = get_object_or_404(Product, id=product_id)
+            images = self.get_images(product)
+
+        return render(request, 'vendor/add_product/addproduct.html', {
+            "categories": categories,
+            "form": form,
+            "offer_form": offer_form,
+            "images": json.dumps(images),
+        })
+
+    def post(self, request, *args, **kwargs):
         form = ProductForm(request.POST)
-        print(request.POST.get('sub_category'))
+        images_data = request.POST.getlist('images')
 
-
-        images_data = None
         if form.is_valid():
             product = form.save(commit=False)
             product.vendor = request.user.vendor
             product.save()
 
+            self.handle_offers(product, request)
+            self.handle_images(images_data, product)
 
+            return redirect('vendor:add')
 
-            # Collect offers data
-            discount_percentages = request.POST.getlist('discount_percentage')
-            min_quantities = request.POST.getlist('min_quantity')
-            max_quantities = request.POST.getlist('max_quantity')
+        else:
+            categories = self.get_categories()
+            return render(request, 'vendor/add_product/addproduct.html', {
+                "categories": categories,
+                "form": form,
+                "images": json.dumps(images_data),
+                "offer_form": OfferForm()
+            })
 
-            # Loop through the offers and create Offer instances
-            for i in range(len(discount_percentages)):
+class BulkUploadProductView(BaseProductView):
+    """View for bulk uploading products."""
+
+    def get(self, request, *args, **kwargs):
+        categories = self.get_categories()
+        return render(request, 'vendor/add_product/add_bulk_products.html', {
+            "categories": categories,
+        })
+
+    def post(self, request, *args, **kwargs):
+        print("POST REQUEST...")
+        print("Request Body:", request.body)  # Log the request body
+
+        try:
+            # Parse the JSON data from the request body
+            products_data = json.loads(request.body)  # Expecting JSON data from the frontend
+            print("Parsed Products Data:", products_data)  # Log the parsed data
+
+            for product_data in products_data:
+                print("Processing Product Data:", product_data)  # Log each product data
+
+                # Create a form instance with the product data
+                form = ProductForm(product_data)
+
+                if form.is_valid():
+                    product = form.save(commit=False)
+                    product.vendor = request.user.vendor
+                    product.save()
+
+                    # Handle offers if they exist
+                    if 'offers' in product_data:
+                        self.handle_offers(product, product_data)
+
+                    # Handle images if they exist
+                    if 'images' in product_data:
+                        self.handle_images(product_data['images'], product)
+
+                else:
+                    print("Form Errors:", form.errors)  # Log errors for debugging
+
+            return JsonResponse({"message": "Products uploaded successfully!"}, status=201)
+
+        except json.JSONDecodeError:
+            return JsonResponse({"error": "Invalid JSON data"}, status=400)
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+    def handle_offers(self, product, product_data):
+        if 'offers' in product_data:
+            for offer in product_data['offers']:
                 offer_data = {
-                    'product': product,  # Set the product instance
-                    'discount_percentage': discount_percentages[i],
-                    'min_quantity': min_quantities[i],
-                    'max_quantity': max_quantities[i] if i < len(max_quantities) else None,
+                    'product': product,
+                    'discount_percentage': offer.get('discount_percentage'),
+                    'min_quantity': offer.get('min_quantity'),
+                    'max_quantity': offer.get('max_quantity'),
                 }
                 offer_form = OfferForm(offer_data)
 
                 if offer_form.is_valid():
                     offer_form.save()
-                    print("Offer saved...")
                 else:
-                    print(offer_form.errors)  # Log errors for debugging
-            # Process images if provided
-            images_data = request.POST.getlist('images')
-            
-            if images_data:
-                images_data = json.loads(images_data[0])  # Parse the base64 image data
-            else:
-                images_data = []  
-            
+                    print(offer_form.errors)
+
+    def handle_images(self, images_data, product):
+        if images_data:
             for image in images_data:
                 file = self.convert_base64_image(image)
-                if file:  # If the file is valid, save the media
-                    media = Media.objects.create(product=product, file=file)
-            
-            print("Form validated successfully")
-            return redirect('vendor:add')  # Redirect after successful form submission
-        
+                if file:
+                    Media.objects.create(product=product, file=file)
+
+    def convert_base64_image(self, base64_data):
+        if base64_data.startswith("data:image"):
+            data = base64_data.split(",")[1]  # Remove the data:image part
+            file_data = base64.b64decode(data)  # Decode the base64 string into binary data
+            file_name = f"{timezone.now().timestamp()}.jpg"  # Generate a unique file name
+            return ContentFile(file_data, name=file_name)
+        return None
+
+
+class EditProductView(BaseProductView):
+    """View for editing an existing product."""
+
+    def get(self, request, product_id, *args, **kwargs):
+        product = get_object_or_404(Product, id=product_id)
+        form = ProductForm(instance=product)
+        offer_form = OfferForm()
+        categories = self.get_categories()
+        images = self.get_images(product)
+
+        return render(request, 'vendor/add_product/edit_product.html', {
+            "categories": categories,
+            "form": form,
+            "offer_form": offer_form,
+            "images": json.dumps(images)
+        })
+
+    def post(self, request, product_id, *args, **kwargs):
+        product = get_object_or_404(Product, id=product_id)
+        form = ProductForm(request.POST, instance=product)
+        images_data = request.POST.getlist('images')  # Get new images from the request
+
+        if form.is_valid():
+            product = form.save(commit=False)
+            product.vendor = request.user.vendor
+            product.save()
+
+            # Handle offers if needed
+            self.handle_offers(product, request)
+
+            # Handle new images
+            self.handle_images(images_data, product)
+
+            return redirect('product:product-detail', product.id)
+
         else:
-            print("Form submission failed", form.errors)
-            # In case the form is invalid, re-render the form with categories and origins
-            categories = Category.objects.all()
+            categories = self.get_categories()
+            images = self.get_images(product)
+            return render(request, 'vendor/add_product/edit_product.html', {
+                "categories": categories,
+                "form": form,
+                "offer_form": OfferForm(),
+                "images": json.dumps(images)
+            })
 
-            return render(request, 'vendor/add_product/addproduct.html', context={"categories": categories ,'form': form,'images':images_data,            "offer_form": OfferForm()
-})
-
-    def convert_base64_image(self,base64_data):
-        data = next(iter(base64_data.values()))
-        if data.startswith("data:image"):
-            data = data.split(",")[1]  # Remove the data:image part
-        file_data = base64.b64decode(data)  # Decode the base64 string into binary data
-        file_name = datetime.now()  # Generate a unique file name using the current timestamp
-        content_file = ContentFile(file_data, name=f"{file_name}.jpg")
-        print(content_file)
-        return content_file
+class DeleteImageView(View):
+    """View to delete an image from media."""
+    def post(self, request, *args, **kwargs):
+        print("REQUEST HIT...")
+        image_url = request.POST.get('img_url')
+        product = request.POST.get('product')
+        media_all = Product.objects.get(id=product).media.all()
 
 
+        print(image_url)
+        if not image_url:
+            return JsonResponse({'error': 'Image URL is required.'}, status=400)
+        elif not product:
+            return JsonResponse({'error': 'Product is required.'}, status=400)
 
+        try:
+
+            for media in media_all:
+                print(media.file.url)
+                if image_url != media.file.url:
+                    print("MEDIA DELETED")
+                    media.delete()
+            return JsonResponse({'success': 'Image deleted successfully.'})
+
+        except Media.DoesNotExist:
+            return JsonResponse({'error': 'Image not found.'}, status=404)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
 class AddBulkProductsView(View):
 
     def get(self, request):
@@ -410,7 +569,7 @@ def register(request):
 
 
 def storeAnalytics(request):
-    return render(request, 'vendor/Analytics.html')
+    return render(request, 'vendor/analytics/analytics.html')
 def OrderList(request):
     return render(request, 'vendor/order/orderlist.html')
 def OrderDetails(request):
@@ -475,54 +634,54 @@ class VendorProductListView(View):
 
 
 
-class EditProductView(UpdateView):
-    model = Product
-    form_class = ProductForm
-    pk_url_kwarg = 'pk'
-
-    def post(self, request, *args, **kwargs):
-        product = get_object_or_404(Product, pk=kwargs.get(self.pk_url_kwarg))
-        form = self.get_form()
-
-        if form.is_valid():
-            # Save the product details
-            self.object = form.save()
-            print(f"FORM SAVED{ self.object}")
-            # Handle image updates
-            images_data = request.POST.getlist('images')
-            if images_data:
-                images_data = json.loads(images_data[0])  # Decode JSON string into a list
-            else:
-                images_data = []
-
-            # Clear existing media files for the product
-            Media.objects.filter(product=product).delete()
-
-            # Save new images
-            for image in images_data:
-                file = self.convert_base64_image(image)
-                if file:
-                    Media.objects.create(product=product, file=file)
-
-            return JsonResponse({'success': True, 'message': 'Product updated successfully'})
-        else:
-            print(f"NOT SUCCESS {form.errors}")
-            return JsonResponse({'success': False, 'errors': form.errors})
-
-    def convert_base64_image(self, base64_data):
-        """
-        Converts a base64 image string into a Django ContentFile.
-        """
-        data = next(iter(base64_data.values()))
-        if data.startswith("data:image"):
-            data = data.split(",")[1]
-        try:
-            file_data = base64.b64decode(data)
-            content_file = ContentFile(file_data, name=f"{uuid.uuid4()}.jpg")
-            return content_file
-        except Exception as e:
-            print(f"Error decoding base64 image: {e}")
-            return None
+# class EditProductView(UpdateView):
+#     model = Product
+#     form_class = ProductForm
+#     pk_url_kwarg = 'pk'
+#
+#     def post(self, request, *args, **kwargs):
+#         product = get_object_or_404(Product, pk=kwargs.get(self.pk_url_kwarg))
+#         form = self.get_form()
+#
+#         if form.is_valid():
+#             # Save the product details
+#             self.object = form.save()
+#             print(f"FORM SAVED{ self.object}")
+#             # Handle image updates
+#             images_data = request.POST.getlist('images')
+#             if images_data:
+#                 images_data = json.loads(images_data[0])  # Decode JSON string into a list
+#             else:
+#                 images_data = []
+#
+#             # Clear existing media files for the product
+#             Media.objects.filter(product=product).delete()
+#
+#             # Save new images
+#             for image in images_data:
+#                 file = self.convert_base64_image(image)
+#                 if file:
+#                     Media.objects.create(product=product, file=file)
+#
+#             return JsonResponse({'success': True, 'message': 'Product updated successfully'})
+#         else:
+#             print(f"NOT SUCCESS {form.errors}")
+#             return JsonResponse({'success': False, 'errors': form.errors})
+#
+#     def convert_base64_image(self, base64_data):
+#         """
+#         Converts a base64 image string into a Django ContentFile.
+#         """
+#         data = next(iter(base64_data.values()))
+#         if data.startswith("data:image"):
+#             data = data.split(",")[1]
+#         try:
+#             file_data = base64.b64decode(data)
+#             content_file = ContentFile(file_data, name=f"{uuid.uuid4()}.jpg")
+#             return content_file
+#         except Exception as e:
+#             print(f"Error decoding base64 image: {e}")
+#             return None
 
 
 

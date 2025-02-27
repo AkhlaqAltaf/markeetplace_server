@@ -1,21 +1,19 @@
 {% extends 'vendor/main/base.html' %}
 
-  {% block content %}
-  <div class="p-10">
+{% block content %}
+<div class="p-10">
 
   <!-- Header -->
-  <div class="flex flex-col sm:flex-row justify-between items-center mb-4 ">
+  <div class="flex flex-col sm:flex-row justify-between items-center mb-4">
     <h1 class="text-3xl text-black font-bold">Orders</h1>
-
   </div>
 
   <!-- Filters -->
   <div class="flex flex-wrap space-x-4 mb-4">
-    <button class="text-teal-700 border-b-4 border-teal-700 pb-1 mb-2 sm:mb-0" onclick="filterOrders('ALL')">All</button>
-    <button class="text-gray-500 hover:text-teal-700 mb-2 sm:mb-0" onclick="filterOrders('pending')">Pending</button>
-    <button class="text-gray-500 hover:text-teal-700 mb-2 sm:mb-0" onclick="filterOrders('ready_t0_ship')">Completed</button>
-          <button class="text-gray-500 hover:text-teal-700 mb-2 sm:mb-0" onclick="filterOrders('canceled')">Cancel</button>
-
+    <a class="text-teal-700 border-b-4 border-teal-700 pb-1 mb-2 sm:mb-0 {% if filter == 'ALL' %}border-teal-700{% else %}border-transparent{% endif %}" href="{% url 'order:order_filter' 'ALL' %}">All</a>
+    <a class="text-teal-700 border-b-4 pb-1 mb-2 sm:mb-0 {% if filter == 'pending' %}border-teal-700{% else %}border-transparent{% endif %}" href="{% url 'order:order_filter' 'pending' %}">Pending</a>
+    <a class="text-teal-700 border-b-4 pb-1 mb-2 sm:mb-0 {% if filter == 'ready_to_ship' %}border-teal-700{% else %}border-transparent{% endif %}" href="{% url 'order:order_filter' 'ready_to_ship' %}">Completed</a>
+    <a class="text-teal-700 border-b-4 pb-1 mb-2 sm:mb-0 {% if filter == 'cancelled' %}border-teal-700{% else %}border-transparent{% endif %}" href="{% url 'order:order_filter' 'cancelled' %}">Cancelled</a>
   </div>
 
   <!-- Search -->
@@ -27,9 +25,9 @@
 
   <!-- Orders Table -->
   <div>
-    <table class="min-w-full bg-white rounded shadow">
+    <table class="min-w-full bg-white rounded shadow-lg">
       <thead>
-        <tr class="bg-gray-100 text-left text-sm">
+        <tr class="bg-gray-200 text-left text-sm">
           <th class="p-4">Order ID</th>
           <th class="p-4">Total</th>
           <th class="p-4">Status</th>
@@ -39,27 +37,25 @@
       </thead>
       <tbody id="ordersTable">
         {% for order in orders %}
-
-        <tr>
+        <tr class="border-b hover:bg-gray-100 transition duration-200">
           <td class="p-4">{{ order.id }}</td>
-          <td class="p-4">{{ order.get_total_cost }}</td>
-          <td class="p-4">{{ order.created_at|date:"Y-m-d H:i" }}</td>
+          <td class="p-4">{{ order.get_total_cost }} SAR</td>
           <td class="p-4">
             <form method="post" action="{% url 'order:update_order_status' order.id %}" class="inline">
               {% csrf_token %}
-              <select name="status" onchange="this.form.submit()">
+              <select name="status" onchange="this.form.submit()" class="border border-gray-300 rounded p-1">
                 <option value="pending" {% if order.status == 'pending' %}selected{% endif %}>Pending</option>
-                <option value="ready_to_ship" {% if order.status == 'ready_to_ship' %}selected{% endif %}>Ready To Shipped</option>
+                <option value="ready_to_ship" {% if order.status == 'ready_to_ship' %}selected{% endif %}>Ready To Ship</option>
 {#                <option value="delivered" {% if order.status == 'delivered' %}selected{% endif %}>Delivered</option>#}
 {#                <option value="cancelled" {% if order.status == 'cancelled' %}selected{% endif %}>Cancelled</option>#}
               </select>
             </form>
-          <td>
-       <a href="{% url 'order:order-detail' order.id %}"> View</a>
           </td>
-
+          <td class="p-4">{{ order.created_at|date:"Y-m-d H:i" }}</td>
+          <td>
+            <a href="{% url 'order:order-detail' order.id %}" class="text-teal-600 hover:underline">View</a>
+          </td>
         </tr>
-
         {% endfor %}
       </tbody>
     </table>
@@ -69,5 +65,20 @@
   <div class="flex justify-center mt-4 space-x-2" id="pagination">
     <!-- Pagination buttons will be dynamically added here -->
   </div>
-</div>
-  {% endblock content %}
+
+<script>
+  function handleSearchChange() {
+    const input = document.getElementById('searchInput').value.toLowerCase();
+    const rows = document.querySelectorAll('#ordersTable tr');
+
+    rows.forEach(row => {
+      const orderId = row.cells[0].textContent.toLowerCase();
+      if (orderId.includes(input)) {
+        row.style.display = '';
+      } else {
+        row.style.display = 'none';
+      }
+    });
+  }
+</script>
+{% endblock %}

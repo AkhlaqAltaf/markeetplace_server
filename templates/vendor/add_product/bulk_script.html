@@ -4,7 +4,6 @@
     const tableBody = document.querySelector("#productsTable tbody");
     const uploadToServerButton = document.getElementById("uploadToServer");
 
-    // Handle File Fetch and Populate Table
     uploadFileInput.addEventListener("change", () => {
       const file = uploadFileInput.files[0];
       if (!file) return;
@@ -20,7 +19,7 @@
         tableBody.innerHTML = ""; // Clear existing rows
 
         rows.forEach((row, rowIndex) => {
-          if (rowIndex === 0 || row.length !== 10) return; // Skip header or invalid rows
+          if (rowIndex === 0 || row.length < 10) return; // Skip header or invalid rows
           const tr = document.createElement("tr");
 
           row.forEach((cell, index) => {
@@ -31,10 +30,9 @@
             tr.appendChild(td);
           });
 
-          // Add dropdowns for category, subcategory, and origin
+          // Add dropdowns for category and subcategory
           const categoryTd = tr.children[6];
           const subCategoryTd = tr.children[7];
-          const originTd = tr.children[9];
 
           const categorySelect = document.createElement("select");
           categorySelect.innerHTML = `
@@ -52,26 +50,46 @@
           subCategoryTd.textContent = "";
           subCategoryTd.appendChild(subCategorySelect);
 
-          const originSelect = document.createElement("select");
-          originSelect.innerHTML = `
-            <option value="" disabled>Select Country</option>
-            {% for origin in origins %}
-              <option value="{{ origin.id }}">{{ origin.name }}</option>
-            {% endfor %}
-          `;
-          originSelect.value = originTd.textContent.trim();
-          originTd.textContent = "";
-          originTd.appendChild(originSelect);
-
-          // Add file input for image column
+          // Add file input for multiple images
           const imageTd = document.createElement("td");
           imageTd.className = "px-4 py-2 border";
           const imageInput = document.createElement("input");
           imageInput.type = "file";
           imageInput.accept = "image/*";
+          imageInput.multiple = true; // Allow multiple images
           imageInput.className = "w-full";
           imageTd.appendChild(imageInput);
           tr.appendChild(imageTd);
+
+          // Add section for offers
+          const offersTd = document.createElement("td");
+          offersTd.className = "px-4 py-2 border";
+          const offersContainer = document.createElement("div");
+          offersContainer.className = "offers-container";
+          offersTd.appendChild(offersContainer);
+          const addOfferButton = document.createElement("button");
+          addOfferButton.type = "button";
+          addOfferButton.textContent = "+ Add Offer";
+          addOfferButton.className = "bg-blue-500 text-white px-2 py-1 rounded mt-2";
+          offersTd.appendChild(addOfferButton);
+          tr.appendChild(offersTd);
+
+          // Handle adding offers
+          addOfferButton.addEventListener("click", () => {
+            const offerDiv = document.createElement("div");
+            offerDiv.innerHTML = `
+              <input type="number" placeholder="Discount (%)" class="w-full border rounded p-1" name="discount_percentage">
+              <input type="number" placeholder="Min Quantity" class="w-full border rounded p-1" name="min_quantity">
+              <input type="number" placeholder="Max Quantity" class="w-full border rounded p-1" name="max_quantity">
+              <button type="button" class="remove-offer bg-red-500 text-white px-2 py-1 rounded mt-1">Remove</button>
+            `;
+            offersContainer.appendChild(offerDiv);
+
+            // Remove offer functionality
+            offerDiv.querySelector(".remove-offer").addEventListener("click", () => {
+              offerDiv.remove();
+            });
+          });
 
           // Fetch subcategories when category changes
           categorySelect.addEventListener("change", () => {
@@ -106,97 +124,101 @@
         );
     }
 
-    document.getElementById("uploadToServer").addEventListener("click", () => {
-  const tableRows = Array.from(
-    document.querySelectorAll("#productsTable tbody tr")
-  );
-  const productsData = [];
+    uploadToServerButton.addEventListener("click", () => {
+      const tableRows = Array.from(
+        document.querySelectorAll("#productsTable tbody tr")
+      );
+      const productsData = [];
+      const errors = [];
 
-  let filesProcessed = 0; // Keep track of processed files
+      tableRows.forEach((row, rowIndex) => {
+        const cells = Array.from(row.children);
+        const imageInputs = cells[10].querySelectorAll("input[type='file']"); // Image input fields
+        const productData = {
+          name: cells[0].textContent.trim(),
+          brand: cells[1].textContent.trim(),
+          price: cells[2].textContent.trim(),
+          sku: cells[3].textContent.trim(),
+          barcode: cells[4].textContent.trim(),
+          stock_quantity: cells[5].textContent.trim(),
+          category: cells[6].querySelector("select").value,
+          sub_category: cells[7].querySelector("select").value,
+          summary: cells[8].textContent.trim(),
+          description: cells[9].textContent.trim(),
+          images: [],
+          offers: []
+        };
 
-  tableRows.forEach((row, index) => {
-    const cells = Array.from(row.children);
-    const imageInput = cells[10].querySelector("input[type='file']"); // Image input field
-    const imageFile = imageInput.files[0]; // Selected image file (if any)
+        // Validate required fields
+        if (!productData.name || !productData.price || !productData.sku || !productData.category || !productData.sub_category) {
+          errors.push(`Row ${rowIndex + 1}: All required fields must be filled.`);
+        }
 
-    let imageBase64 = null;
-    const productData = {
-      name: cells[0].textContent.trim(),
-      currency: cells[1].textContent.trim(),
-      price: cells[2].textContent.trim(),
-      discount_price: cells[3].textContent.trim(),
-      sku: cells[4].textContent.trim(),
-      stock_quantity: cells[5].textContent.trim(),
-      category: cells[6].querySelector("select").value,
-      sub_category: cells[7].querySelector("select").value,
-      description: cells[8].textContent.trim(),
-      country_origin: cells[9].querySelector("select").value,
-      image: null, // Initialize image field as null
-    };
+        // Validate price and stock quantity
+        if (isNaN(productData.price) || parseFloat(productData.price) <= 0) {
+          errors.push(`Row ${rowIndex + 1}: Price must be a positive number.`);
+        }
+        if (isNaN(productData.stock_quantity) || parseInt(productData.stock_quantity) < 0) {
+          errors.push(`Row ${rowIndex + 1}: Stock quantity must be a non-negative integer.`);
+        }
 
-    // Process the image if selected
-    if (imageFile) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        imageBase64 = reader.result.split(",")[1]; // Extract the Base64 string
-        productData.image = imageBase64; // Assign the Base64 string to the productData
+        // Check for unique SKU
+        if (productsData.some(product => product.sku === productData.sku)) {
+          errors.push(`Row ${rowIndex + 1}: SKU must be unique.`);
+        }
+
+        // Process multiple images
+        imageInputs.forEach(input => {
+          if (input.files.length > 0) {
+            Array.from(input.files).forEach(file => {
+              const reader = new FileReader();
+              reader.onloadend = () => {
+                productData.images.push(reader.result.split(",")[1]); // Store Base64 string
+              };
+              reader.readAsDataURL(file); // Read the file as Base64
+            });
+          }
+        });
+
+        // Process offers
+        const offerElements = cells[11].querySelectorAll(".offers-container > div");
+        offerElements.forEach(offer => {
+          const discount = offer.querySelector("input[name='discount_percentage']").value;
+          const minQuantity = offer.querySelector("input[name='min_quantity']").value;
+          const maxQuantity = offer.querySelector("input[name='max_quantity']").value;
+          productData.offers.push({ discount_percentage: discount, min_quantity: minQuantity, max_quantity: maxQuantity });
+        });
 
         productsData.push(productData); // Push product data into the array
-        filesProcessed++; // Increment processed file count
-
-        // Once all files are processed, send the data
-        if (filesProcessed === tableRows.length) {
-          sendProductsData(productsData); // Send the products data to the server
-        }
-      };
-      reader.readAsDataURL(imageFile); // Start reading the image as Base64
-    } else {
-      // If no image, immediately push the product data
-      productsData.push(productData);
-      filesProcessed++; // Increment the processed file count
-
-      // Once all rows are processed, send the data
-      if (filesProcessed === tableRows.length) {
-        sendProductsData(productsData);
-      }
-    }
-  });
-
-  // Function to send products data to the server
-  function sendProductsData(productsData) {
-    const formData = new FormData();
-
-    // Append all products data to formData
-    productsData.forEach((product, index) => {
-      Object.keys(product).forEach((key) => {
-        if (product[key] !== null) { // Only append if the value is not null
-          formData.append(`products[${index}][${key}]`, product[key]);
-        }
       });
+
+      // If there are errors, display them and do not send data
+      if (errors.length > 0) {
+        alert(errors.join("\n"));
+        return;
+      }
+
+      // Send the products data to the server
+      sendProductsData(productsData);
     });
 
-    // Check if formData is populated correctly
-    console.log('FormData:', formData);
+    function sendProductsData(productsData) {
+        console.log(productsData)
+      fetch("{% url 'vendor:add_bulk' %}", {
+        method: "POST",
 
-    // Send the data to the server
-    fetch("{% url 'vendor:add_bulk' %}", {
-      method: "POST",
-      headers: {
-        "X-CSRFToken": "{{ csrf_token }}",
-      },
-      body: formData,
-    })
+        body: JSON.stringify(productsData),
+
+      })
       .then((response) => {
         if (!response.ok) throw new Error("Failed to upload products");
         return response.json();
       })
       .then((data) => {
         alert("Products uploaded successfully!");
-        console.log(data);
+        {#location.reload(); // Reload the page after successful upload#}
       })
       .catch((error) => console.error("Error uploading products:", error));
-  }
-});
-
+    }
   });
 </script>

@@ -14,15 +14,16 @@ app_name = 'vendor'
 
 urlpatterns = [
     path('', views.VendorSiteView.as_view(), name="vendor"),
+
+    path('edit-product/<int:product_id>/',views.EditProductView.as_view(), name="edit_product"),
     path('become-vendor/', views.BecomeVendorView.as_view(), name="become-vendor"),
-    path('vendor-admin/', views.VendorAdminView.as_view(), name="vendor-admin"),
+    path('vendor-admin/', views.VendorSiteView.as_view(), name="vendor-admin"),
     path('edit-vendor/', views.EditVendorView.as_view(), name="edit-vendor"),
     path('logout/', auth_views.LogoutView.as_view(), name="logout"),
     path('<int:vendor_id>/', views.VendorDetailView.as_view(), name="vendor"),
     path('add_product/subcategory/<str:category>/',views.GetSubCategory.as_view(),name="subcategory"),
-    path('add_bulk/subcategory/<str:category>/', views.GetSubCategory.as_view(), name="subcategory"),
+    path('add_bulk/subcategory/<str:category>/', views.GetSubCategory.as_view(), name="subcategorybulk"),
     path('add_product/', views.AddProductView.as_view(),name="add"),
-    path('products/edit/<int:pk>/',views.EditProductView.as_view(),name="edit_product"),
 
     path('select-offer-type/', views.select_offer_type, name='select_offer_type'),
     path('create-product-offer/', views.create_product_offer, name='create_product_offer'),
@@ -33,7 +34,7 @@ urlpatterns = [
     path('create-product/',views.ProductAdd,name="create-product"),
     path('product-list/',views.ProductList,name="product-list"),
     path('checkout/',views.checkout,name="checkout"),
-
+    path('delete-image/',views.DeleteImageView.as_view(),name="delete-image"),
     path('invoice-list/',views.InvoiceList,name="invoice-list"),
     path('invoice-details/',views.InvoiceDetails,name="invoice-details"),
     path('calender/',views.Calender,name="calender"),
@@ -52,5 +53,5 @@ urlpatterns = [
     path('models/', views.list_models, name='list_models'),
     path('models/create/', views.create_model, name='create_model'),
     path('models/<pk>/download/', views.download_model, name='download_model'),
-    path('add_bulk/',views.AddBulkProductsView.as_view(),name='add_bulk')
+    path('add_bulk/',views.BulkUploadProductView.as_view(),name='add_bulk')
               ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

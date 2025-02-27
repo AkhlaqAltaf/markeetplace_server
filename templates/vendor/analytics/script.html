@@ -1,0 +1,207 @@
+<script>
+    class SalesRevenueChart {
+  constructor(containerId, salesRevenueData, currentMonth) {
+    this.containerId = containerId;
+    this.chart = null;
+    this.salesRevenueData = salesRevenueData; // Accept sales revenue data as a parameter
+    this.currentMonth = currentMonth;
+    this.gradients = {};
+    this.initializeChart();
+  }
+
+  createGradients(ctx) {
+    // Create gradient for current period
+    const currentGradient = ctx.createLinearGradient(0, 0, 0, 400);
+    currentGradient.addColorStop(0, "rgba(11, 93, 81, 0.2)");
+    currentGradient.addColorStop(1, "rgba(11, 93, 81, 0.0)");
+
+    return { currentGradient };
+  }
+
+  updateDateRange() {
+    const dateRangeElement = document.querySelector(".current-period");
+    if (dateRangeElement) {
+      dateRangeElement.textContent = `Sales Revenue for ${this.currentMonth}`;
+    }
+  }
+
+  async initializeChart() {
+    const ctx = document.getElementById(this.containerId).getContext("2d");
+    this.gradients = this.createGradients(ctx);
+    this.updateDateRange();
+
+    this.chart = new Chart(ctx, {
+      type: "line",
+      data: {
+        labels: Array.from({ length: this.salesRevenueData.length }, (v, i) => i + 1),
+        datasets: [{
+          label: 'Daily Sales Revenue (SAR)',
+          data: this.salesRevenueData,
+          backgroundColor: this.gradients.currentGradient,
+          borderColor: "#0B5D51",
+          borderWidth: 2,
+          fill: true,
+          tension: 0.5,
+        }],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: {
+          mode: "index",
+          intersect: false,
+        },
+        plugins: {
+          legend: {
+            position: "top",
+            align: "end",
+          },
+          tooltip: {
+            callbacks: {
+              label: function (context) {
+                return `Day ${context.label}: SAR ${context.parsed.y.toLocaleString()}`;
+              },
+            },
+          },
+        },
+        scales: {
+          x: {
+            title: {
+              display: true,
+              text: 'Day of the Month',
+            },
+          },
+          y: {
+            title: {
+              display: true,
+              text: 'Revenue (SAR)',
+            },
+            beginAtZero: true,
+          },
+        },
+      },
+    });
+  }
+}
+
+// Initialize when DOM is loaded
+document.addEventListener("DOMContentLoaded", () => {
+  const salesRevenueData = {{ sales_revenue_data|safe }};
+  const currentMonth = "{{ current_month }}"; // Pass the current month from the context
+  const salesRevenueChart = new SalesRevenueChart("sales-revenue-chart", salesRevenueData, currentMonth);
+});
+</script>
+
+
+<script>
+ class CostBreakdownChart {
+  constructor(containerId, data) {
+    this.containerId = containerId;
+    this.chart = null;
+    this.data = data; // Accept data as a parameter
+    this.initializeChart();
+  }
+
+  updateTableData() {
+    const tbody = document.querySelector(".cost-table tbody");
+    if (!tbody) return;
+
+    const labels = ["Under Review", "Active", "Out of Stock", "Not Sold"];
+    const values = [this.data.underReviewCount, this.data.activeCount, this.data.outOfStockCount, this.data.notSoldCount];
+    const colors = ["#E5E7EB", "#6366F1", "#0B5D51", "#F79009"];
+
+    tbody.innerHTML = labels
+      .map(
+        (label, index) => `
+      <tr>
+        <td>
+          <div class="channel-info">
+            <span class="dot" style="background-color: ${colors[index]}"></span>
+            <p>${label}</p>
+          </div>
+        </td>
+        <td> ${values[index].toLocaleString()}</td>
+      </tr>
+    `
+      )
+      .join("");
+  }
+
+  initializeChart() {
+    const ctx = document.getElementById(this.containerId).getContext("2d");
+
+    this.chart = new Chart(ctx, {
+      type: "doughnut",
+      data: {
+        labels: ["Under Review", "Active", "Out of Stock", "Not Sold"],
+        datasets: [
+          {
+            data: [
+              this.data.underReviewCount,
+              this.data.activeCount,
+              this.data.outOfStockCount,
+              this.data.notSoldCount,
+            ],
+            backgroundColor: ["#E5E7EB", "#6366F1", "#0B5D51", "#F79009"],
+            borderWidth: 0,
+            hoverOffset: 4,
+            borderRadius: 4,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        cutout: "75%",
+        layout: {
+          padding: 20,
+        },
+        plugins: {
+          legend: {
+            display: false,
+          },
+          tooltip: {
+            backgroundColor: "white",
+            titleColor: "#111927",
+            bodyColor: "#6C737F",
+            bodyFont: {
+              family: "Inter",
+              size: 14,
+            },
+            padding: 12,
+            boxWidth: 10,
+            boxHeight: 10,
+            boxPadding: 3,
+            usePointStyle: true,
+            callbacks: {
+              label: function (context) {
+                const value = context.raw;
+                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                const percentage = ((value / total) * 100).toFixed(1);
+                return ` ${value.toLocaleString()} (${percentage}%)`;
+              },
+            },
+          },
+        },
+        animation: {
+          animateScale: true,
+          animateRotate: true,
+        },
+      },
+    });
+
+    this.updateTableData();
+  }
+}
+
+// Initialize when DOM is loaded
+document.addEventListener("DOMContentLoaded", () => {
+  const data = {
+    underReviewCount: {{ under_review_count }},
+    activeCount: {{ active_count }},
+    outOfStockCount: {{ out_of_stock_count }},
+    notSoldCount: {{ not_sold_count }},
+  };
+  const costBreakdownChart = new CostBreakdownChart("cost-breakdown-chart", data);
+});
+</script>
