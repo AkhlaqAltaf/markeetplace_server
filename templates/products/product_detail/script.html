@@ -55,7 +55,7 @@
   }
    function addWithOffer(productId, minQuantity,offerID) {
         fetch(`/cart/add_with_offer/${productId}/${minQuantity}/${offerID}/`, {
-            method: 'GET',
+            method: 'POST',
             headers: {
                 'X-Requested-With': 'XMLHttpRequest',
             },

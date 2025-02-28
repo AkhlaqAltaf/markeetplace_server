@@ -27,8 +27,7 @@ class AddToCartView(View):
 class AddToCartWithOffer(View):
     """THIS VIEW USE FOR IF:
      """
-    def get(self):
-        pass
+
     def post(self, request,id,quantity,offerid):
         cart = Cart(request)
         cart.add_with_specific_quantity(request,id,quantity,offerid)
