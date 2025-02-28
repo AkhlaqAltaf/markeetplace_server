@@ -43,9 +43,8 @@
 
                         <div class="flex items-center gap-2 sm:gap-4">
                             {% if product.stock_quantity > 0 %}
-                                <a href="{% url 'cart:addToCart' product.id 1 %}" class="add-to-cart bg-[#073741] text-white text-sm px-4 py-2 rounded-lg hover:bg-[#065a34]">
-                                    <i class="fa fa-shopping-cart"></i>
-                                </a>
+                                             {% include 'commons/addToCartButton.html' %}
+
                             {% endif %}
                             <button onclick="removeFromWishlist({{ product.id }})"
                                 class="remove-item text-red-500 text-sm px-4 py-2 rounded-lg border border-red-200 hover:bg-red-100">

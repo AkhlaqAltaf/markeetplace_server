@@ -16,8 +16,7 @@ def success(request):
 
 class AddToCartView(View):
     """ADD TO CART VIEW """
-    def get(self, request,id):
-        pass
+
     def post(self, request, id,quantity):
         product = get_object_or_404(Product, id=id)
         print(product)
