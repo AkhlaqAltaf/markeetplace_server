@@ -1,4 +1,21 @@
-<header class="bg-white shadow-md p-4 md:p-0 flex justify-between  md:h-screen items-start">
+
+<style>
+        /* Default styles for the toggle button */
+        #toggle-sidebar {
+            position: sticky; /* Default to sticky */
+            top: 80px; /* Adjust as needed */
+            z-index: 20;
+        }
+
+        /* Media query for mobile devices */
+        @media (max-width: 768px) {
+            #toggle-sidebar {
+                position: fixed; /* Change to fixed for mobile */
+                right: 20px; /* Position it on the left */
+                top: 100px;
+            }
+        }
+    </style>
     <h1 class="text-2xl font-bold text-black md:hidden">Products</h1>
 
     <!-- Sidebar Toggle Button -->
@@ -8,7 +25,6 @@
         </svg>
         <span class="text-lg font-medium">Filters</span>
     </button>
-</header>
 
 <!-- Sidebar -->
 <div id="sidebar" class="fixed top-0 left-0 w-72 h-full bg-white shadow-lg transform -translate-x-full transition-transform duration-300 ease-in-out p-6 z-50">
@@ -24,29 +40,36 @@
 
     <!-- Filter Form -->
     <form method="get" action="{% url 'product:all-product' %}" class="space-y-6">
-        <!-- Category Dropdown -->
+        <!-- Category Filters -->
         <div class="category-filters space-y-2">
             <h4 class="font-medium text-lg text-black">Categories</h4>
-            <select name="filter" class="w-full py-1 px-3 border border-gray-300 rounded-lg focus:outline-none hover:ring-2 hover:ring-[#0B5D51] transition duration-300">
-                <option value="" disabled selected>Select Category</option>
-                {% for category in categories %}
-                <option value="{{ category.id }}" {% if category.id|stringformat:"s" in selected_filters %} selected {% endif %}>
-                    {{ category.name }}
-                </option>
-                {% endfor %}
-            </select>
+            {% for category in categories %}
+                <div class="border-b border-gray-300 pb-2 mb-2">
+                    <h5 class="font-semibold text-md text-gray-800 cursor-pointer hover:text-[#0B5D51]">
+                        <a href="{% url 'product:all-product' %}?filter={{ category.id }}&q={{ search_query }}&price={{ selected_price }}">
+                            {{ category.name }}
+                        </a>
+                    </h5>
+                    <ul class="ml-4 space-y-1">
+                        {% for subcategory in category.subcategories.all %}
+                            <li>
+                                <a href="{% url 'product:all-product' %}?filter={{ category.id }}&filter={{ subcategory.id }}&q={{ search_query }}&price={{ selected_price }}" class="text-gray-600 hover:text-[#0D9488]">
+                                    {{ subcategory.name }}
+                                </a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endfor %}
         </div>
 
         <!-- Price Filters -->
         <div class="price-filters space-y-4">
             <h4 class="font-semibold text-lg text-black">Price Range</h4>
-            {% for key, label in prices_range.items %}
-            <label class="flex items-center space-x-2">
-                <input type="checkbox" name="price" value="{{ key }}" {% if selected_price == key %} checked {% endif %}
-                    class="w-5 h-5 accent-[#f8f6f4]">
-                <span class="text-black text-sm">{{ label }}</span>
-            </label>
-            {% endfor %}
+            <div class="flex space-x-2">
+                <input type="number" name="min_price" placeholder="Min" class="w-full py-2 px-3 border border-gray-300 rounded-lg focus:outline-none hover:ring-2 hover:ring-[#0B5D51] transition duration-300" min="0 " step="0.01">
+                <input type="number" name="max_price" placeholder="Max" class="w-full py-2 px-3 border border-gray-300 rounded-lg focus:outline-none hover:ring-2 hover:ring-[#0B5D51] transition duration-300" min="0" step="0.01">
+            </div>
         </div>
 
         <!-- Apply Filters Button -->
@@ -83,3 +106,4 @@
         });
     });
 </script>
+

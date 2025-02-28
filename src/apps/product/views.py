@@ -152,8 +152,8 @@ class ProductDetail3DView(DetailView):
         return context
 
 class AllProductsView(View):
-    def get(self, request, category=None):
-        filter_values = request.GET.getlist('filter')
+    def get(self, request):
+        filter_values = request.GET.getlist('filter')  # This can include both category and subcategory IDs
         price_filter = request.GET.get('price', None)
         search_query = request.GET.get('q', '')  # Get the search query if provided
 
@@ -187,13 +187,17 @@ class AllProductsView(View):
             prices_range = {}
 
         # Filter and search products
-        products = Product.objects.all().select_related('category')
+        products = Product.objects.all().select_related('category', 'sub_category')
 
-        if search_query:  # Apply search filter
-            products = products.filter(name__icontains=search_query)
+        if search_query:
+            products = products.filter(
+                Q(name__icontains=search_query) |
+                Q(brand__icontains=search_query) |
+                Q(description__icontains=search_query)
+            )
 
-        if filter_values:  # Apply category filter
-            products = products.filter(category__id__in=filter_values)
+        if filter_values:  # Apply category and subcategory filter
+            products = products.filter(Q(category__id__in=filter_values) | Q(sub_category__id__in=filter_values))
 
         if price_filter:  # Apply price range filter
             price_parts = price_filter.split('_')
@@ -232,8 +236,6 @@ class AllProductsView(View):
             'search_query': search_query,  # Pass the search query to the template
         }
         return render(request, "products/all_products/all_products.html", context)
-
-
 class CategoryProductsView(View):
     def get(self, request,id):
         category = get_object_or_404(Category, id=id)
@@ -244,11 +246,24 @@ class CategoryProductsView(View):
 
 
 
-def search(request):
-    query = request.GET.get('query', '') # second is default parameter which is empty
-    products = Product.objects.filter(Q(title__icontains=query) | Q(description__icontains=query))
-    return render(request, 'products/all_products/all_products.html', {'products':products, 'query': query})
+def product_search(request):
+    query = request.GET.get('q')  # Get the search query from the request
+    products = Product.objects.all()  # Start with all products
 
+    if query:
+        # Filter products based on name, brand, or description
+        products = products.filter(
+            Q(name__icontains=query) |
+            Q(brand__icontains=query) |
+            Q(description__icontains=query)
+        )
+    print("PRODUCTS...")
+    print(products)
+    context = {
+        'products': products,
+        'query': query,
+    }
+    return render(request, 'products/all_products/all_products.html', context)
 
 # PRODUCT SEARCH VIEW
 

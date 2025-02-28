@@ -102,37 +102,4 @@
         }
     });
 </script>
-<script>
-document.addEventListener("DOMContentLoaded", function () {
-    const searchIcon = document.querySelector(".fa-search");
-    const menu = document.getElementById("menu1");
-    const header = document.querySelector("header");
-    const searchBar = document.createElement("input");
 
-    searchBar.setAttribute("type", "text");
-    searchBar.setAttribute("placeholder", "Search...");
-    searchBar.classList.add("border", "rounded-md", "px-2", "py-1", "transition-all", "duration-300");
-
-    let isSearchOpen = false;
-
-    searchIcon.addEventListener("click", function () {
-        if (window.innerWidth > 768) {
-   if (!isSearchOpen) {
-                searchBar.classList.add("absolute", "top-14", "left-1/2", "transform", "-translate-x-1/2", "w-10/12" , "transition-all", "duration-300");
-                header.appendChild(searchBar);
-            } else {
-                searchBar.remove();
-            }
-        } else {
-            // For small screens: Show search bar below the navbar
-            if (!isSearchOpen) {
-                searchBar.classList.add("absolute", "top-14", "left-1/2", "transform", "-translate-x-1/2", "w-10/12", "transition-all", "duration-300");
-                header.appendChild(searchBar);
-            } else {
-                searchBar.remove();
-            }
-        }
-        isSearchOpen = !isSearchOpen;
-    });
-});
-</script>

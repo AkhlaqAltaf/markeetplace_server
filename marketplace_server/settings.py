@@ -96,7 +96,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'src.apps.cart.context_processors.cart'
+                'src.apps.cart.context_processors.cart',
+                'src.apps.product.context_processors.menu_categories',
 
             ],
         },
@@ -137,6 +138,13 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# settings.py
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'unique-snowflake',
+    }
+}
 # LOGIN_REDIRECT_URL = '/'
 # # EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 # EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
