@@ -3,7 +3,7 @@
 {% block content %}
 <div class="bg-gray-50 font-sans min-h-screen flex items-center justify-center">
   <div class="p-6 lg:max-w-7xl mx-auto">
-    <div class="grid lg:grid-cols-2 gap-12 items-center">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
 
       <!-- Left Section: Images -->
       <div class="lg:sticky top-6">
@@ -13,12 +13,12 @@
             id="mainImage"
             src="{{ product.media.first.file.url }}"
             alt="Main Product Image"
-            class="w-full h-64 object-cover transition-transform duration-500 hover:scale-110"
+            class="w-full h-auto object-cover transition-transform duration-500 hover:scale-110"
           />
         </div>
 
         <!-- Thumbnail Images -->
-        <div class="flex gap-4 justify-center">
+        <div class="flex gap-2 justify-center overflow-x-auto">
           {% for media in product.media.all %}
           {% if media.media_type != '3d' %}
           <img
@@ -33,48 +33,42 @@
       </div>
 
       <!-- Right Section: Details -->
-      <div class="flex flex-col justify-center rounded-lg ">
-        <h1 class="text-3xl font-bold text-[#0B5D51] mb-4 lg:text-left">{{ product.name }}</h1>
+      <div class="flex flex-col justify-center rounded-lg">
+        <h1 class="text-2xl lg:text-3xl font-bold text-[#0B5D51] mb-4 lg:text-left">{{ product.name }}</h1>
 
-
-                <!-- Star Rating -->
-       <div class="flex items-center">
-        {% for star in "*****" %}
-         <svg class="w-5 h-5 {{ rating_percentages|default:0|get_star_color:forloop.counter }}" fill="currentColor" viewBox="0 0 20 20">
-             <path d="M10 15l-5.878 3.09 1.121-6.535L0 6.545l6.545-.955L10 0l2.455 5.59L20 6.545l-5.243 4.005 1.121 6.535z"/>
-         </svg>
-        {% endfor %}
-        <span class="text-gray-400 ml-2">|</span>
-        <span class="ml-2 text-[#0B5D51] text-lg underline"> 20 Reviews</span>
-       </div>
-
+        <!-- Star Rating -->
+        <div class="flex items-center">
+          {% for star in "*****" %}
+          <svg class="w-5 h-5 {{ rating_percentages|default:0|get_star_color:forloop.counter }}" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M10 15l-5.878 3.09 1.121-6.535L0 6.545l6.545-.955L10 0l2.455 5.59L20 6.545l-5.243 4.005 1.121 6.535z"/>
+          </svg>
+          {% endfor %}
+          <span class="text-gray-400 ml-2">|</span>
+          <span class="ml-2 text-[#0B5D51] text-lg underline"> 20 Reviews</span>
+        </div>
 
         <div class="mt-3 grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-1">
           {% for product_order_offer in product.offers.all %}
           {% if product_order_offer %}
           <a href="javascript:void(0);" onclick="addWithOffer('{{ product.id }}', '{{ product_order_offer.min_quantity }}',{{ product_order_offer.id }})">
-          <div class="bg-gradient-to-r from-[#0B5D51] to-[#073741] text-center rounded-lg text-white cursor-pointer transition-all duration-300 hover:shadow-lg">
-            <ul class=" mt-2 p-1">
-              <li>
-
-                <span class="text-yellow-300 text-sm">1 box of
-                <strong class="font-semibold text-sm text-gray-200">{{ product_order_offer.min_quantity }}</strong>
-             products</span>
-              </li>
-              <li>
-
-                <span class="text-yellow-300 text-sm">{{ product_order_offer.calculate_discounted_price }}</span> <span class="text-white-300 text-sm">SAR</span>
-                <span class="text-yellow-300 text-sm">({{ product_order_offer.discount_percentage }}% OFF)</span>
-
-              </li>
-              <li>
-                <strong class="font-semibold text-sm text-gray-200">Average Price </strong>
-                <span class="text-yellow-300 text-sm">{{ product_order_offer.calculate_average_price }}</span>
-              </li>
-
-            </ul>
-          </div>
-        </a>
+            <div class="bg-gradient-to-r from-[#0B5D51] to-[#073741] text-center rounded-lg text-white cursor-pointer transition-all duration-300 hover:shadow-lg">
+              <ul class="mt-2 p-1">
+                <li>
+                  <span class="text-yellow-300 text-sm">1 box of
+                  <strong class="font-semibold text-sm text-gray-200">{{ product_order_offer.min_quantity }}</strong>
+                  products</span>
+                </li>
+                <li>
+                  <span class="text-yellow-300 text-sm">{{ product_order_offer.calculate_discounted_price }}</span> <span class="text-white-300 text-sm">SAR</span>
+                  <span class="text-yellow-300 text-sm">({{ product_order_offer.discount_percentage }}% OFF)</span>
+                </li>
+                <li>
+                  <strong class="font-semibold text-sm text-gray-200">Average Price </strong>
+                  <span class="text-yellow-300 text-sm">{{ product_order_offer.calculate_average_price }}</span>
+                </li>
+              </ul>
+            </div>
+          </a>
           {% endif %}
           {% endfor %}
         </div>
@@ -82,7 +76,7 @@
         <p class="mt-2">{{ product.sub_category }}</p>
 
         <div class="flex items-center gap-6 mb-2 mt-2 justify-center lg:justify-start">
-          <p class="text-2xl font-semibold text-[#FF6A3D]">
+          <p class="text-xl lg:text-2xl font-semibold text-[#FF6A3D]">
             {% if discount %}
             <span style="text-decoration: line-through;" class="text-gray-500">{{ product.price }} SAR</span>
             <br>
@@ -101,17 +95,15 @@
           {% endif %}
         </p>
 
-
         <div class="flex items-center gap-4 mt-3 justify-center lg:justify-start">
           <div class="flex justify-center space-x-4">
             {% include 'commons/addToCartButton.html' %}
-            {% include 'commons/addToWishList.html' %}
           </div>
         </div>
-
       </div>
     </div>
-    <button id="toggleDescription" class="mt-12 text-[#0B5D51] border text-start p-3 w-100 bg-gray-100 font-semibold" onclick="toggleVisibility('description','toggleDescription')">Show Description</button>
+
+    <button id="toggleDescription" class="mt-12 text-[#0B5D51] border text-start p-3 w-full bg-gray-100 font-semibold" onclick="toggleVisibility('description','toggleDescription')">Show Description</button>
     <div class="bg-grey border">
       <div id="description" class="hidden">
         <p class="text-gray-700 leading-6 p-4 mb-6 lg:text-left">
@@ -119,8 +111,9 @@
         </p>
       </div>
     </div>
-    <button id="toggleReviews" class="mt-1 text-[#0B5D51] border text-start p-3 w-100 bg-gray-100 font-semibold" onclick="toggleVisibility('reviews','toggleReviews')">Show Reviews</button>
-   <p></p>
+
+    <button id="toggleReviews" class="mt-1 text-[#0B5D51] border text-start p-3 w-full bg-gray-100 font-semibold" onclick="toggleVisibility('reviews','toggleReviews')">Show Reviews</button>
+    <p></p>
 
     <div class="mt-12">
       <div id="reviews" class="hidden">
@@ -133,7 +126,18 @@
         {% endfor %}
       </div>
     </div>
+    <!-- Scrollable Products Section -->
+    <div class="mt-12">
+
+         <div class="max-w-screen-screen md:px-20 mx-auto">
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-6">
+        {% for product in products %}
+            {% include 'commons/product.html' %}
+        {% endfor %}
+      </div>
+    </div>
   </div>
 </div>
-    {% include 'products/product_detail/script.html' %}
+
+{% include 'products/product_detail/script.html' %}
 {% endblock %}

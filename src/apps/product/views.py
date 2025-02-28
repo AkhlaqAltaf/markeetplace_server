@@ -77,7 +77,7 @@ class ProductDetailView(DetailView):
         print(reviews)
         context['reviews'] = reviews
         context['rating_percentages'] = rating_percentages
-        context['products'] = Product.objects.all()
+        context['products'] = Product.objects.all()[:8]
         context['product_offers'] = product_offers
         context['discount'] = product_after_discount
         context['product_order_offers'] = product_order_offers
