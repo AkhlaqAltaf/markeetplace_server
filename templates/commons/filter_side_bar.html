@@ -14,6 +14,12 @@
                 right: 20px; /* Position it on the left */
                 top: 100px;
             }
+
+        }
+          /* Scrollable categories */
+        .category-filters {
+            max-height: 400px; /* Set a max height */
+            overflow-y: auto; /* Enable vertical scrolling */
         }
     </style>
     <h1 class="text-2xl font-bold text-black md:hidden">Products</h1>
@@ -39,7 +45,7 @@
     <h3 class="text-xl font-semibold text-black mb-4">Filter Products</h3>
 
     <!-- Filter Form -->
-    <form method="get" action="{% url 'product:all-product' %}" class="space-y-6">
+        <form method="get" action="{% url 'product:all-product' %}" class="space-y-6">
         <!-- Category Filters -->
         <div class="category-filters space-y-2">
             <h4 class="font-medium text-lg text-black">Categories</h4>
@@ -58,8 +64,7 @@
                                 </a>
                             </li>
                         {% endfor %}
-                    </ul>
-                </div>
+                    </ul> </div>
             {% endfor %}
         </div>
 
@@ -67,7 +72,7 @@
         <div class="price-filters space-y-4">
             <h4 class="font-semibold text-lg text-black">Price Range</h4>
             <div class="flex space-x-2">
-                <input type="number" name="min_price" placeholder="Min" class="w-full py-2 px-3 border border-gray-300 rounded-lg focus:outline-none hover:ring-2 hover:ring-[#0B5D51] transition duration-300" min="0 " step="0.01">
+                <input type="number" name="min_price" placeholder="Min" class="w-full py-2 px-3 border border-gray-300 rounded-lg focus:outline-none hover:ring-2 hover:ring-[#0B5D51] transition duration-300" min="0" step="0.01">
                 <input type="number" name="max_price" placeholder="Max" class="w-full py-2 px-3 border border-gray-300 rounded-lg focus:outline-none hover:ring-2 hover:ring-[#0B5D51] transition duration-300" min="0" step="0.01">
             </div>
         </div>
@@ -79,6 +84,7 @@
             </button>
         </div>
     </form>
+
 </div>
 
 <!-- JavaScript for Sidebar Toggle -->
