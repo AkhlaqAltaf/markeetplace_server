@@ -132,7 +132,7 @@ class OrderListView(VendorRequiredMixin, View):
     def get(self, request):
         vendor_products = Product.objects.filter(vendor=request.user.vendor)  # Assuming the user has a related Vendor
         orders = Order.objects.filter(products__in=vendor_products).distinct()
-        return render(request, 'order/order_list.html', {'orders': orders})
+        return render(request, 'order/orderlist.html', {'orders': orders})
 
 
 class OrderFilterView(VendorRequiredMixin, View):
@@ -144,5 +144,7 @@ class OrderFilterView(VendorRequiredMixin, View):
         else:
             orders = Order.objects.filter(products__in=vendor_products, status=status.lower()).distinct()
         return render(request, 'order/orderlist.html', {'orders': orders})
+
+
 
 

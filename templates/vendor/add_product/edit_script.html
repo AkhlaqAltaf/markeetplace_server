@@ -36,6 +36,68 @@ document.addEventListener("DOMContentLoaded", () => {
     const uploadImagesInput = document.getElementById("uploadImages");
     let imageStack = document.getElementById('imageStack');
     let imagesInput = document.getElementById('imagesInput');
+    // Decode and parse existing images
+    let existingImages = JSON.parse('{{ images|safe }}') || [];
+    if (!Array.isArray(existingImages)) {
+        console.log("EMPTY LIST OF IMAGES...")
+        existingImages = [];
+    }
+    else {
+        console.log("NOT EMPTY.......")
+    }
+
+    function displayImage(imageSrc) {
+        console.log("DISPLAY IMAGES...");
+        console.log(existingImages);
+        let imgWrapper = document.createElement('div');
+        imgWrapper.classList.add('relative', 'w-24', 'h-24', 'flex-shrink-0');
+
+        let img = document.createElement('img');
+        img.src = imageSrc; // Directly use the base64 string
+        img.classList.add('w-full', 'h-full', 'object-cover', 'rounded-lg');
+
+        let removeBtn = document.createElement('a');
+
+        removeBtn.innerHTML = "&times;";
+        removeBtn.classList.add('absolute', 'top-0', 'right-0', 'bg-red-500', 'text-white', 'rounded-full', 'w-5', 'h-5', 'text-xs', 'flex', 'items-center', 'justify-center');
+        removeBtn.onclick = function () {
+
+        fetch(`{% url 'vendor:delete-image'%}`,{
+                method: 'POST',
+
+                body: new URLSearchParams({
+                    'img_url': imageSrc,
+                    'product':{{ form.instance.id }}
+                })
+            })
+           .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log(data.success);
+            imgWrapper.remove();
+            existingImages = existingImages.filter(img => img !== imageSrc);
+            imagesInput.value = JSON.stringify(existingImages);
+    })
+    .catch(error => {
+        console.error('Error deleting image:', error);
+    });
+
+        };
+
+        imgWrapper.appendChild(img);
+        imgWrapper.appendChild(removeBtn);
+        imageStack.appendChild(imgWrapper);
+    }
+    existingImages.forEach(imageSrc => displayImage(imageSrc));
+    imagesInput.value = JSON.stringify(existingImages);
+
+
+
+
 
     let imageFiles = [];
 

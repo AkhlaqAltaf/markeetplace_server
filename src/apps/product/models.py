@@ -1,7 +1,10 @@
 import os
 import uuid
 
+from django.db.models import Sum
+
 from src.apps.accounts.models import CustomUser
+from src.apps.order.models import OrderItem
 from src.apps.vendor.models import Vendor
 from django.db import models
 from PIL import Image
@@ -98,6 +101,16 @@ class Product(models.Model):
                 pass  # If the offer does not exist, use the default price
 
         return round(total_price, 2)  # Return total price rounded to 2 decimal places
+
+    def get_total_sales(self):
+        """
+        Calculate the total quantity of sold products.
+
+        :return: Total quantity sold
+        """
+        total_sold = OrderItem.objects.filter(product=self).aggregate(total_quantity=Sum('quantity'))['total_quantity'] or 0
+        return total_sold
+
 class Offer(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='offers')
     min_quantity = models.PositiveIntegerField()
@@ -179,16 +192,8 @@ class Media(models.Model):
         """
         if self.is_primary:
             return image
-        img = Image.open(image)
-        img = img.convert('RGB')
-        img.thumbnail(size)
 
-        thumb_io = BytesIO()
-        img.save(thumb_io, 'JPEG', quality=100)
-
-        unique_name = f"{uuid.uuid4().hex}.jpg"  # Generate a unique filename
-        thumbnail = File(thumb_io, name=unique_name)
-        return thumbnail
+        return image
 
     def save(self, *args, **kwargs):
         """
