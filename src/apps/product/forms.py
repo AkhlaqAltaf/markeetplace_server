@@ -1,5 +1,6 @@
 from django import forms
-from src.apps.product.models import Category, Product, Media, SubCategory, Offer
+from src.apps.product.models import Category, Product, Media, SubCategory, Offer, Brand
+
 
 class CategoryCreateForm(forms.ModelForm):
     class Meta:
@@ -38,3 +39,21 @@ class SubCategoryForm(forms.ModelForm):
         model = SubCategory
         fields = ['name', 'category', 'image']
 
+
+
+class BrandRegistrationForm(forms.ModelForm):
+    class Meta:
+        model = Brand
+        fields = ['name', 'logo', 'categories', 'sub_categories']
+
+    categories = forms.ModelMultipleChoiceField(
+        queryset=Category.objects.all(),
+        widget=forms.CheckboxSelectMultiple,
+        required=True
+    )
+
+    sub_categories = forms.ModelMultipleChoiceField(
+        queryset=SubCategory.objects.all(),
+        widget=forms.CheckboxSelectMultiple,
+        required=True
+    )

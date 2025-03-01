@@ -4,16 +4,25 @@ from django.db.models import Min, Max
 from django.db.models import Q
 from django.http import HttpResponse, Http404
 from django.http import JsonResponse
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
 from django.shortcuts import render
 from django.views import View
 from django.views.generic import DetailView
 
-# from .models import Category, CountryOrigin, Product, Media, SubCategory, Tag, WishListProduct, Order, OrderItem
-from .forms import CategoryCreateForm, SubCategoryCreateForm
+from .forms import CategoryCreateForm, SubCategoryCreateForm, BrandRegistrationForm
 from .forms import SubCategoryForm
 from .models import Category, Product, SubCategory, ProductOffer, OrderOffer
 
+
+def register_brand(request):
+    if request.method == 'POST':
+        form = BrandRegistrationForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('vendor:vendor')
+    else:
+        form = BrandRegistrationForm()
+    return render(request, 'vendor/register_brand.html', {'form': form})
 
 class ProductDetailView(DetailView):
     model = Product

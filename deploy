@@ -29,3 +29,9 @@ gunicorn run to test
 to permission
 sudo -u www-data ls /root/markeetplace_server/static/
 sudo chmod 755 /root/markeetplace_server
+
+
+
+SQL QUERY :
+
+sqlite3 db.sqlite3
