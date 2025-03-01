@@ -126,7 +126,6 @@ class Offer(models.Model):
     min_quantity = models.PositiveIntegerField()
     max_quantity = models.PositiveIntegerField(null=True, blank=True)
     discount_percentage = models.DecimalField(max_digits=5, decimal_places=2)
-
     def calculate_discounted_price(self):
         """Calculate total price after discount"""
         if self.min_quantity < self.min_quantity or (self.max_quantity and self.min_quantity > self.max_quantity):
