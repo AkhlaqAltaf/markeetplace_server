@@ -13,3 +13,4 @@ urllib3
 django-cors-headers
 django-crispy-forms
 crispy-bootstrap5
+whitenoise
