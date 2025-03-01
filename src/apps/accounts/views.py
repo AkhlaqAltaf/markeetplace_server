@@ -61,114 +61,109 @@ class AccountsView(View):
         signup_form = UserRegistrationForm()
         return render(request, self.template_name, {'signin_form': signin_form, 'signup_form': signup_form})
 
-class ForgotPasswordView(View):
-    """FORGOT PASSWORD VIEW"""
-    def post(self, request):
-        message = None
-        message_type = None
-        verification_code_sent = False
-        verification_successful = False
-        new_password_form = False
-        form = ForgotEmailForm()
-        if 'email' in request.POST:
-            form = ForgotEmailForm(request.POST)
-            if form.is_valid():
-                email = form.cleaned_data['email']
-                if CustomUser.objects.filter(email=email).exists():
-                    verification_code = random.randint(100000, 999999)
-                    request.session['verification_code'] = verification_code
-                    request.session['email'] = email
 
-                    subject = "Your Verification Code"
-                    message_content = f"Your verification code is {verification_code}. Please use this to reset your password."
-                    from_email = settings.DEFAULT_EMAIL_FROM
-                    recipient_list = [email]
+def forgat_password(request):
+    message = None
+    message_type = None
+    verification_code_sent = False
+    verification_successful = False
+    new_password_form = False
+    form = ForgotEmailForm()
+    if 'email' in request.POST:
+        form = ForgotEmailForm(request.POST)
+        if form.is_valid():
+            email = form.cleaned_data['email']
+            if CustomUser.objects.filter(email=email).exists():
+                verification_code = random.randint(100000, 999999)
+                request.session['verification_code'] = verification_code
+                request.session['email'] = email
 
-                    try:
-                        send_mail(subject, message_content, from_email, recipient_list)
-                        message = "A verification code has been sent to your email."
-                        message_type = "success"
-                        verification_code_sent = True
-                    except Exception as e:
-                        message = f"An error occurred while sending the email: {str(e)}"
-                        message_type = "error"
-                else:
-                    message = "This email address is not registered."
-                    message_type = "error"
+                subject = "Your Verification Code"
+                message_content = f"Your verification code is {verification_code}. Please use this to reset your password."
+                from_email = settings.DEFAULT_EMAIL_FROM
+                recipient_list = [email]
 
-        elif 'verification_code' in request.POST:
-            entered_code = request.POST.get('verification_code')
-            stored_code = request.session.get('verification_code')
-
-            if entered_code and str(entered_code) == str(stored_code):
-                verification_successful = True
-                message = "Verification successful. You can now reset your password."
-                message_type = "success"
-                new_password_form = True
-            else:
-                message = "Invalid verification code. Please try again."
-                message_type = "error"
-
-        elif 'new_password' in request.POST:
-            new_password = request.POST.get('new_password')
-            confirm_password = request.POST.get('confirm_password')
-
-            if new_password == confirm_password:
-                email = request.session.get('email')
                 try:
-                    user = CustomUser.objects.get(email=email)
-                    user.set_password(new_password)
-                    user.save()
-
-                    message = "Password reset successful. Please log in with your new password."
+                    send_mail(subject, message_content, from_email, recipient_list)
+                    message = "A verification code has been sent to your email."
                     message_type = "success"
-
-                    del request.session['verification_code']
-                    del request.session['email']
-
-                    return redirect('accounts:login')  # Redirect to login page
-                except CustomUser.DoesNotExist:
-                    message = "User not found. Please try again."
+                    verification_code_sent = True
+                except Exception as e:
+                    message = f"An error occurred while sending the email: {str(e)}"
                     message_type = "error"
             else:
-                message = "Passwords do not match. Please try again."
+                message = "This email address is not registered."
                 message_type = "error"
 
-        return render(request, 'accounts/forgetEmail.html', {
-            'form': form,
-            'message': message,
-            'message_type': message_type,
-            'verification_code_sent': verification_code_sent,
-            'verification_successful': verification_successful,
-            'new_password_form': new_password_form,
-        })
+    elif 'verification_code' in request.POST:
+        entered_code = request.POST.get('verification_code')
+        stored_code = request.session.get('verification_code')
 
+        if entered_code and str(entered_code) == str(stored_code):
+            verification_successful = True
+            message = "Verification successful. You can now reset your password."
+            message_type = "success"
+            new_password_form = True
+        else:
+            message = "Invalid verification code. Please try again."
+            message_type = "error"
 
+    elif 'new_password' in request.POST:
+        new_password = request.POST.get('new_password')
+        confirm_password = request.POST.get('confirm_password')
 
-
-class VerifyEmail(View):
-    """
-    View for verifying the user's email with OTP and logging them in directly.
-    """
-    def post(self,request):
-        email = request.POST.get('email')
-        otp = request.POST.get('otp')
-        try:
-            user = CustomUser.objects.get(email=email)
-            is_valid, message = CustomUser.objects.validate_otp(user, otp)
-            if is_valid:
-                user.is_verified = True
+        if new_password == confirm_password:
+            email = request.session.get('email')
+            try:
+                user = CustomUser.objects.get(email=email)
+                user.set_password(new_password)
                 user.save()
-                login(request, user)
-                messages.success(request, "Your email has been verified. You are now logged in.")
-                next_url = request.GET.get('next', 'core:home')
-                return redirect(next_url)
-            else:
-                messages.error(request, message)
-        except CustomUser.DoesNotExist:
-            messages.error(request, "User does not exist.")
 
-        return render(request, "accounts/verify_email.html", {'email': email})
+                message = "Password reset successful. Please log in with your new password."
+                message_type = "success"
+
+                del request.session['verification_code']
+                del request.session['email']
+
+                return redirect('accounts:login')  # Redirect to login page
+            except CustomUser.DoesNotExist:
+                message = "User not found. Please try again."
+                message_type = "error"
+        else:
+            message = "Passwords do not match. Please try again."
+            message_type = "error"
+
+    return render(request, 'accounts/forgetEmail.html', {
+        'form': form,
+        'message': message,
+        'message_type': message_type,
+        'verification_code_sent': verification_code_sent,
+        'verification_successful': verification_successful,
+        'new_password_form': new_password_form,
+    })
+
+
+def verify_email(request,email):
+    email = request.POST.get('email')
+    otp = request.POST.get('otp')
+    try:
+        user = CustomUser.objects.get(email=email)
+        is_valid, message = CustomUser.objects.validate_otp(user, otp)
+        if is_valid:
+            user.is_verified = True
+            user.save()
+            login(request, user)
+            messages.success(request, "Your email has been verified. You are now logged in.")
+            next_url = request.GET.get('next', 'core:home')
+            return redirect(next_url)
+        else:
+            messages.error(request, message)
+    except CustomUser.DoesNotExist:
+        messages.error(request, "User does not exist.")
+
+    return render(request, "accounts/verify_email.html", {'email': email})
+
+
 
 
 class ResendOtp(View):
