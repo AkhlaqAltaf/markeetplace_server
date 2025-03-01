@@ -1,7 +1,7 @@
 
 # Register your models here.
 
-from .models import Category, Product, Offer, LandingPageProduct
+from .models import Category, Product, Offer, LandingPageProduct, Brand
 
 from .models import Category,  Product, ProductVariant, Media,SubCategory,TopPageProduct, Tag, ShippingInfo, Review , OrderOffer , ProductOffer
 from ..core.admin import admin_site
@@ -18,3 +18,4 @@ admin_site.register(TopPageProduct)
 admin_site.register(Review)
 admin_site.register(Offer)
 admin_site.register(LandingPageProduct)
+admin_site.register(Brand)

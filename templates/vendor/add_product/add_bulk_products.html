@@ -4,6 +4,9 @@
 <div id="page" class="bg-gray-50 p-6">
   <div class="max-w-4xl mx-auto bg-white shadow-md p-6 rounded-lg">
     <h1 class="text-xl font-semibold mb-4">Upload Bulk Products</h1>
+      {% for brand in brands %}
+          {{ brand }}
+      {% endfor %}
 
     <!-- File Upload -->
     <div class="mb-4">

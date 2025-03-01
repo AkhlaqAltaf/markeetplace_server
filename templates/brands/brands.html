@@ -1,0 +1,31 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="grid grid-cols-2 md:grid-cols-5 gap-4 p-4">
+    {% for brand in brands %}
+        <a
+                            href="{% url 'product:all-product' %}?brand={{ brand.id }}"
+                class="group relative flex flex-col items-center p-4">
+            <!-- Image Circle with Loader Effect -->
+            <div class="relative w-28 h-28 rounded-full border-4 border-green-500 flex items-center justify-center overflow-hidden">
+                <img src="{{ brand.logo.url }}" alt="Brand Logo" class="w-full h-full object-cover rounded-full">
+
+                <!-- Circular Progress Effect -->
+                <div class="absolute inset-0 border-4 border-dashed border-green-300 rounded-full animate-spin"></div>
+
+                <!-- Hover Effect (Center Icon) -->
+                <div class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="white" class="w-10 h-10">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m0-4h.01M12 20h.01M3 12h.01M21 12h.01M4.22 19.78h.01M19.78 4.22h.01M4.22 4.22h.01M19.78 19.78h.01" />
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Brand Name & Product Count -->
+            <p class="mt-2 text-lg font-semibold text-green-700">{{ brand.name }}</p>
+            <p class="text-sm text-gray-500">{{ brand.get_len_products }}</p>
+        </a>
+    {% endfor %}
+</div>
+{% endblock %}

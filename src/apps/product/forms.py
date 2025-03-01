@@ -26,7 +26,7 @@ class ProductForm(forms.ModelForm):
         fields = [
             'name', 'description', 'category', 'sub_category',
             'price',  'stock_quantity', 'sku',
-             'brand','barcode','content'
+             'brand','barcode','content',
         ]
 class OfferForm(forms.ModelForm):
     class Meta:

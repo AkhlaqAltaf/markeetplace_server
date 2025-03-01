@@ -3,11 +3,13 @@
         {#console.log(`{{images}}`);#}
 
 document.addEventListener("DOMContentLoaded", () => {
+    console.log("LOADED////")
     // ========== Subcategory Dropdown ==========
     const categorySelect = document.getElementById("categorySelect");
     const subcategorySelect = document.getElementById("subcategorySelect");
 
     function fetchSubcategories(category) {
+        console.log("CATEGORY SELECTED...")
         if (!category) return;
 
         subcategorySelect.innerHTML = '<option value="" disabled selected>Select Sub-Category</option>';

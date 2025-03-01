@@ -74,8 +74,13 @@
 <div class="bottom-bar w-full bg-teal-600 py-2 px-4 flex justify-center shadow-sm mt-20">
     <nav class="hidden md:flex md:space-x-3 lg:space-x-6">
         <a href="/" class="lg:text-lg md:text-sm hover:text-[#0D9488]">Home</a>
-        <a href="{% url 'product:all-product' %}" class="lg:text-lg md:text-sm hover:text-[#0D9488]">Shop</a>
+        <a href="{% url 'product:all-product' %}" class="lg:text-lg md:text-sm hover:text-[#0D9488]">
+            Shop</a>
+                       <a href="{% url 'product:brands' %}"
+                      class="lg:text-lg md:text-sm hover:text-[#0D9488]">Brands</a>
+
         <div class="relative group">
+
             <a href="#" class="lg:text-lg md:text-sm hover:text-[#0D9488]">Categories</a>
  <div class="absolute left-1/2 transform -translate-x-1/2 top-full bg-[#A7C1C5]/90 shadow-lg hidden group-hover:flex flex-col items-center p-6 z-50 w-[750px] rounded-lg">
         <div class="flex flex-wrap justify-center items-start w-full">
@@ -133,6 +138,7 @@
     <nav class="flex flex-col items-center space-y-4 mt-2 w-full">
         <a href="{% url 'core:home' %}" class="text-lg font-semibold text-gray-800 hover:text-[#0D9488] transition duration-200">Home</a>
         <a href="{% url 'product:all-product' %}" class="text-lg font-semibold text-gray-800 hover:text-[#0D9488] transition duration-200">Shop</a>
+        <a href="{% url 'product:brands' %}" class="text-lg font-semibold text-gray-800 hover:text-[#0D9488] transition duration-200">Brands</a>
 
         <div class="relative w-full text-center">
             <button id="mobile-dropdown-btn" class="text-lg font-semibold text-gray-800 hover:text-[#0D9488] w-full transition duration-200">Categories</button>

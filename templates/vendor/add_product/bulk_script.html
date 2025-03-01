@@ -25,7 +25,7 @@
           row.forEach((cell, index) => {
             const td = document.createElement("td");
             td.className = "px-4 py-2 border";
-            td.contentEditable = index !== 6 && index !== 7 && index !== 9; // Disable editing for dropdowns
+            td.contentEditable = index !== 6 && index !== 7 && index !== 9 && index !==1; // Disable editing for dropdowns
             td.textContent = cell;
             tr.appendChild(td);
           });
@@ -73,6 +73,20 @@
           addOfferButton.className = "bg-blue-500 text-white px-2 py-1 rounded mt-2";
           offersTd.appendChild(addOfferButton);
           tr.appendChild(offersTd);
+
+            const brandTd = tr.children[1];
+            brandTd.innerHTML = ""; // Completely remove any existing text content
+            const brandSelect = document.createElement("select");
+            brandSelect.innerHTML = `
+              <option value="" disabled selected>Select Brand</option>
+              {% for brand in brands %}
+                <option value="{{ brand.id }}">{{ brand.name }}</option>
+              {% endfor %}
+            `;
+            brandTd.appendChild(brandSelect);
+
+
+
 
           // Handle adding offers
           addOfferButton.addEventListener("click", () => {
@@ -136,7 +150,7 @@
         const imageInputs = cells[10].querySelectorAll("input[type='file']"); // Image input fields
         const productData = {
           name: cells[0].textContent.trim(),
-          brand: cells[1].textContent.trim(),
+            brand: cells[1].querySelector("select").value,
           price: cells[2].textContent.trim(),
           sku: cells[3].textContent.trim(),
           barcode: cells[4].textContent.trim(),

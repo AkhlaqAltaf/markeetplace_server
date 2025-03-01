@@ -11,8 +11,8 @@ from django.shortcuts import get_object_or_404
 from django.views import View
 from django.views.generic import CreateView, UpdateView, DetailView
 from src.apps.accounts.models import CustomUser
-from src.apps.product.forms import ProductForm, OfferForm
-from src.apps.product.models import Category, SubCategory, Media, Product, ProductOffer, OrderOffer
+from src.apps.product.forms import ProductForm, OfferForm, BrandRegistrationForm
+from src.apps.product.models import Category, SubCategory, Media, Product, ProductOffer, OrderOffer, Brand
 from src.apps.vendor.forms import VendorForm, ProductOfferForm, OrderOfferForm
 from src.apps.vendor.models import Vendor
 from .mixins import CheckVendorMixin
@@ -182,6 +182,8 @@ class BaseProductView(View):
 
     def get_categories(self):
         return Category.objects.all()
+    def get_brands(self):
+        return Brand.objects.all()
 
     def get_images(self, product):
         media_files = product.media.all()
@@ -230,7 +232,8 @@ class AddProductView(BaseProductView):
     def get(self, request, *args, **kwargs):
         form = ProductForm()
         offer_form = OfferForm()
-        categories = self.get_categories()
+
+        brands =self.get_brands()
         images = []
         product_id = request.GET.get('product_id')
 
@@ -239,7 +242,7 @@ class AddProductView(BaseProductView):
             images = self.get_images(product)
 
         return render(request, 'vendor/add_product/addproduct.html', {
-            "categories": categories,
+            "brands": brands,
             "form": form,
             "offer_form": offer_form,
             "images": json.dumps(images),
@@ -262,7 +265,6 @@ class AddProductView(BaseProductView):
         else:
             categories = self.get_categories()
             return render(request, 'vendor/add_product/addproduct.html', {
-                "categories": categories,
                 "form": form,
                 "images": json.dumps(images_data),
                 "offer_form": OfferForm()
@@ -273,9 +275,7 @@ class BulkUploadProductView(BaseProductView):
 
     def get(self, request, *args, **kwargs):
         categories = self.get_categories()
-        return render(request, 'vendor/add_product/add_bulk_products.html', {
-            "categories": categories,
-        })
+        return render(request, 'vendor/add_product/add_bulk_products.html', )
 
     def post(self, request, *args, **kwargs):
         print("POST REQUEST...")
@@ -357,7 +357,6 @@ class EditProductView(BaseProductView):
         images = self.get_images(product)
 
         return render(request, 'vendor/add_product/edit_product.html', {
-            "categories": categories,
             "form": form,
             "offer_form": offer_form,
             "images": json.dumps(images)
@@ -385,7 +384,6 @@ class EditProductView(BaseProductView):
             categories = self.get_categories()
             images = self.get_images(product)
             return render(request, 'vendor/add_product/edit_product.html', {
-                "categories": categories,
                 "form": form,
                 "offer_form": OfferForm(),
                 "images": json.dumps(images)
@@ -419,12 +417,25 @@ class DeleteImageView(View):
             return JsonResponse({'error': 'Image not found.'}, status=404)
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
+
+
+def register_brand(request):
+    if request.method == 'POST':
+        form = BrandRegistrationForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('vendor:add')
+    else:
+        form = BrandRegistrationForm()
+
+    return render(request, 'vendor/register_brand.html', {'form': form})
+
 class AddBulkProductsView(View):
 
     def get(self, request):
         """Render the form for adding bulk products."""
         categories = Category.objects.all()
-        return render(request, 'vendor/add_product/add_bulk_products.html', context={"categories": categories})
+        return render(request, 'vendor/add_product/add_bulk_products.html')
 
     def post(self, request):
         """Process bulk product submissions."""

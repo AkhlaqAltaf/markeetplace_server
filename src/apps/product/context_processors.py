@@ -1,6 +1,8 @@
-from src.apps.product.models import Category
+from src.apps.product.models import Category, Brand
 
 
 def menu_categories(request):
     categories = Category.objects.prefetch_related('subcategories').all()
-    return {'categories': categories}
+    brands = Brand.objects.all()
+    return {'categories': categories,'brands':brands}
+

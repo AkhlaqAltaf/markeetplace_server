@@ -12,4 +12,5 @@ urlpatterns = [
     path('product_detail/<int:pk>/', views.ProductDetailView.as_view(), name='product-detail'),
     path('product_detail3d/<int:pk>/', views.ProductDetail3DView.as_view(), name='product-detail3d'),
     path('add_product/getsubcategories/<str:category>/', views.GetSubCategory.as_view(), name='subcategories'),
+    path('brands/',views.BrandPageView.as_view(),name='brands')
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

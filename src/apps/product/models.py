@@ -47,6 +47,8 @@ class Brand(models.Model):
 
     def __str__(self):
         return self.name
+    def get_len_products(self):
+        return self.products.count()
 
 class Product(models.Model):
     STATUS_CHOICES = [

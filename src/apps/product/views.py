@@ -11,18 +11,8 @@ from django.views.generic import DetailView
 
 from .forms import CategoryCreateForm, SubCategoryCreateForm, BrandRegistrationForm
 from .forms import SubCategoryForm
-from .models import Category, Product, SubCategory, ProductOffer, OrderOffer
+from .models import Category, Product, SubCategory, ProductOffer, OrderOffer, Brand
 
-
-def register_brand(request):
-    if request.method == 'POST':
-        form = BrandRegistrationForm(request.POST, request.FILES)
-        if form.is_valid():
-            form.save()
-            return redirect('vendor:vendor')
-    else:
-        form = BrandRegistrationForm()
-    return render(request, 'vendor/register_brand.html', {'form': form})
 
 class ProductDetailView(DetailView):
     model = Product
@@ -161,15 +151,24 @@ class ProductDetail3DView(DetailView):
         context['products'] = products_json
         return context
 
+
+class BrandPageView(View):
+    def get(self,request):
+        brands = Brand.objects.all()
+        return render(request,'brands/brands.html',{'brands':brands})
+
+
 class AllProductsView(View):
     def get(self, request):
-        filter_values = request.GET.getlist('filter')  # This can include both category and subcategory IDs
+        filter_values = request.GET.getlist('filter')  # Category & Subcategory filters
         price_filter = request.GET.get('price', None)
-        search_query = request.GET.get('q', '')  # Get the search query if provided
+        brand_filter = request.GET.getlist('brand')  # Get selected brand filters
+        search_query = request.GET.get('q', '')  # Search query
 
         categories = Category.objects.all()
+        brands = Brand.objects.all()  # Fetch all brands
 
-        # Get the minimum and maximum product prices
+        # Get the min and max price of products
         min_price = Product.objects.aggregate(Min('price'))['price__min']
         max_price = Product.objects.aggregate(Max('price'))['price__max']
 
@@ -186,27 +185,25 @@ class AllProductsView(View):
                 num_buckets = 7
 
             price_step = round(price_range_span / num_buckets)
-
-            prices_range = {}
-            for i in range(num_buckets):
-                upper_limit = min_price + (i + 1) * price_step
-                prices_range[f'bucket_{i + 1}'] = f'Under ${upper_limit}'
+            prices_range = {
+                f'bucket_{i + 1}': f'Under ${min_price + (i + 1) * price_step}'
+                for i in range(num_buckets)
+            }
             prices_range['high'] = f'Under ${max_price}'
-
         else:
             prices_range = {}
 
-        # Filter and search products
-        products = Product.objects.all().select_related('category', 'sub_category')
+        # Fetch products and apply filters
+        products = Product.objects.all().select_related('category', 'sub_category', 'brand')
 
         if search_query:
             products = products.filter(
                 Q(name__icontains=search_query) |
-                Q(brand__icontains=search_query) |
+                Q(brand__name__icontains=search_query) |  # Search by brand name
                 Q(description__icontains=search_query)
             )
 
-        if filter_values:  # Apply category and subcategory filter
+        if filter_values:  # Filter by category and subcategory
             products = products.filter(Q(category__id__in=filter_values) | Q(sub_category__id__in=filter_values))
 
         if price_filter:  # Apply price range filter
@@ -215,6 +212,9 @@ class AllProductsView(View):
                 bucket_index = int(price_parts[1]) - 1
                 price_threshold = min_price + (bucket_index + 1) * price_step
                 products = products.filter(price__lt=price_threshold)
+
+        if brand_filter:  # Apply brand filter
+            products = products.filter(brand__id__in=brand_filter)
 
         # Calculate discounts for products
         allProductOffers = ProductOffer.objects.all()
@@ -236,14 +236,16 @@ class AllProductsView(View):
         if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
             return render(request, "products/includes/product_grid.html", {'products': products})
 
-        # Pass the data to the full page render
+        # Pass data to template
         context = {
             'products_with_discounts': zip(products, discounts),
             'categories': categories,
+            'brands': brands,  # Pass brands to the template
             'prices_range': prices_range,
             'selected_filters': filter_values,
+            'selected_brands': brand_filter,  # Track selected brands
             'selected_price': price_filter,
-            'search_query': search_query,  # Pass the search query to the template
+            'search_query': search_query,
         }
         return render(request, "products/all_products/all_products.html", context)
 class CategoryProductsView(View):

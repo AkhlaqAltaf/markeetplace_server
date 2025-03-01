@@ -33,21 +33,23 @@
           {% endif %}
         </div>
 
-        <div>
-          <label  class="block text-sm font-medium mb-1">Brand Name</label>
-          <input type="text" name="brand"
-            class="w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-orange-500"
-          value="{{ form.brand.value|default:"" }}"
-          >
-                    {% if form.brand.errors %}
+<div>
+        <label class="block text-sm font-medium mb-1">Brand</label>
+        <select name="brand" id="brandSelect" class="w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-orange-500">
+          <option value="" disabled {% if not form.category.value %}selected{% endif %}>Select Brand</option>
+          {% for brand in brands %}
+            <option value="{{ brand.id }}" {% if brand.id == form.brand.value %}selected{% endif %}>{{ brand.name }}</option>
+          {% endfor %}
+          <option value="other">Other</option> <!-- Add Other option -->
+        </select>
+        {% if form.brand.errors %}
           <div class="text-red-500 text-sm mt-1">
             {% for error in form.brand.errors %}
               <p>{{ error }}</p>
             {% endfor %}
           </div>
         {% endif %}
-        </div>
-
+      </div>
 
         <div>
           <label class="block text-sm font-medium mb-1">Price</label>
@@ -110,10 +112,13 @@
 
          <div>
           <label class="block text-sm font-medium mb-1">Product Category</label>
-          <select name="category" id="categorySelect" class="w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-orange-500">
+          <select name="category" id="categorySelect"
+                  class="w-full border border-gray-300 rounded
+                   p-2 focus:outline-none focus:ring-2 focus:ring-orange-500">
             <option value="" disabled {% if not form.category.value %}selected{% endif %}>Select Category</option>
             {% for category in categories %}
-              <option value="{{ category.id }}" {% if category.id == form.category.value %}selected{% endif %}>{{ category.name }}</option>
+              <option value="{{ category.id }}"
+                      {% if category.id == form.category.value %}selected{% endif %}>{{ category.name }}</option>
             {% endfor %}
           </select>
           {% if form.category.errors %}
@@ -126,8 +131,10 @@
         </div>
 
         <div>
-          <label class="block text-sm font-medium mb-1">Sub Category</label>
-          <select name="sub_category" id="subcategorySelect" class="w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-orange-500">
+          <label
+                  class="block text-sm font-medium mb-1">Sub Category</label>
+          <select name="sub_category" id="subcategorySelect"
+                  class="w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-orange-500">
             <option value="" disabled {% if not form.sub_category.value %}selected{% endif %}>Select Sub-Category</option>
           </select>
           {% if form.sub_category.errors %}
@@ -140,7 +147,8 @@
         </div>
 
         <div>
-          <label class="block text-sm font-medium mb-1">Summary</label>
+          <label
+                  class="block text-sm font-medium mb-1">Summary</label>
           <textarea name="description"
             class="w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-orange-500">
               {{ form.description.value }}
@@ -154,11 +162,13 @@
             </div>
           {% endif %}
         </div>
+
       </div>
     <div>
                   <label class="block text-sm font-medium mb-1">Description</label>
 
-                <textarea  name="content" placeholder="Product Details" class="form-control" rows="12" cols="50">
+                <textarea  name="content" placeholder="Product Details"
+                           class="form-control" rows="12" cols="50">
 
                 </textarea>
           {% if form.content.errors %}
@@ -211,6 +221,78 @@
         </button>
       </div>
     </form>
+      <!-- Brand Registration Form -->
+ <!-- Brand Registration Modal -->
+    <div id="brandRegistrationModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
+      <div class="bg-white rounded-lg p-6 w-11/12 max-w-md">
+        <h2 class="text-lg font-semibold mb-4">Register New Brand</h2>
+        <form id="newBrandForm" action="{% url 'vendor:register-brand' %}" method="POST" enctype="multipart/form-data">
+          {% csrf_token %}
+
+          <div>
+            <label class="block text-sm font-medium mb-1">Brand Name</label>
+            <input type="text" name="name"
+              class="w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-orange-500"
+              required>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium mb-1">Brand Logo</label>
+            <input type="file" name="logo"
+              class="w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-orange-500"
+              accept="image/*" required>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium mb-1">Categories</label>
+            <select name="categories" multiple
+              class="w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-orange-500"
+              required>
+              {% for category in categories %}
+                <option value="{{ category.id }}">{{ category.name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium mb-1">Subcategories</label>
+            <select name="sub_categories" multiple
+              class="w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-orange-500"
+              required>
+              {% for category in categories %}
+                            {% for sub_category in category.subcategories.all %}
+                <option value="{{ sub_category.id }}">{{ sub_category.name }}</option>
+                      {% endfor %}
+              {% endfor %}
+            </select>
+          </div>
+
+          <button type="submit" class="w-full py-2 bg-[#0B5D51] text-white font-semibold rounded-lg focus:outline-none focus:ring-2 mt-4">
+            Register Brand
+          </button>
+        </form>
+         <button id="closeModal" class="mt-4 text-red-500">Close</button>
+      </div>
+    </div>
+     <script>
+document.addEventListener('DOMContentLoaded', function() {
+    const brandSelect = document.getElementById('brandSelect');
+    const brandRegistrationModal = document.getElementById('brandRegistrationModal');
+    const closeModalButton = document.getElementById('closeModal');
+
+    brandSelect.addEventListener('change', function() {
+        if (this.value === 'other') {
+            brandRegistrationModal.classList.remove('hidden');
+        } else {
+            brandRegistrationModal.classList.add('hidden');
+        }
+    });
+
+    closeModalButton.addEventListener('click', function() {
+        brandRegistrationModal.classList.add('hidden');
+    });
+});
+</script>
     <!-- Form End -->
   </div>
 </div>

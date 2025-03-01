@@ -1,3 +1,5 @@
+from tkinter.font import names
+
 from django.urls import path
 
 from . import views
@@ -53,5 +55,6 @@ urlpatterns = [
     path('models/', views.list_models, name='list_models'),
     path('models/create/', views.create_model, name='create_model'),
     path('models/<pk>/download/', views.download_model, name='download_model'),
-    path('add_bulk/',views.BulkUploadProductView.as_view(),name='add_bulk')
+    path('add_bulk/',views.BulkUploadProductView.as_view(),name='add_bulk'),
+    path('register-brand/',views.register_brand , name = 'register-brand'),
               ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
