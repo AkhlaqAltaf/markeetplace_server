@@ -1,4 +1,21 @@
 Name,Brand,Price,SKU,Barcode,Stock Quantity,Category,Sub Category,Summary,Description
-"Product 1","Brand A",19.99,"SKU001","1234567890123",100,New Category,12,"This is a summary for Product 1","Detailed description of Product 1"
-"Product 2","Brand B",29.99,"SKU002","1234567890124",200,New Category,12,"This is a summary for Product 2","Detailed description of Product 2"
-"Product 3","Brand C",39.99,"SKU003","1234567890125",150,New Category,12,"This is a summary for Product 3","Detailed description of Product 3"
+Wireless Mouse,Logitech,29.99,LOGI-MOUSE-001,123456789001,150,Electronics,Computer Accessories,Ergonomic wireless mouse,A comfortable wireless mouse with a long battery life.
+Gaming Keyboard,Razer,99.99,RAZER-KEYBOARD-002,123456789002,75,Electronics,Computer Accessories,Mechanical gaming keyboard,RGB lighting and customizable keys for gamers.
+Bluetooth Headphones,Sony,149.99,SONY-HEADPHONES-003,123456789003,50,Electronics,Audio,Noise-cancelling Bluetooth headphones,Experience high-quality sound without distractions.
+Smartphone,Apple,999.99,APPLE-PHONE-004,123456789004,30,Electronics,Mobile Phones,Latest iPhone model,The most advanced iPhone with A14 chip and 5G.
+Laptop,Dell,799.99,DELL-LAPTOP-005,123456789005,20,Electronics,Laptops,Powerful laptop for work and play,Intel i7 processor with 16GB RAM and 512GB SSD.
+4K TV,Samsung,599.99,SAMSUNG-TV-006,123456789006,15,Electronics,Televisions,Ultra HD 4K Smart TV,Enjoy stunning picture quality and smart features.
+Digital Camera,Canon,899.99,CANON-CAMERA-007,123456789007,10,Electronics,Cameras,High-resolution digital camera,Capture stunning photos and videos with ease.
+Coffee Maker,Breville,199.99,BREVILLE-COFFEE-008,123456789008,100,Home Appliances,Kitchen,Premium coffee maker,Brew café-quality coffee at home.
+Blender,Ninja,89.99,NINJA-BLENDER-009,123456789009,120,Home Appliances,Kitchen,Powerful blender for smoothies,Blend fruits and vegetables effortlessly.
+Air Fryer,Philips,149.99,PHILIPS-AIRFRYER-010,123456789010,80,Home Appliances,Kitchen,Healthy air fryer,Fry your favorite foods with little to no oil.
+Running Shoes,Nike,119.99,NIKE-SHOES-011,123456789011,200,Sports,Footwear,Lightweight running shoes,Designed for comfort and performance.
+Yoga Mat,Liforme,79.99,LIFORME-YOGA-012,123456789012,150,Sports,Accessories,Eco-friendly yoga mat,Perfect for yoga and fitness enthusiasts.
+Backpack,Osprey,129.99,OSPREY-BACKPACK-013,123456789013,60,Outdoor,Travel,Durable hiking backpack,Ideal for day hikes and weekend trips.
+Watch,Seiko,299.99,SEIKO-WATCH-014,123456789014,40,Fashion,Accessories,Elegant wristwatch,A classic design for any occasion.
+Sunglasses,Ray-Ban,159.99,RAYBAN-SUNGLASSES-015,123456789015,80,Fashion,Accessories,Stylish sunglasses,Protect your eyes with style.
+T-shirt,Hanes,19.99,HANES-TSHIRT-016,123456789016,300,Fashion,Clothing,Comfortable cotton t-shirt,Soft and breathable for everyday wear.
+Jeans,Levi's,49.99,LEVIS-JEANS-017,123456789017,150,Fashion,Clothing,Classic fit jeans,Timeless style and comfort.
+Notebook,Moleskine,24.99,MOLESKINE-NOTEBOOK-018,123456789018,200,Stationery,Writing,Classic notebook for notes and sketches,Perfect for writers and artists.
+Pen,Montblanc,199.99,MONTBLANC-PEN-019,123456789019,100,Stationery,Writing,Luxury fountain pen,A symbol of elegance and sophistication.
+Desk Lamp,Philips,59.99,PHILIPS-LAMP-020,123456789020,90,Furniture,Lighting,Adjustable LED desk lamp,Brighten your workspace with style.

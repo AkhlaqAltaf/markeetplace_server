@@ -1,43 +1,108 @@
 <!-- templates/main/base.html -->
- {% load static %}
+{% load static %}
 
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
     <link rel="stylesheet" href="{% static 'css/salesRevenue.css' %}">
     <script src="https://kit.fontawesome.com/ac8aec1afa.js" crossorigin="anonymous"></script>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
-
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-\    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
-    />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
     <title>{% block title %}My Website{% endblock %}</title>
-  </head>
-  <body class="bg-gray-100">
-    <div id="app" class="relative h-full max-w-screen">
-      {% include 'vendor/main/partials/sidebar.html' %}
+    <style>
+        /* Custom scrollbar for sidebar */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 3px;
+        }
+        /* Add this to your CSS file or within a <style> tag */
+.message {
+    opacity: 0; /* Start hidden */
+    transition: opacity 0.3s ease-in-out; /* Smooth transition */
+}
+    </style>
+</head>
+<body class="bg-gray-100">
 
-  <div class="ml-0 lg:ml-[280px] md:ml-[240px] w-full lg:w-[75vw]">
+    <!-- Message Container -->
+    <div class="bg-dark-subtle z-[50]">
+        <div class="messages" id="message-container">
 
-    {% block content %}
-    {% endblock %}
-</div>
-
-
-
-
+        </div>
     </div>
-  </body>
+
+    <div id="app" class="relative h-full max-w-screen">
+        {% include 'vendor/main/partials/sidebar.html' %}
+
+        <div class="ml-0 lg:ml-[280px] md:ml-[240px] w-full lg:w-[75vw]">
+            {% block content %}
+            {% endblock %}
+        </div>
+    </div>
+
+    <script>
+        function closeMessage(button) {
+            const messageContainer = document.getElementById('message-container');
+            const message = button.parentElement; // Get the parent message div
+            messageContainer.removeChild(message); // Remove the message from the container
+        }
+
+        // Function to show messages dynamically
+function showMessage(type, text) {
+    const messageContainer = document.getElementById('message-container');
+
+    // Create a new message div
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `fixed top-5 left-1/2 transform -translate-x-1/2 w-auto p-4 mb-4 text-sm text-white rounded-lg shadow-lg transition-all duration-300 ease-in-out z-50 max-w-xs`;
+
+    // Set background color based on message type
+    if (type === 'success') {
+        messageDiv.classList.add('bg-green-500');
+    } else if (type === 'error') {
+        messageDiv.classList.add('bg-red-500');
+    } else {
+        messageDiv.classList.add('bg-gray-500');
+    }
+
+    messageDiv.innerHTML = `
+        <div class="flex justify-between items-center">
+            <span>${text}</span>
+            <button class="ml-4 text-white hover:text-gray-200" onclick="closeMessage(this)">&times;</button>
+        </div>
+    `;
+
+    // Append the message div to the container
+    messageContainer.appendChild(messageDiv);
+
+    // Animate the message appearance
+    setTimeout(() => {
+        messageDiv.classList.add('opacity-100');
+    }, 10);
+
+    // Auto-dismiss after 5 seconds
+    setTimeout(() => {
+        messageDiv.classList.remove('opacity-100');
+        messageDiv.classList.add('opacity-0');
+        setTimeout(() => {
+            messageContainer.removeChild(messageDiv);
+        }, 300); // Wait for fade-out animation to complete
+    }, 5000);
+}        // This can be called after an AJAX request or any other event
+        // showMessage('success', 'Your action was successful!');
+    </script>
+</body>
 </html>

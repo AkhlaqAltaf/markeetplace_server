@@ -278,20 +278,14 @@ class BulkUploadProductView(BaseProductView):
         return render(request, 'vendor/add_product/add_bulk_products.html', )
 
     def post(self, request, *args, **kwargs):
-        print("POST REQUEST...")
-        print("Request Body:", request.body)  # Log the request body
 
         try:
-            # Parse the JSON data from the request body
-            products_data = json.loads(request.body)  # Expecting JSON data from the frontend
-            print("Parsed Products Data:", products_data)  # Log the parsed data
+            products_data = json.loads(request.body)
+            success_count = 0
+            error_messages = []
 
             for product_data in products_data:
-                print("Processing Product Data:", product_data)  # Log each product data
-
-                # Create a form instance with the product data
                 form = ProductForm(product_data)
-
                 if form.is_valid():
                     product = form.save(commit=False)
                     product.vendor = request.user.vendor
@@ -305,15 +299,33 @@ class BulkUploadProductView(BaseProductView):
                     if 'images' in product_data:
                         self.handle_images(product_data['images'], product)
 
+                    success_count += 1  # Increment success count
                 else:
-                    print("Form Errors:", form.errors)  # Log errors for debugging
+                    # Collect error messages for each product
+                    error_messages.append({
+                        "product": product_data,
+                        "errors": form.errors
+                    })
 
-            return JsonResponse({"message": "Products uploaded successfully!"}, status=201)
+            if error_messages:
+                print("ERROR MESSAGES")
+                messages.error(request,  f"message: {success_count} products uploade successfully :errors : {error_messages}")
+                return JsonResponse({
+                    "message": f"{success_count} products uploaded successfully!",
+                    "errors": error_messages
+                }, status=207)  # 207 Multi-Status for partial success
+
+            return JsonResponse({"message": "All products uploaded successfully!"}, status=201)
+
+
 
         except json.JSONDecodeError:
+            messages.error(request, "JSON decoding error")
             return JsonResponse({"error": "Invalid JSON data"}, status=400)
         except Exception as e:
+            messages.error(request,str(e))
             return JsonResponse({"error": str(e)}, status=500)
+
     def handle_offers(self, product, product_data):
         if 'offers' in product_data:
             for offer in product_data['offers']:
